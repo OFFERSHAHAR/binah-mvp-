@@ -27,6 +27,20 @@ async function initializeDatabase() {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     })
+
+    // Seeded admin account. ponytail: seeded (not registered) so it survives
+    // serverless cold starts even with the in-memory store. Move to Supabase +
+    // env-based credentials before real production.
+    const adminHash = await hashPassword(process.env.ADMIN_PASSWORD || 'Admin@123')
+    userDatabase.set('admin@binah.com', {
+      id: 'admin-user-001',
+      email: 'admin@binah.com',
+      passwordHash: adminHash,
+      name: 'מנהל המערכת',
+      role: 'admin',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    })
   }
 }
 

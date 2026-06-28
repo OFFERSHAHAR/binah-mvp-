@@ -18,8 +18,10 @@ import { Messages } from '@/components/screens/Messages'
 import { Resources } from '@/components/screens/Resources'
 import { Record } from '@/components/screens/Record'
 import { LessonBuilder } from '@/components/screens/LessonBuilder'
+import { Admin } from '@/components/screens/Admin'
 import { Settings } from '@/components/screens/Settings'
 import { useNavigationStore, type ScreenKey } from '@/store/navigationStore'
+import { useAuthStore } from '@/store/authStore'
 
 /**
  * Screen component mapping
@@ -38,7 +40,7 @@ const SCREEN_COMPONENTS: Record<ScreenKey, React.ComponentType> = {
   'record': Record,
   'lesson-builder': LessonBuilder,
   'settings': Settings,
-  'admin': Dashboard, // Fallback to Dashboard
+  'admin': Admin,
   'analytics': Dashboard, // Fallback to Dashboard
 }
 
@@ -58,6 +60,7 @@ const VALID_SCREENS: ScreenKey[] = [
   'record',
   'lesson-builder',
   'settings',
+  'admin',
 ]
 
 /**
@@ -67,6 +70,7 @@ function ScreenContent() {
   const router = useRouter()
   const params = useParams()
   const { currentScreen, setCurrentScreen } = useNavigationStore()
+  const { user } = useAuthStore()
 
   const screenParam = params.screen as string | undefined
 
@@ -87,11 +91,17 @@ function ScreenContent() {
       return
     }
 
+    // Admin area is admin-only
+    if (normalizedScreen === 'admin' && user?.role !== 'admin') {
+      router.push('/dashboard')
+      return
+    }
+
     // Sync URL with store
     if (currentScreen !== normalizedScreen) {
       setCurrentScreen(normalizedScreen)
     }
-  }, [screenParam, router, currentScreen, setCurrentScreen])
+  }, [screenParam, router, currentScreen, setCurrentScreen, user])
 
   // Determine which component to render
   const ScreenComponent = SCREEN_COMPONENTS[currentScreen as ScreenKey]

@@ -26,6 +26,7 @@ export interface Screen {
   component: string
   color: string
   order: number
+  adminOnly?: boolean
 }
 
 export interface NavigationState {
@@ -152,6 +153,16 @@ const DEFAULT_SCREENS: Screen[] = [
     component: 'Settings',
     color: '#7A7A92',
     order: 12,
+  },
+  {
+    id: 'admin',
+    title: 'ניהול',
+    description: 'ממשק ניהול מערכת',
+    icon: 'M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6zM9 12l2 2 4-4',
+    component: 'Admin',
+    color: '#E5483C',
+    order: 13,
+    adminOnly: true,
   },
 ]
 

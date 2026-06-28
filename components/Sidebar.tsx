@@ -4,11 +4,16 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useNavigationStore } from '@/store/navigationStore'
+import { useAuthStore } from '@/store/authStore'
 import { UserMenu } from './UserMenu'
 
 export const Sidebar = () => {
   const { screens } = useNavigationStore()
+  const { user } = useAuthStore()
   const pathname = usePathname()
+
+  // Admin-only screens are hidden unless the signed-in user is an admin.
+  const visibleScreens = screens.filter((s) => !s.adminOnly || user?.role === 'admin')
 
   // Extract current screen from pathname
   const currentScreen = pathname.split('/').pop() || 'dashboard'
@@ -64,7 +69,7 @@ export const Sidebar = () => {
         animate="visible"
         className="flex flex-col gap-1 flex-1 min-h-0 overflow-y-auto"
       >
-        {screens.map((screen) => {
+        {visibleScreens.map((screen) => {
           const isActive = currentScreen === screen.id
           return (
             <Link
