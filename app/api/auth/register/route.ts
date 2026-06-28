@@ -1,9 +1,12 @@
+import crypto from 'crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { hashPassword } from '@/lib/password'
 import { generateAccessToken, generateRefreshToken } from '@/lib/jwt'
 import { validateEmail, validatePassword } from '@/lib/auth-utils'
 import { createUser, getUserPublicData } from '@/lib/db'
 import { checkRateLimit, incrementRateLimit, DEFAULT_AUTH_RATE_LIMIT } from '@/lib/rate-limit'
+import { kvSet } from '@/lib/store/kv'
+import { sendVerificationEmail } from '@/lib/email'
 
 interface RegisterRequest {
   email: string
@@ -85,6 +88,16 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       name: name.trim(),
       role: 'student',
     })
+
+    // Send confirmation email (best-effort — never fail signup if email is down/unconfigured)
+    try {
+      const verifyToken = crypto.randomBytes(32).toString('hex')
+      await kvSet(`verify:${verifyToken}`, user.email, 24 * 60 * 60) // 24h
+      const verifyUrl = `${request.nextUrl.origin}/api/auth/verify?token=${verifyToken}`
+      await sendVerificationEmail(user.email, user.name, verifyUrl)
+    } catch (emailErr) {
+      console.error('Verification email failed (signup still succeeded):', emailErr)
+    }
 
     // Generate tokens
     const accessToken = generateAccessToken(user.id, user.email)

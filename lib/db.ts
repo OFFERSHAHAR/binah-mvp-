@@ -7,6 +7,7 @@ interface StoredUser {
   passwordHash: string
   name: string
   role: 'student' | 'teacher' | 'admin'
+  emailVerified: boolean
   createdAt: string
   updatedAt: string
 }
@@ -24,6 +25,7 @@ async function initializeDatabase() {
       passwordHash: demoHash,
       name: 'דנה כהן',
       role: 'student',
+      emailVerified: true,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     })
@@ -38,6 +40,7 @@ async function initializeDatabase() {
       passwordHash: adminHash,
       name: 'מנהל המערכת',
       role: 'admin',
+      emailVerified: true,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     })
@@ -77,12 +80,22 @@ export async function createUser(input: CreateUserInput): Promise<StoredUser> {
     passwordHash: input.passwordHash,
     name: input.name,
     role: input.role || 'student',
+    emailVerified: false,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   }
 
   userDatabase.set(input.email.toLowerCase(), user)
   return user
+}
+
+export async function markEmailVerified(email: string): Promise<boolean> {
+  await initializeDatabase()
+  const user = userDatabase.get(email.toLowerCase())
+  if (!user) return false
+  user.emailVerified = true
+  user.updatedAt = new Date().toISOString()
+  return true
 }
 
 export async function updateUserLastLogin(userId: string): Promise<void> {
