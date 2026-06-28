@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { useEffect } from 'react'
 import { useAppData } from '@/hooks'
+import { useAuthStore } from '@/store/authStore'
 import { SkeletonCard, SkeletonGrid } from '../Skeleton'
 
 interface DashboardData {
@@ -133,6 +134,7 @@ const itemVariants = {
 
 export const Dashboard = ({ data = DEFAULT_DATA }: { data?: DashboardData }) => {
   const { courses, loadingCourses, errorCourses, fetchCourses } = useAppData()
+  const { user } = useAuthStore()
 
   useEffect(() => {
     fetchCourses()
@@ -196,7 +198,9 @@ export const Dashboard = ({ data = DEFAULT_DATA }: { data?: DashboardData }) => 
         className="flex items-center justify-between mb-7 px-10 pt-8"
       >
         <div>
-          <div className="text-3xl font-black text-dark">{finalData.greeting} 👋</div>
+          <div className="text-3xl font-black text-dark">
+            {user?.name ? `שלום, ${user.name.split(' ')[0]}` : finalData.greeting} 👋
+          </div>
           <div className="text-sm text-muted mt-1">
             המשך מהמקום שעצרת — נשארו לך עוד {finalData.remaining} שיעורים השבוע.
           </div>

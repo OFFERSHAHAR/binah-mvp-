@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { useState } from 'react'
+import { useAuthStore } from '@/store/authStore'
 
 interface StudentData {
   name: string
@@ -113,8 +114,20 @@ const itemVariants = {
   },
 }
 
-export const StudentProfile = ({ data = DEFAULT_DATA }: { data?: StudentData }) => {
+export const StudentProfile = ({ data: incoming = DEFAULT_DATA }: { data?: StudentData }) => {
+  const { user } = useAuthStore()
   const [isEditing, setIsEditing] = useState(false)
+
+  // Overlay the signed-in user's real identity over the (mock) profile data,
+  // so a registered user sees themselves — not the "דנה לוי" placeholder.
+  const data: StudentData = {
+    ...incoming,
+    name: user?.name || incoming.name,
+    avatarInitial: user?.name?.trim().charAt(0) || incoming.avatarInitial,
+    info: incoming.info.map((i) =>
+      i.label === 'אימייל' && user?.email ? { ...i, value: user.email } : i
+    ),
+  }
 
   const statusConfig = {
     'in_progress': { bg: 'rgba(255,191,140,0.2)', color: '#E5821A', label: 'בעבודה' },
