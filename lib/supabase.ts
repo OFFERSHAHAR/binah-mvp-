@@ -1,8 +1,10 @@
 import { createClient } from '@supabase/supabase-js'
 
-// Get from your Supabase project settings
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+// Get from your Supabase project settings.
+// Safe placeholders keep createClient from throwing at import when env is unset
+// (the active data path is the mock /api/data; this client is dormant until wired).
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co'
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key'
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
