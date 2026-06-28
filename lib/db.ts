@@ -1,6 +1,10 @@
 import { hashPassword } from './password'
+import { kvGet, kvSet } from './store/kv'
 
-// Mock database - in production, replace with Supabase/PostgreSQL
+// User store backed by the shared KV (Upstash Redis in prod) so signups persist
+// across serverless instances and cold starts. Falls back to in-memory KV locally.
+// ponytail: keyed by email + a uid->email index. No "list all users" (needs a scan) —
+// that admin feature is the reason to move to Supabase later.
 interface StoredUser {
   id: string
   email: string
@@ -12,32 +16,39 @@ interface StoredUser {
   updatedAt: string
 }
 
-const userDatabase: Map<string, StoredUser> = new Map()
+const USER_KEY = (email: string) => `user:${email.toLowerCase()}`
+const UID_KEY = (id: string) => `uid:${id}`
 
-// Initialize with seeded data (NOT in production)
-async function initializeDatabase() {
-  if (userDatabase.size === 0) {
-    // Seed demo user only for testing - will be removed before production
-    const demoHash = await hashPassword('Demo@123')
-    userDatabase.set('demo@binah.com', {
+let seeded = false
+
+async function putUser(user: StoredUser): Promise<void> {
+  await kvSet(USER_KEY(user.email), user)
+  await kvSet(UID_KEY(user.id), user.email.toLowerCase())
+}
+
+// Seed demo + admin once per instance (idempotent writes to the shared store).
+async function initializeDatabase(): Promise<void> {
+  if (seeded) return
+  seeded = true
+
+  if (!(await kvGet<StoredUser>(USER_KEY('demo@binah.com')))) {
+    await putUser({
       id: 'demo-user-001',
       email: 'demo@binah.com',
-      passwordHash: demoHash,
+      passwordHash: await hashPassword('Demo@123'),
       name: 'דנה כהן',
       role: 'student',
       emailVerified: true,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     })
+  }
 
-    // Seeded admin account. ponytail: seeded (not registered) so it survives
-    // serverless cold starts even with the in-memory store. Move to Supabase +
-    // env-based credentials before real production.
-    const adminHash = await hashPassword(process.env.ADMIN_PASSWORD || 'Admin@123')
-    userDatabase.set('admin@binah.com', {
+  if (!(await kvGet<StoredUser>(USER_KEY('admin@binah.com')))) {
+    await putUser({
       id: 'admin-user-001',
       email: 'admin@binah.com',
-      passwordHash: adminHash,
+      passwordHash: await hashPassword(process.env.ADMIN_PASSWORD || 'Admin@123'),
       name: 'מנהל המערכת',
       role: 'admin',
       emailVerified: true,
@@ -56,21 +67,19 @@ export interface CreateUserInput {
 
 export async function findUserByEmail(email: string): Promise<StoredUser | null> {
   await initializeDatabase()
-  return userDatabase.get(email.toLowerCase()) || null
+  return kvGet<StoredUser>(USER_KEY(email))
 }
 
 export async function findUserById(id: string): Promise<StoredUser | null> {
   await initializeDatabase()
-  for (const user of userDatabase.values()) {
-    if (user.id === id) return user
-  }
-  return null
+  const email = await kvGet<string>(UID_KEY(id))
+  return email ? kvGet<StoredUser>(USER_KEY(email)) : null
 }
 
 export async function createUser(input: CreateUserInput): Promise<StoredUser> {
   await initializeDatabase()
 
-  if (userDatabase.has(input.email.toLowerCase())) {
+  if (await kvGet<StoredUser>(USER_KEY(input.email))) {
     throw new Error('User already exists')
   }
 
@@ -85,27 +94,26 @@ export async function createUser(input: CreateUserInput): Promise<StoredUser> {
     updatedAt: new Date().toISOString(),
   }
 
-  userDatabase.set(input.email.toLowerCase(), user)
+  await putUser(user)
   return user
+}
+
+export async function updateUserLastLogin(userId: string): Promise<void> {
+  const user = await findUserById(userId)
+  if (user) {
+    user.updatedAt = new Date().toISOString()
+    await putUser(user)
+  }
 }
 
 export async function markEmailVerified(email: string): Promise<boolean> {
   await initializeDatabase()
-  const user = userDatabase.get(email.toLowerCase())
+  const user = await kvGet<StoredUser>(USER_KEY(email))
   if (!user) return false
   user.emailVerified = true
   user.updatedAt = new Date().toISOString()
+  await putUser(user)
   return true
-}
-
-export async function updateUserLastLogin(userId: string): Promise<void> {
-  await initializeDatabase()
-  for (const user of userDatabase.values()) {
-    if (user.id === userId) {
-      user.updatedAt = new Date().toISOString()
-      break
-    }
-  }
 }
 
 export function getUserPublicData(user: StoredUser) {
