@@ -46,7 +46,9 @@ cp .env.example .env.local   # fill in JWT_SECRET + Upstash
 npm run dev                  # http://localhost:3000
 ```
 
-Demo login: `demo@binah.com` / `demo123`.
+Demo login (student): `demo@binah.com` / `Demo@123`.
+Admin login: `admin@binah.com` / `Admin@123` → "ניהול" appears in the sidebar; `/admin` is role-gated.
+Change the admin password via the `ADMIN_PASSWORD` env var (see `.env.example`).
 
 Useful checks:
 ```bash
