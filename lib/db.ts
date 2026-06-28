@@ -1,10 +1,8 @@
 import { hashPassword } from './password'
-import { kvGet, kvSet } from './store/kv'
+import { sbSelect, sbInsert, sbUpdate } from './supabase-server'
 
-// User store backed by the shared KV (Upstash Redis in prod) so signups persist
-// across serverless instances and cold starts. Falls back to in-memory KV locally.
-// ponytail: keyed by email + a uid->email index. No "list all users" (needs a scan) —
-// that admin feature is the reason to move to Supabase later.
+// Users persisted in Supabase Postgres (app_users table). Custom JWT auth —
+// not Supabase Auth. Server-only (uses service_role via supabase-server).
 interface StoredUser {
   id: string
   email: string
@@ -16,45 +14,56 @@ interface StoredUser {
   updatedAt: string
 }
 
-const USER_KEY = (email: string) => `user:${email.toLowerCase()}`
-const UID_KEY = (id: string) => `uid:${id}`
+interface UserRow {
+  id: string
+  email: string
+  password_hash: string
+  name: string
+  role: 'student' | 'teacher' | 'admin'
+  email_verified: boolean
+  created_at: string
+  updated_at: string
+}
+
+const fromRow = (r: UserRow): StoredUser => ({
+  id: r.id,
+  email: r.email,
+  passwordHash: r.password_hash,
+  name: r.name,
+  role: r.role,
+  emailVerified: r.email_verified,
+  createdAt: r.created_at,
+  updatedAt: r.updated_at,
+})
+
+const enc = (s: string) => encodeURIComponent(s)
 
 let seeded = false
 
-async function putUser(user: StoredUser): Promise<void> {
-  await kvSet(USER_KEY(user.email), user)
-  await kvSet(UID_KEY(user.id), user.email.toLowerCase())
-}
-
-// Seed demo + admin once per instance (idempotent writes to the shared store).
-async function initializeDatabase(): Promise<void> {
+// Seed demo + admin once per instance (insert-if-absent; unique email makes it safe).
+async function ensureSeed(): Promise<void> {
   if (seeded) return
   seeded = true
-
-  if (!(await kvGet<StoredUser>(USER_KEY('demo@binah.com')))) {
-    await putUser({
-      id: 'demo-user-001',
-      email: 'demo@binah.com',
-      passwordHash: await hashPassword('Demo@123'),
-      name: 'דנה כהן',
-      role: 'student',
-      emailVerified: true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    })
-  }
-
-  if (!(await kvGet<StoredUser>(USER_KEY('admin@binah.com')))) {
-    await putUser({
-      id: 'admin-user-001',
-      email: 'admin@binah.com',
-      passwordHash: await hashPassword(process.env.ADMIN_PASSWORD || 'Admin@123'),
-      name: 'מנהל המערכת',
-      role: 'admin',
-      emailVerified: true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    })
+  const seeds = [
+    { id: 'demo-user-001', email: 'demo@binah.com', pw: 'Demo@123', name: 'דנה כהן', role: 'student' as const },
+    { id: 'admin-user-001', email: 'admin@binah.com', pw: process.env.ADMIN_PASSWORD || 'Admin@123', name: 'מנהל המערכת', role: 'admin' as const },
+  ]
+  for (const s of seeds) {
+    try {
+      const existing = await sbSelect<UserRow>(`app_users?email=eq.${enc(s.email)}&select=id`)
+      if (existing.length) continue
+      await sbInsert('app_users', {
+        id: s.id,
+        email: s.email,
+        password_hash: await hashPassword(s.pw),
+        name: s.name,
+        role: s.role,
+        email_verified: true,
+      })
+    } catch (e) {
+      // 409/race on the unique email is fine — another instance seeded it.
+      console.warn('seed user skipped:', (e as Error).message)
+    }
   }
 }
 
@@ -66,53 +75,45 @@ export interface CreateUserInput {
 }
 
 export async function findUserByEmail(email: string): Promise<StoredUser | null> {
-  await initializeDatabase()
-  return kvGet<StoredUser>(USER_KEY(email))
+  await ensureSeed()
+  const rows = await sbSelect<UserRow>(`app_users?email=eq.${enc(email.toLowerCase())}&select=*&limit=1`)
+  return rows[0] ? fromRow(rows[0]) : null
 }
 
 export async function findUserById(id: string): Promise<StoredUser | null> {
-  await initializeDatabase()
-  const email = await kvGet<string>(UID_KEY(id))
-  return email ? kvGet<StoredUser>(USER_KEY(email)) : null
+  await ensureSeed()
+  const rows = await sbSelect<UserRow>(`app_users?id=eq.${enc(id)}&select=*&limit=1`)
+  return rows[0] ? fromRow(rows[0]) : null
 }
 
 export async function createUser(input: CreateUserInput): Promise<StoredUser> {
-  await initializeDatabase()
-
-  if (await kvGet<StoredUser>(USER_KEY(input.email))) {
-    throw new Error('User already exists')
+  await ensureSeed()
+  try {
+    const row = await sbInsert<UserRow>('app_users', {
+      id: `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      email: input.email.toLowerCase(),
+      password_hash: input.passwordHash,
+      name: input.name,
+      role: input.role || 'student',
+      email_verified: false,
+    })
+    return fromRow(row)
+  } catch (e) {
+    if ((e as { status?: number }).status === 409) throw new Error('User already exists')
+    throw e
   }
-
-  const user: StoredUser = {
-    id: `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-    email: input.email.toLowerCase(),
-    passwordHash: input.passwordHash,
-    name: input.name,
-    role: input.role || 'student',
-    emailVerified: false,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  }
-
-  await putUser(user)
-  return user
 }
 
 export async function updateUserLastLogin(userId: string): Promise<void> {
-  const user = await findUserById(userId)
-  if (user) {
-    user.updatedAt = new Date().toISOString()
-    await putUser(user)
-  }
+  await sbUpdate('app_users', `id=eq.${enc(userId)}`, { updated_at: new Date().toISOString() })
 }
 
 export async function markEmailVerified(email: string): Promise<boolean> {
-  await initializeDatabase()
-  const user = await kvGet<StoredUser>(USER_KEY(email))
-  if (!user) return false
-  user.emailVerified = true
-  user.updatedAt = new Date().toISOString()
-  await putUser(user)
+  await ensureSeed()
+  await sbUpdate('app_users', `email=eq.${enc(email.toLowerCase())}`, {
+    email_verified: true,
+    updated_at: new Date().toISOString(),
+  })
   return true
 }
 
