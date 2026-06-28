@@ -1,10 +1,22 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useAppData } from '@/hooks'
 import { useAuthStore } from '@/store/authStore'
+import { getAuthHeaders } from '@/lib/auth-client'
+
+interface AdminUser {
+  id: string
+  email: string
+  name: string
+  role: 'student' | 'teacher' | 'admin'
+  email_verified: boolean
+  created_at: string
+}
+
+const roleLabel: Record<string, string> = { student: 'תלמיד', teacher: 'מורה', admin: 'מנהל' }
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -18,17 +30,30 @@ const itemVariants = {
 export const Admin = () => {
   const { user } = useAuthStore()
   const { courses, fetchCourses } = useAppData()
+  const [users, setUsers] = useState<AdminUser[]>([])
+  const [usersState, setUsersState] = useState<'loading' | 'ok' | 'error'>('loading')
 
   useEffect(() => {
     fetchCourses()
   }, [fetchCourses])
+
+  useEffect(() => {
+    fetch('/api/admin/users', { headers: getAuthHeaders() })
+      .then(async (r) => {
+        if (!r.ok) throw new Error(String(r.status))
+        const data = await r.json()
+        setUsers(data.users || [])
+        setUsersState('ok')
+      })
+      .catch(() => setUsersState('error'))
+  }, [])
 
   const totalLessons = courses.reduce((acc, c) => acc + (c.lessons || 0), 0)
 
   const stats = [
     { label: 'קורסים פעילים', value: courses.length || '—', grad: 'linear-gradient(135deg,#9FB4F5,#C3A8EE)' },
     { label: 'שיעורים במאגר', value: totalLessons || '—', grad: 'linear-gradient(135deg,#7FD3C0,#9AD9F0)' },
-    { label: 'משתמשים רשומים', value: 'Supabase', grad: 'linear-gradient(135deg,#FFD08A,#FFB0A0)' },
+    { label: 'משתמשים רשומים', value: usersState === 'ok' ? users.length : '…', grad: 'linear-gradient(135deg,#FFD08A,#FFB0A0)' },
     { label: 'מצב מערכת', value: 'תקין', grad: 'linear-gradient(135deg,#C3A8EE,#E0A8E8)' },
   ]
 
@@ -83,16 +108,37 @@ export const Admin = () => {
         ))}
       </motion.div>
 
-      {/* User management — honest placeholder */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="rounded-2xl glass p-6">
-        <div className="text-base font-extrabold text-dark mb-2">ניהול משתמשים</div>
-        <p className="text-sm text-muted leading-relaxed">
-          ניהול משתמשים, תפקידים והרשאות יהיה זמין לאחר חיבור מסד הנתונים (Supabase).
-          כרגע המשתמשים נשמרים זמנית בזיכרון ואינם פרסיסטנטיים.
-        </p>
-        <div className="mt-3 inline-flex items-center gap-2 text-xs font-bold text-amber-600 bg-amber-50 px-3 py-1.5 rounded-lg">
-          ⚠️ דורש חיבור Supabase לניהול מלא
+      {/* User management — live from Supabase */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="rounded-2xl glass p-5 sm:p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="text-base font-extrabold text-dark">ניהול משתמשים</div>
+          {usersState === 'ok' && <span className="text-xs text-muted">{users.length} משתמשים · Postgres</span>}
         </div>
+
+        {usersState === 'loading' && <div className="text-sm text-muted py-6 text-center">טוען משתמשים…</div>}
+        {usersState === 'error' && (
+          <div className="text-sm text-amber-600 bg-amber-50 px-3 py-2 rounded-lg">לא ניתן לטעון משתמשים — ודא שאתה מחובר כמנהל.</div>
+        )}
+
+        {usersState === 'ok' && (
+          <div className="flex flex-col gap-2">
+            {users.map((u) => (
+              <div key={u.id} className="flex items-center gap-3 p-3 rounded-xl bg-white/70 border border-white/80">
+                <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#9FB4F5] to-[#C3A8EE] flex items-center justify-center text-white font-bold shrink-0">
+                  {u.name?.charAt(0) || '?'}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-bold text-dark truncate">{u.name}</div>
+                  <div className="text-xs text-muted truncate" dir="ltr">{u.email}</div>
+                </div>
+                <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full shrink-0 ${
+                  u.role === 'admin' ? 'bg-red-100 text-red-600' : u.role === 'teacher' ? 'bg-[#7FD3C0]/20 text-[#2E7E5E]' : 'bg-[#9FB4F5]/15 text-[#5E5AA8]'
+                }`}>{roleLabel[u.role] || u.role}</span>
+                {!u.email_verified && <span className="text-[10px] text-amber-600 shrink-0" title="לא אומת">●</span>}
+              </div>
+            ))}
+          </div>
+        )}
       </motion.div>
     </main>
   )
