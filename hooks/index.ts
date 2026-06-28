@@ -15,9 +15,4 @@ export type {
   Message,
   User,
 } from './useAppData'
-// Real-time hooks
-export { useWebSocket } from './useWebSocket'
-export { useRealtimeMessages } from './useRealtimeMessages'
-export { useRealtimeGrades } from './useRealtimeGrades'
-export { useRealtimeAssignments } from './useRealtimeAssignments'
 export { useDashboardRefresh } from './useDashboardRefresh'
