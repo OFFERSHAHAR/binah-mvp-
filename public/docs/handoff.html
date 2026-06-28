@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>בִּינָה — מסמך מסירה טכני | AGENT HUB GURU</title>
+<style>
+  :root{
+    --bg:#0F1218; --panel:#171B24; --panel2:#1E2330; --line:#2A2F3D;
+    --ink:#E8EBF2; --muted:#9098AB; --faint:#6B7286;
+    --accent:#A9B6F5; --accent-soft:rgba(169,182,245,.12); --accent-line:rgba(169,182,245,.32);
+    --ok:#46C08A; --ok-bg:rgba(70,192,138,.12);
+    --warn:#E0A23C; --warn-bg:rgba(224,162,60,.12);
+    --crit:#E5645A; --crit-bg:rgba(229,100,90,.12);
+    --sans:system-ui,"Segoe UI",Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Code",Consolas,"Courier New",monospace;
+  }
+  *{box-sizing:border-box}
+  .doc{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.65;
+    direction:rtl;padding:48px 22px 80px;font-size:16px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:880px;margin:0 auto}
+  code,.mono{font-family:var(--mono);direction:ltr;unicode-bidi:embed}
+  a{color:var(--accent);text-decoration:none}
+  a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px}
+
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--accent);direction:ltr;display:inline-block}
+  h1{font-size:clamp(30px,5vw,44px);font-weight:800;letter-spacing:-.02em;margin:14px 0 8px;
+    text-wrap:balance;line-height:1.1}
+  h2{font-size:23px;font-weight:750;letter-spacing:-.01em;margin:0 0 4px;text-wrap:balance}
+  h3{font-size:15px;font-weight:700;margin:0 0 6px}
+  p{margin:0 0 12px;color:#D2D7E3}
+  .lede{font-size:18px;color:var(--muted);max-width:62ch}
+  .muted{color:var(--muted)}
+  .faint{color:var(--faint)}
+  hr{border:0;border-top:1px solid var(--line);margin:46px 0}
+
+  header{border-bottom:1px solid var(--line);padding-bottom:30px;margin-bottom:8px}
+  .topmeta{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:18px;font-size:13px;color:var(--faint);
+    font-family:var(--mono);direction:ltr}
+  .topmeta b{color:var(--muted);font-weight:600}
+
+  section{margin-top:46px}
+  .sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:20px;flex-wrap:wrap}
+  .sec-num{font-family:var(--mono);font-size:13px;color:var(--accent);direction:ltr}
+
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px 24px}
+  .panel+.panel{margin-top:14px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:620px){.grid2{grid-template-columns:1fr}}
+
+  /* credential rows */
+  .cred{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;padding:13px 0;border-bottom:1px solid var(--line)}
+  .cred:last-child{border-bottom:0}
+  .cred .role{font-weight:700;min-width:74px}
+  .kv{font-family:var(--mono);direction:ltr;background:var(--panel2);border:1px solid var(--line);
+    border-radius:7px;padding:4px 9px;font-size:13.5px;color:#DDE3F2}
+  .biglink{font-family:var(--mono);direction:ltr;font-size:clamp(15px,2.6vw,21px);font-weight:600;
+    color:var(--accent);word-break:break-all}
+
+  /* status chips */
+  .chip{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+    padding:3px 9px;border-radius:6px;font-weight:700;direction:ltr;white-space:nowrap;display:inline-block}
+  .c-ok{color:var(--ok);background:var(--ok-bg);border:1px solid rgba(70,192,138,.3)}
+  .c-warn{color:var(--warn);background:var(--warn-bg);border:1px solid rgba(224,162,60,.3)}
+  .c-crit{color:var(--crit);background:var(--crit-bg);border:1px solid rgba(229,100,90,.3)}
+
+  .item{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--line)}
+  .item:last-child{border-bottom:0}
+  .item .body{flex:1;min-width:0}
+  .item h3{margin-bottom:3px}
+  .item p{margin:0;font-size:14.5px;color:var(--muted)}
+
+  ul.clean{list-style:none;padding:0;margin:0}
+  ul.clean li{padding:11px 0;border-bottom:1px solid var(--line);font-size:15px}
+  ul.clean li:last-child{border-bottom:0}
+  ul.clean li b{color:var(--ink)}
+  ul.clean .t{color:var(--faint);font-family:var(--mono);font-size:12px;direction:ltr;
+    display:inline-block;min-width:108px}
+
+  .callout{border-right:3px solid var(--crit);background:var(--crit-bg);border-radius:8px;
+    padding:14px 18px;margin:16px 0}
+  .callout.warn{border-right-color:var(--warn);background:var(--warn-bg)}
+  .callout.accent{border-right-color:var(--accent);background:var(--accent-soft)}
+  .callout p{margin:0;font-size:14.5px;color:#E3E7F1}
+
+  .flow{display:flex;align-items:stretch;gap:0;flex-wrap:wrap;font-family:var(--mono);direction:ltr;
+    margin:6px 0 4px}
+  .node{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:10px 13px;
+    font-size:12.5px;color:#CCD3E4}
+  .node .n-t{color:var(--accent);font-weight:700}
+  .arrow{display:flex;align-items:center;padding:0 9px;color:var(--faint)}
+
+  footer{margin-top:54px;border-top:1px solid var(--line);padding-top:28px}
+  .sig{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+  .badge{width:46px;height:46px;border-radius:12px;flex-shrink:0;
+    background:linear-gradient(135deg,#9FB4F5,#C3A8EE);display:flex;align-items:center;justify-content:center;
+    font-weight:800;color:#15171F;font-size:20px}
+  .tnum{font-variant-numeric:tabular-nums}
+
+  /* studio brand mark */
+  .brandrow{display:flex;align-items:center;gap:11px;margin-bottom:22px}
+  .mark{width:34px;height:34px;border-radius:9px;flex-shrink:0;position:relative;
+    background:linear-gradient(135deg,#9FB4F5,#C3A8EE);display:flex;align-items:center;justify-content:center}
+  .mark::after{content:"";width:13px;height:13px;border:2.5px solid #15171F;border-radius:50%;
+    border-right-color:transparent;transform:rotate(-30deg)}
+  .brandtext{font-family:var(--mono);direction:ltr;line-height:1.2}
+  .brandtext .bn{font-size:13px;font-weight:700;letter-spacing:.16em;color:var(--ink)}
+  .brandtext .bd{font-size:10.5px;letter-spacing:.14em;color:var(--faint)}
+
+  /* detailed architecture diagram */
+  .arch{display:flex;flex-direction:column;align-items:stretch;gap:0;margin:18px 0 4px}
+  .layer{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:14px 16px 16px;position:relative}
+  .layer-tag{position:absolute;top:-9px;right:16px;background:var(--bg);padding:0 8px;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);direction:ltr}
+  .layer.edge .layer-tag{color:#7FD3C0}
+  .layer.compute{border-color:var(--accent-line);background:linear-gradient(180deg,var(--accent-soft),transparent 60%),var(--panel)}
+  .layer.planned{border-style:dashed;border-color:#39404f;background:transparent}
+  .layer.planned .layer-tag{color:var(--faint)}
+  .nodes{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+  .anode{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 12px;
+    font-family:var(--mono);direction:ltr;font-size:12.5px;color:#CCD3E4}
+  .anode.dashed{border-style:dashed;color:var(--faint);background:transparent}
+  .seclayer{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px;
+    font-family:var(--mono);direction:ltr;font-size:12px;color:var(--accent)}
+  .vlink{width:2px;height:22px;background:linear-gradient(var(--accent-line),var(--line));margin:0 auto}
+  .branch{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 0}
+  .branch-wrap{display:flex;flex-direction:column;gap:0}
+  .vsplit{height:22px;width:60%;margin:0 auto;border-bottom:0;position:relative}
+  .vsplit::before,.vsplit::after{content:"";position:absolute;top:0;width:2px;height:100%;background:var(--line)}
+  .vsplit::before{right:0}.vsplit::after{left:0}
+  .svc{border:1px solid var(--line);border-radius:11px;background:var(--panel);padding:13px 15px;
+    font-family:var(--mono);direction:ltr;font-size:12.5px;color:#BCC4D8}
+  .svc .svc-t{display:block;color:var(--accent);font-weight:700;font-size:13px;margin-bottom:3px}
+  @media(max-width:560px){.branch{grid-template-columns:1fr}.vsplit{display:none}}
+</style>
+</head>
+<body style="margin:0">
+<div class="doc">
+<div class="wrap">
+
+  <header>
+    <div class="brandrow">
+      <div class="mark" aria-hidden="true"></div>
+      <div class="brandtext">
+        <div class="bn">AGENT HUB GURU</div>
+        <div class="bd">STUDIO · agenthub.guru</div>
+      </div>
+    </div>
+    <span class="eyebrow">Technical Handoff · Confidential</span>
+    <h1>בִּינָה — מסמך מסירה טכני</h1>
+    <p class="lede">סטטוס מלא של המערכת: היכן היא יושבת, איך היא עומדת בעומסים, אילו הגנות מוטמעות — ובכנות, מה עדיין חסר לפני ייצור מלא.</p>
+    <div class="topmeta">
+      <span><b>Studio:</b> AGENT HUB GURU</span>
+      <span><b>Build:</b> 2026-06-28</span>
+      <span><b>Stack:</b> Next.js 15 · Edge/Serverless</span>
+      <span><b>Status:</b> Live MVP</span>
+    </div>
+  </header>
+
+  <!-- 1 · ACCESS -->
+  <section>
+    <div class="sec-head"><span class="sec-num">01</span><h2>גישה חיה</h2></div>
+    <div class="panel">
+      <span class="eyebrow">Production URL</span>
+      <p class="biglink" style="margin:8px 0 4px">https://binah-mvp.vercel.app</p>
+      <p class="faint" style="font-size:13px">ציבורי · HTTPS · CDN גלובלי. מבקר לא-מחובר מופנה אוטומטית למסך התחברות.</p>
+    </div>
+    <div class="panel">
+      <div class="cred">
+        <span class="role">תלמיד</span>
+        <span class="kv">demo@binah.com</span><span class="kv">Demo@123</span>
+        <span class="faint" style="font-size:13px">— חוויית המשתמש המלאה</span>
+      </div>
+      <div class="cred">
+        <span class="role">מנהל</span>
+        <span class="kv">admin@binah.com</span><span class="kv">Admin@123</span>
+        <span class="faint" style="font-size:13px">— מוסיף מסך "ניהול" · נתיב <code>/admin</code></span>
+      </div>
+    </div>
+    <div class="callout">
+      <p><b>⚠ אבטחה:</b> סיסמת המנהל היא ברירת מחדל זרועה (משתנה <code>ADMIN_PASSWORD</code>). יש לשנותה לפני שימוש אמיתי. כל המפתחות שהוחלפו במהלך ההקמה (Vercel / Upstash / Resend) — לבצע <span class="mono">rotate</span>. מסמך זה מכיל סיסמאות — חסוי.</p>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- 2 · WHERE IT LIVES -->
+  <section>
+    <div class="sec-head"><span class="sec-num">02</span><h2>איפה האתר יושב — תשתית</h2></div>
+    <p class="muted">ארכיטקטורה מנותקת (decoupled), כל שכבה אצל ספק מנוהל בתוכנית חינמית. אין שרת יחיד — אין נקודת כשל בודדת.</p>
+
+    <div class="arch">
+      <div class="layer">
+        <span class="layer-tag">Client</span>
+        <div class="nodes">
+          <div class="anode">דפדפן / מובייל</div>
+          <div class="anode">Next.js Client · React 18</div>
+          <div class="anode">Zustand state</div>
+          <div class="anode">Framer Motion</div>
+        </div>
+      </div>
+      <div class="vlink"></div>
+      <div class="layer edge">
+        <span class="layer-tag">Edge / CDN</span>
+        <div class="nodes">
+          <div class="anode">Vercel CDN — global</div>
+          <div class="anode">catalog cached · s-maxage=300</div>
+          <div class="anode">HTTPS · HSTS</div>
+        </div>
+      </div>
+      <div class="vlink"></div>
+      <div class="layer compute">
+        <span class="layer-tag">Vercel Serverless · autoscale</span>
+        <div class="nodes">
+          <div class="anode">SSR Pages</div>
+          <div class="anode">/api/auth/* — JWT</div>
+          <div class="anode">/api/auth/verify</div>
+          <div class="anode">/api/data</div>
+          <div class="anode">/api/tts</div>
+          <div class="anode">/api/security/*</div>
+        </div>
+        <div class="seclayer">Security middleware — PBKDF2 · JWT (15m/7d) · Rate-limit+backoff · CSRF · RBAC · Audit</div>
+      </div>
+      <div class="vsplit"></div>
+      <div class="branch">
+        <div class="svc">
+          <span class="svc-t">Upstash Redis</span>
+          shared state · sessions · rate-limit · csrf · users
+        </div>
+        <div class="svc">
+          <span class="svc-t">Resend</span>
+          confirmation email → user inbox · domain agenthub.guru
+        </div>
+      </div>
+      <div class="vlink"></div>
+      <div class="layer planned">
+        <span class="layer-tag">Planned</span>
+        <div class="nodes">
+          <div class="anode dashed">Supabase · Postgres (real data)</div>
+          <div class="anode dashed">WebSocket server (realtime)</div>
+          <div class="anode dashed">STT / LLM (lesson AI)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid2" style="margin-top:16px">
+      <div class="panel">
+        <h3>Vercel <span class="chip c-ok">Hosting</span></h3>
+        <p class="muted" style="font-size:14px">אירוח האפליקציה (Next.js 15, App Router). בנייה אוטומטית, CDN גלובלי, HTTPS, autoscaling serverless. פרויקט <code>binah-mvp</code>.</p>
+      </div>
+      <div class="panel">
+        <h3>Upstash Redis <span class="chip c-ok">State</span></h3>
+        <p class="muted" style="font-size:14px">מאגר מפתח-ערך משותף לכל ה-instances: sessions, rate-limit, CSRF, ומשתמשים. נגיש דרך REST (מתאים ל-serverless).</p>
+      </div>
+      <div class="panel">
+        <h3>Resend <span class="chip c-ok">Email</span></h3>
+        <p class="muted" style="font-size:14px">מיילי אישור הרשמה. דומיין מאומת <code>agenthub.guru</code> — שליחה לכל נמען, לא מצב בדיקה.</p>
+      </div>
+      <div class="panel">
+        <h3>נתוני תוכן <span class="chip c-warn">Mock</span></h3>
+        <p class="muted" style="font-size:14px">קורסים / שיעורים / ציונים מוגשים כרגע כ-<code>mock</code> סטטי מ-<code>/api/data</code>. ראה סעיף 05.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- 3 · SCALE -->
+  <section>
+    <div class="sec-head"><span class="sec-num">03</span><h2>למה זה עומד בסקייל</h2></div>
+    <ul class="clean">
+      <li><span class="t">Stateless app</span><b>שכבת אפליקציה חסרת-מצב.</b> אימות מבוסס JWT — אין session דביק לשרת מסוים. Vercel מרים instances לפי עומס אוטומטית, כל אחד מטפל בכל בקשה.</li>
+      <li><span class="t">Shared state</span><b>מצב משותף ב-Redis.</b> sessions / rate-limit / CSRF / משתמשים ב-Upstash — לא בזיכרון מקומי. לכן 2 instances או 200 רואים אותו מצב; משתמש לא "מתנתק אקראית" בין שרתים.</li>
+      <li><span class="t">CDN cache</span><b>קריאות נפוצות מה-edge.</b> קטלוג הקורסים/שיעורים מוגש עם <code>s-maxage</code> — אלפי קריאות מתקפלות לפנייה אחת למקור לכל חלון זמן.</li>
+      <li><span class="t">Backoff</span><b>הגנת brute-force מבוזרת.</b> rate-limit עם exponential backoff שמור ב-Redis — נאכף גם כשהבקשות מתפזרות בין instances.</li>
+    </ul>
+    <div class="callout warn">
+      <p><b>תקרה אמיתית:</b> שכבת ה-<b>נתונים</b> היא היום mock + מאגר מפתח-ערך (Redis). זה מצוין לאימות ולמצב, אבל לא לשאילתות יחסיות, אנליטיקה, או מיליוני רשומות. סקייל אמיתי של תוכן דורש <b>Postgres (Supabase)</b> עם connection pooling. ראה מפת דרכים (06).</p>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- 4 · SECURITY -->
+  <section>
+    <div class="sec-head"><span class="sec-num">04</span><h2>הגנות אבטחה</h2></div>
+    <div class="grid2">
+      <div class="panel">
+        <h3>גיבוב סיסמאות <span class="chip c-ok">Active</span></h3>
+        <p class="muted" style="font-size:14px">PBKDF2-HMAC-SHA512, 100,000 איטרציות, salt 32 בייט לכל סיסמה. <span class="faint">המלצה: מעבר ל-argon2id/bcrypt לטווח ארוך.</span></p>
+      </div>
+      <div class="panel">
+        <h3>JWT + Cookies <span class="chip c-ok">Active</span></h3>
+        <p class="muted" style="font-size:14px">Access token 15 דק', Refresh 7 ימים ב-cookie מסוג HttpOnly+Secure+SameSite. <span class="faint">מימוש HS256 עצמאי; להחלפה ב-<code>jose</code> + רשימת ביטול לייצור.</span></p>
+      </div>
+      <div class="panel">
+        <h3>Rate-limit + CSRF <span class="chip c-ok">Active</span></h3>
+        <p class="muted" style="font-size:14px">Backoff מעריכי + טוקני CSRF חד-פעמיים, שניהם ב-Redis המשותף.</p>
+      </div>
+      <div class="panel">
+        <h3>RBAC + Audit <span class="chip c-ok">Active</span></h3>
+        <p class="muted" style="font-size:14px">endpoints של ניהול/אבטחה חסומים בצד-שרת ל-role=admin; לוג אירועי אבטחה. <span class="faint">חסימת מסך האדמין עצמו היא client-side — להוסיף guard שרתי.</span></p>
+      </div>
+      <div class="panel">
+        <h3>Headers + HTTPS <span class="chip c-warn">חלקי</span></h3>
+        <p class="muted" style="font-size:14px">HSTS / X-Frame-Options / nosniff מיושמים ב-helper התגובה. <span class="faint">להחיל גלובלית (next.config/middleware) שיכסה גם ראוטי ה-JWT.</span></p>
+      </div>
+      <div class="panel">
+        <h3>WAF / Bot protection <span class="chip c-crit">חסר</span></h3>
+        <p class="muted" style="font-size:14px">אין כרגע. Vercel BotID/Firewall זמינים — לא הופעלו. מומלץ לפני חשיפה רחבה.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- 5 · DONE vs MISSING -->
+  <section>
+    <div class="sec-head"><span class="sec-num">05</span><h2>מה מוכן — ומה חסר (ללא ייפוי)</h2></div>
+
+    <div class="item"><span class="chip c-ok">Done</span><div class="body"><h3>אימות מלא + הרשמה מתמשכת</h3><p>הרשמה, התחברות, JWT, אונבורדינג. משתמשים נשמרים ב-Redis — שורדים cold-start ו-instances מרובים. נבדק end-to-end בייצור.</p></div></div>
+    <div class="item"><span class="chip c-ok">Done</span><div class="body"><h3>מיילי אישור הרשמה</h3><p>Resend + דומיין מאומת. כל נרשם מקבל מייל אישור עם קישור הפעלה (תוקף 24ש', חד-פעמי).</p></div></div>
+    <div class="item"><span class="chip c-ok">Done</span><div class="body"><h3>12 מסכים + חדר שידור + בונה שיעורים</h3><p>UI מלא RTL, מצלמה/הקלטה אמיתית (getUserMedia + MediaRecorder), ניווט מלא, ממשק ניהול מבוסס-תפקיד.</p></div></div>
+    <div class="item"><span class="chip c-warn">Partial</span><div class="body"><h3>נתוני תוכן (קורסים/ציונים/הודעות)</h3><p>מוגשים כ-<code>mock</code> סטטי. עקביים ומהירים, אך אינם נתונים אמיתיים פר-משתמש ואינם נשמרים. נדרש Supabase.</p></div></div>
+    <div class="item"><span class="chip c-warn">Partial</span><div class="body"><h3>ניהול משתמשים באדמין</h3><p>המסך קיים; רשימת/עריכת משתמשים דורשת מאגר יחסי (Redis KV לא תומך scan יעיל). נפתח עם Supabase.</p></div></div>
+    <div class="item"><span class="chip c-warn">Partial</span><div class="body"><h3>בונה השיעורים — AI</h3><p>פיצול טרנסקריפט→סצנות הוא היוריסטי בצד-לקוח. תמלול וידאו (STT) ותכנון סצנות חכם (LLM) דורשים מפתחות API — תפר מוכן.</p></div></div>
+    <div class="item"><span class="chip c-crit">Missing</span><div class="body"><h3>Realtime / WebSocket</h3><p>הודעות חיות אינן פעילות — Vercel serverless לא מריץ תהליך WS מתמשך. דורש שרת WS נפרד (למשל Render) + <code>NEXT_PUBLIC_WS_URL</code>.</p></div></div>
+    <div class="item"><span class="chip c-crit">Missing</span><div class="body"><h3>בדיקות + ניטור + CI</h3><p>קובץ בדיקה אחד בלבד; אין CI. Sentry מחווט אך ללא DSN. נדרש לפני ייצור רציני.</p></div></div>
+  </section>
+
+  <hr>
+
+  <!-- 6 · ROADMAP -->
+  <section>
+    <div class="sec-head"><span class="sec-num">06</span><h2>מפת דרכים לייצור מלא</h2></div>
+    <ul class="clean">
+      <li><span class="t">Step 1</span><b>Supabase (Postgres).</b> נתונים אמיתיים פר-משתמש, ניהול משתמשים, אנליטיקה — סוגר את ה-Partial בסעיף 05.</li>
+      <li><span class="t">Step 2</span><b>הקשחת אבטחה.</b> JWT דרך <code>jose</code> + ביטול טוקנים, headers גלובליים, guard שרתי לאדמין, הפעלת WAF/BotID, סבב rotate למפתחות.</li>
+      <li><span class="t">Step 3</span><b>Realtime.</b> שרת WebSocket ייעודי להתראות והודעות חיות.</li>
+      <li><span class="t">Step 4</span><b>איכות.</b> חבילת בדיקות, CI/CD, Sentry פעיל, audit חיצוני.</li>
+    </ul>
+  </section>
+
+  <!-- FOOTER / CREDIT -->
+  <footer>
+    <div class="sig">
+      <div class="badge">ב</div>
+      <div style="flex:1;min-width:220px">
+        <h3 style="font-size:17px">נבנה ב-<span class="tnum">3</span> ימים רצופים על-ידי צוות <span style="color:var(--accent)">AGENT HUB GURU</span></h3>
+        <p class="muted" style="font-size:14.5px;margin-top:6px">מהאפיון ועד אתר חי בייצור: ארכיטקטורה, אימות, תשתית-בסקייל, מיילים, ממשק ניהול ובדיקות end-to-end — בשקיפות מלאה על מה שמוכן ומה שעוד לפנינו.</p>
+        <p class="muted" style="font-size:14.5px;margin-top:10px"><b style="color:var(--ink)">אור</b> לוקח חלק מלא ובלתי נפרד בכל מוצר חתום מבית היוצר של הסטודיו שלנו.</p>
+      </div>
+    </div>
+    <p class="faint" style="font-size:12px;margin-top:24px;font-family:var(--mono);direction:ltr">© AGENT HUB GURU Studio · Confidential — contains live credentials · 2026-06-28</p>
+  </footer>
+
+</div>
+</div>
+</body>
+</html>
