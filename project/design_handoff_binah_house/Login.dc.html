@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Heebo', -apple-system, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  @keyframes floatA { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(24px,-30px) scale(1.06); } }
+  @keyframes floatB { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-30px,22px) scale(1.05); } }
+  @keyframes floatC { 0%,100% { transform: translate(0,0); } 50% { transform: translate(16px,20px); } }
+  @keyframes spinSlow { to { transform: rotate(360deg); } }
+  @keyframes twinkle { 0%,100% { opacity:.25; } 50% { opacity:.8; } }
+  input::placeholder { color: #9AA3B2; }
+</style>
+</helmet>
+
+<div style="position:absolute; left:0; top:0; width:1180px;">
+  <div data-drags-parent="1" style="font-size:13px; font-weight:700; color:#64748B; letter-spacing:.04em; margin:0 6px 16px;">01 · AURORA — כרטיס זכוכית מרכזי</div>
+  <div data-screen-label="Login · Aurora" dir="rtl" style="position:relative; width:1180px; height:820px; border-radius:36px; overflow:hidden; background:linear-gradient(160deg,#EEF3FF 0%,#F6F0FF 48%,#ECFBF6 100%); box-shadow:0 30px 80px rgba(31,38,135,0.16);">
+    <div style="position:absolute; width:520px; height:520px; left:-120px; top:-140px; border-radius:50%; background:radial-gradient(circle at 30% 30%, #9FB4FF, rgba(159,180,255,0) 70%); filter:blur(40px); animation:floatA 19s ease-in-out infinite;"></div>
+    <div style="position:absolute; width:480px; height:480px; right:-130px; top:-90px; border-radius:50%; background:radial-gradient(circle at 40% 40%, #D7B6FF, rgba(215,182,255,0) 70%); filter:blur(44px); animation:floatB 23s ease-in-out infinite;"></div>
+    <div style="position:absolute; width:440px; height:440px; left:38%; bottom:-180px; border-radius:50%; background:radial-gradient(circle at 50% 50%, #9BF0DC, rgba(155,240,220,0) 70%); filter:blur(46px); animation:floatC 21s ease-in-out infinite;"></div>
+
+    <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:48px;">
+
+      <div style="position:absolute; top:28px; right:32px; display:flex; align-items:center; gap:10px;">
+        <div style="display:flex; align-items:center; gap:8px; height:38px; padding:0 14px; border-radius:19px; background:rgba(255,255,255,0.6); border:1px solid rgba(255,255,255,0.8); backdrop-filter:blur(20px); box-shadow:0 4px 14px rgba(31,38,135,0.08);">
+          <span style="width:9px; height:9px; border-radius:50%; background:#30D158; box-shadow:0 0 0 4px rgba(48,209,88,0.18);"></span>
+          <span style="font-size:13px; font-weight:600; color:#1F2937;">המנוי פעיל</span>
+        </div>
+      </div>
+      <div style="position:absolute; top:28px; left:32px;">
+        <div style="display:flex; align-items:center; gap:8px; height:38px; padding:0 12px; border-radius:19px; background:rgba(255,255,255,0.6); border:1px solid rgba(255,255,255,0.8); backdrop-filter:blur(20px); box-shadow:0 4px 14px rgba(31,38,135,0.08); cursor:pointer;">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#5B7CFF" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 2.5 15 0 18M12 3c-2.5 2.5-2.5 15 0 18"/></svg>
+          <span style="font-size:12px; font-weight:600; color:#5B7CFF;">תרגום · מנהל</span>
+        </div>
+      </div>
+
+      <div style="position:relative; width:432px; padding:40px 38px 34px; border-radius:32px; background:rgba(255,255,255,0.55); border:1px solid rgba(255,255,255,0.75); backdrop-filter:blur(48px) saturate(180%); box-shadow:0 24px 70px rgba(31,38,135,0.20), inset 0 1px 0 rgba(255,255,255,0.9);">
+        <div style="position:absolute; top:0; left:8%; right:8%; height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.95),transparent);"></div>
+
+        <div style="display:flex; flex-direction:column; align-items:center; gap:14px; margin-bottom:26px;">
+          <div style="width:60px; height:60px; border-radius:20px; background:linear-gradient(135deg,#5B7CFF,#9B6BFF); display:flex; align-items:center; justify-content:center; box-shadow:0 12px 28px rgba(91,124,255,0.42), inset 0 1px 0 rgba(255,255,255,0.5);">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18M6 6l12 12M18 6L6 18"/></svg>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:26px; font-weight:800; color:#111827; letter-spacing:-.01em;">ברוך שובך</div>
+            <div style="font-size:14px; color:#6B7280; margin-top:4px;">התחבר כדי להמשיך בקורס שלך</div>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:16px;">
+          <label style="font-size:13px; font-weight:600; color:#4B5563;">אימייל</label>
+          <div style="display:flex; align-items:center; gap:10px; height:54px; padding:0 16px; border-radius:16px; background:rgba(255,255,255,0.7); border:1px solid rgba(120,130,160,0.18); box-shadow:inset 0 1px 2px rgba(255,255,255,0.8);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9AA3B2" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg>
+            <input style="flex:1; border:none; background:transparent; outline:none; font-size:15px; font-family:inherit; color:#1F2937; text-align:right;" placeholder="name@email.com" value="dana@studio.ai"/>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <label style="font-size:13px; font-weight:600; color:#4B5563;">סיסמה</label>
+            <span style="font-size:12px; font-weight:600; color:#5B7CFF; cursor:pointer;">שכחת סיסמה?</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; height:54px; padding:0 16px; border-radius:16px; background:rgba(255,255,255,0.7); border:1px solid rgba(120,130,160,0.18); box-shadow:inset 0 1px 2px rgba(255,255,255,0.8);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9AA3B2" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+            <input type="password" style="flex:1; border:none; background:transparent; outline:none; font-size:15px; font-family:inherit; color:#1F2937; text-align:right; letter-spacing:.2em;" value="password"/>
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#9AA3B2" stroke-width="2" style="cursor:pointer;"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:18px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#30D158" stroke-width="2.4"><path d="M12 2 4 5v6c0 5 3.5 8 8 11 4.5-3 8-6 8-11V5l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg>
+          <span style="font-size:12.5px; color:#6B7280;">מאובטח באימות דו-שלבי (2FA)</span>
+        </div>
+
+        <button style="width:100%; height:56px; border:none; border-radius:18px; background:linear-gradient(135deg,#5B7CFF,#9B6BFF); color:#fff; font-size:16px; font-weight:700; font-family:inherit; cursor:pointer; box-shadow:0 14px 32px rgba(91,124,255,0.42), inset 0 1px 0 rgba(255,255,255,0.4);">התחברות מאובטחת</button>
+
+        <div style="display:flex; align-items:center; gap:14px; margin:22px 0;">
+          <div style="flex:1; height:1px; background:rgba(120,130,160,0.18);"></div>
+          <span style="font-size:12px; color:#9AA3B2;">או המשך עם</span>
+          <div style="flex:1; height:1px; background:rgba(120,130,160,0.18);"></div>
+        </div>
+
+        <div style="display:flex; gap:12px;">
+          <button style="flex:1; height:50px; display:flex; align-items:center; justify-content:center; gap:9px; border:1px solid rgba(120,130,160,0.18); border-radius:15px; background:rgba(255,255,255,0.72); font-size:14px; font-weight:600; font-family:inherit; color:#1F2937; cursor:pointer;">
+            <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22 12.2c0-.7-.06-1.4-.18-2.06H12v3.9h5.6a4.8 4.8 0 0 1-2.08 3.15v2.6h3.36C20.84 18 22 15.36 22 12.2Z"/><path fill="#34A853" d="M12 22c2.7 0 4.97-.9 6.63-2.42l-3.36-2.6c-.93.62-2.12.99-3.27.99-2.5 0-4.62-1.69-5.38-3.96H3.16v2.69A10 10 0 0 0 12 22Z"/><path fill="#FBBC05" d="M6.62 13.01a6 6 0 0 1 0-3.84V6.48H3.16a10 10 0 0 0 0 9.04l3.46-2.51Z"/><path fill="#EA4335" d="M12 6.58c1.47 0 2.79.5 3.83 1.5l2.87-2.87A10 10 0 0 0 3.16 6.48l3.46 2.69C7.38 6.9 9.5 6.58 12 6.58Z"/></svg>
+            Google
+          </button>
+          <button style="flex:1; height:50px; display:flex; align-items:center; justify-content:center; gap:9px; border:1px solid rgba(120,130,160,0.18); border-radius:15px; background:rgba(255,255,255,0.72); font-size:14px; font-weight:600; font-family:inherit; color:#1F2937; cursor:pointer;">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="#111827"><path d="M16.4 12.7c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.8-3.5.8-.7 0-1.8-.8-3-.8-1.5 0-3 .9-3.8 2.3-1.6 2.8-.4 7 1.2 9.3.8 1.1 1.7 2.4 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3 .7 2-1 2.8-2.1c.9-1.3 1.2-2.5 1.3-2.6-.1 0-2.5-1-2.5-3.8ZM14.2 5.9c.6-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.1 1.8-1 2.8 1.1.1 2.2-.5 2.8-1.3Z"/></svg>
+            Apple
+          </button>
+        </div>
+
+        <div style="text-align:center; margin-top:24px; font-size:13.5px; color:#6B7280;">
+          אין לך חשבון עדיין? <span style="font-weight:700; color:#5B7CFF; cursor:pointer;">הרשמה</span>
+        </div>
+      </div>
+
+      <div style="margin-top:22px; display:flex; align-items:center; gap:8px; opacity:.7;">
+        <div style="width:26px; height:26px; border-radius:9px; background:linear-gradient(135deg,#5B7CFF,#9B6BFF); display:flex; align-items:center; justify-content:center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v18M3 12h18"/></svg></div>
+        <span style="font-size:14px; font-weight:700; color:#374151;">בִּינָה</span>
+        <span style="font-size:11px; font-weight:600; color:#9AA3B2; letter-spacing:.12em;">AI ACADEMY</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="position:absolute; left:1270px; top:0; width:1180px;">
+  <div data-drags-parent="1" style="font-size:13px; font-weight:700; color:#64748B; letter-spacing:.04em; margin:0 6px 16px;">02 · SPLIT — פאנל אימרסיבי + טופס</div>
+  <div data-screen-label="Login · Split" dir="rtl" style="position:relative; width:1180px; height:820px; border-radius:36px; overflow:hidden; background:#F4F6FB; box-shadow:0 30px 80px rgba(31,38,135,0.16); display:flex;">
+
+    <div style="width:460px; flex-shrink:0; position:relative; display:flex; flex-direction:column; justify-content:center; padding:56px 50px; background:rgba(255,255,255,0.5); backdrop-filter:blur(40px);">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:auto;">
+        <div style="width:34px; height:34px; border-radius:11px; background:linear-gradient(135deg,#5B7CFF,#9B6BFF); display:flex; align-items:center; justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v18M3 12h18"/></svg></div>
+        <span style="font-size:17px; font-weight:800; color:#1F2937;">בִּינָה</span>
+      </div>
+
+      <div style="margin:40px 0;">
+        <div style="display:inline-flex; gap:4px; padding:5px; border-radius:16px; background:rgba(120,130,160,0.1); margin-bottom:30px;">
+          <div style="padding:9px 22px; border-radius:12px; background:#fff; font-size:14px; font-weight:700; color:#1F2937; box-shadow:0 2px 8px rgba(31,38,135,0.1);">התחברות</div>
+          <div style="padding:9px 22px; border-radius:12px; font-size:14px; font-weight:600; color:#6B7280; cursor:pointer;">הרשמה</div>
+        </div>
+
+        <div style="font-size:28px; font-weight:800; color:#111827; line-height:1.25; letter-spacing:-.01em; margin-bottom:6px;">היכנס לחשבון<br>שלך</div>
+        <div style="font-size:14px; color:#6B7280; margin-bottom:28px;">הקורס האישי שלך ממשיך בדיוק מהמקום שעצרת.</div>
+
+        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:14px;">
+          <label style="font-size:13px; font-weight:600; color:#4B5563;">אימייל</label>
+          <div style="display:flex; align-items:center; gap:10px; height:52px; padding:0 15px; border-radius:14px; background:#fff; border:1px solid rgba(120,130,160,0.18);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9AA3B2" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg>
+            <input style="flex:1; border:none; background:transparent; outline:none; font-size:15px; font-family:inherit; color:#1F2937; text-align:right;" placeholder="name@email.com" value="dana@studio.ai"/>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:16px;">
+          <label style="font-size:13px; font-weight:600; color:#4B5563;">קוד אימות דו-שלבי (2FA)</label>
+          <div style="display:flex; gap:9px; direction:ltr; justify-content:flex-end;">
+            <div style="width:48px; height:56px; border-radius:13px; background:#fff; border:1.5px solid #5B7CFF; display:flex; align-items:center; justify-content:center; font-size:21px; font-weight:700; color:#1F2937; box-shadow:0 0 0 4px rgba(91,124,255,0.12);">4</div>
+            <div style="width:48px; height:56px; border-radius:13px; background:#fff; border:1px solid rgba(120,130,160,0.2); display:flex; align-items:center; justify-content:center; font-size:21px; font-weight:700; color:#1F2937;">8</div>
+            <div style="width:48px; height:56px; border-radius:13px; background:#fff; border:1px solid rgba(120,130,160,0.2); display:flex; align-items:center; justify-content:center; font-size:21px; font-weight:700; color:#1F2937;">1</div>
+            <div style="width:48px; height:56px; border-radius:13px; background:#fff; border:1px solid rgba(120,130,160,0.2); display:flex; align-items:center; justify-content:center; font-size:21px; font-weight:700; color:#9AA3B2;">·</div>
+            <div style="width:48px; height:56px; border-radius:13px; background:#fff; border:1px solid rgba(120,130,160,0.2); display:flex; align-items:center; justify-content:center; font-size:21px; font-weight:700; color:#9AA3B2;">·</div>
+            <div style="width:48px; height:56px; border-radius:13px; background:#fff; border:1px solid rgba(120,130,160,0.2); display:flex; align-items:center; justify-content:center; font-size:21px; font-weight:700; color:#9AA3B2;">·</div>
+          </div>
+        </div>
+
+        <button style="width:100%; height:54px; border:none; border-radius:16px; background:linear-gradient(135deg,#5B7CFF,#9B6BFF); color:#fff; font-size:15.5px; font-weight:700; font-family:inherit; cursor:pointer; box-shadow:0 12px 28px rgba(91,124,255,0.4);">אימות והתחברות</button>
+
+        <div style="display:flex; gap:12px; margin-top:16px;">
+          <button style="flex:1; height:48px; display:flex; align-items:center; justify-content:center; gap:8px; border:1px solid rgba(120,130,160,0.18); border-radius:14px; background:#fff; font-size:13.5px; font-weight:600; font-family:inherit; color:#1F2937; cursor:pointer;"><svg width="17" height="17" viewBox="0 0 24 24"><path fill="#4285F4" d="M22 12.2c0-.7-.06-1.4-.18-2.06H12v3.9h5.6a4.8 4.8 0 0 1-2.08 3.15v2.6h3.36C20.84 18 22 15.36 22 12.2Z"/><path fill="#34A853" d="M12 22c2.7 0 4.97-.9 6.63-2.42l-3.36-2.6c-.93.62-2.12.99-3.27.99-2.5 0-4.62-1.69-5.38-3.96H3.16v2.69A10 10 0 0 0 12 22Z"/><path fill="#FBBC05" d="M6.62 13.01a6 6 0 0 1 0-3.84V6.48H3.16a10 10 0 0 0 0 9.04l3.46-2.51Z"/><path fill="#EA4335" d="M12 6.58c1.47 0 2.79.5 3.83 1.5l2.87-2.87A10 10 0 0 0 3.16 6.48l3.46 2.69C7.38 6.9 9.5 6.58 12 6.58Z"/></svg>Google</button>
+          <button style="flex:1; height:48px; display:flex; align-items:center; justify-content:center; gap:8px; border:1px solid rgba(120,130,160,0.18); border-radius:14px; background:#fff; font-size:13.5px; font-weight:600; font-family:inherit; color:#1F2937; cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="#111827"><path d="M16.4 12.7c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.8-3.5.8-.7 0-1.8-.8-3-.8-1.5 0-3 .9-3.8 2.3-1.6 2.8-.4 7 1.2 9.3.8 1.1 1.7 2.4 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3 .7 2-1 2.8-2.1c.9-1.3 1.2-2.5 1.3-2.6-.1 0-2.5-1-2.5-3.8ZM14.2 5.9c.6-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.1 1.8-1 2.8 1.1.1 2.2-.5 2.8-1.3Z"/></svg>Apple</button>
+        </div>
+      </div>
+
+      <div style="margin-top:auto; display:flex; align-items:center; gap:8px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9AA3B2" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        <span style="font-size:12px; color:#9AA3B2;">חיבור מוצפן · 256-bit</span>
+      </div>
+    </div>
+
+    <div style="flex:1; position:relative; overflow:hidden; background:linear-gradient(150deg,#5B7CFF 0%,#7B6BFF 50%,#9B6BFF 100%); display:flex; flex-direction:column; justify-content:center; padding:60px 56px;">
+      <div style="position:absolute; width:360px; height:360px; right:-100px; top:-90px; border-radius:50%; background:radial-gradient(circle at 40% 40%, rgba(255,255,255,0.35), rgba(255,255,255,0)); filter:blur(20px); animation:floatA 20s ease-in-out infinite;"></div>
+      <div style="position:absolute; width:300px; height:300px; left:-80px; bottom:-80px; border-radius:50%; background:radial-gradient(circle at 50% 50%, rgba(155,240,220,0.4), rgba(155,240,220,0)); filter:blur(24px); animation:floatB 24s ease-in-out infinite;"></div>
+      <div style="position:absolute; width:5px; height:5px; left:18%; top:24%; border-radius:50%; background:#fff; animation:twinkle 4s ease-in-out infinite;"></div>
+      <div style="position:absolute; width:4px; height:4px; left:62%; top:18%; border-radius:50%; background:#fff; animation:twinkle 5s ease-in-out .8s infinite;"></div>
+      <div style="position:absolute; width:6px; height:6px; left:40%; top:70%; border-radius:50%; background:#fff; animation:twinkle 6s ease-in-out 1.4s infinite;"></div>
+      <div style="position:absolute; width:4px; height:4px; left:78%; top:60%; border-radius:50%; background:#fff; animation:twinkle 4.5s ease-in-out .4s infinite;"></div>
+
+      <div style="position:relative; color:#fff;">
+        <div style="display:inline-flex; align-items:center; gap:8px; height:34px; padding:0 14px; border-radius:17px; background:rgba(255,255,255,0.18); border:1px solid rgba(255,255,255,0.3); backdrop-filter:blur(20px); margin-bottom:26px;">
+          <span style="width:8px; height:8px; border-radius:50%; background:#5BFFB0;"></span>
+          <span style="font-size:13px; font-weight:600;">קורס מותאם אישית · פעיל</span>
+        </div>
+        <div style="font-size:40px; font-weight:800; line-height:1.18; letter-spacing:-.02em; margin-bottom:14px;">לְמַד AI.<br>בְּנֵה. פְּתֹר.</div>
+        <div style="font-size:16px; line-height:1.6; opacity:.85; max-width:380px; margin-bottom:38px;">כל תלמיד מקבל מסלול אישי — שיעורים, מצגות אינטראקטיביות ומבחנים, עם מעקב התקדמות מלא.</div>
+
+        <div style="display:flex; gap:16px; align-items:stretch;">
+          <div style="flex:1; padding:22px; border-radius:22px; background:rgba(255,255,255,0.16); border:1px solid rgba(255,255,255,0.28); backdrop-filter:blur(24px); box-shadow:inset 0 1px 0 rgba(255,255,255,0.3);">
+            <div style="position:relative; width:84px; height:84px; margin:0 auto 14px;">
+              <svg width="84" height="84" viewBox="0 0 84 84" style="transform:rotate(-90deg);"><circle cx="42" cy="42" r="36" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="8"/><circle cx="42" cy="42" r="36" fill="none" stroke="#5BFFB0" stroke-width="8" stroke-linecap="round" stroke-dasharray="226" stroke-dashoffset="68"/></svg>
+              <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:800;">70%</div>
+            </div>
+            <div style="text-align:center; font-size:13px; font-weight:600; opacity:.9;">התקדמות בקורס</div>
+          </div>
+          <div style="flex:1; display:flex; flex-direction:column; gap:12px;">
+            <div style="padding:16px 18px; border-radius:18px; background:rgba(255,255,255,0.16); border:1px solid rgba(255,255,255,0.28); backdrop-filter:blur(24px);">
+              <div style="font-size:12px; opacity:.8; margin-bottom:4px;">שיעור נוכחי</div>
+              <div style="font-size:15px; font-weight:700;">Prompt Engineering</div>
+            </div>
+            <div style="padding:16px 18px; border-radius:18px; background:rgba(255,255,255,0.16); border:1px solid rgba(255,255,255,0.28); backdrop-filter:blur(24px);">
+              <div style="display:flex; justify-content:space-between; align-items:center;"><span style="font-size:12px; opacity:.8;">מבחן הבא</span><span style="font-size:13px; font-weight:700;">8/10 ✓</span></div>
+              <div style="height:6px; border-radius:3px; background:rgba(255,255,255,0.25); margin-top:8px; overflow:hidden;"><div style="width:80%; height:100%; background:#5BFFB0; border-radius:3px;"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="position:absolute; left:2540px; top:0; width:1180px;">
+  <div data-drags-parent="1" style="font-size:13px; font-weight:700; color:#64748B; letter-spacing:.04em; margin:0 6px 16px;">03 · MINIMAL — עמודה אוורירית</div>
+  <div data-screen-label="Login · Minimal" dir="rtl" style="position:relative; width:1180px; height:820px; border-radius:36px; overflow:hidden; background:linear-gradient(180deg,#FBFCFF 0%,#F3F5FC 100%); box-shadow:0 30px 80px rgba(31,38,135,0.16);">
+    <div style="position:absolute; width:620px; height:620px; left:50%; top:-160px; transform:translateX(-50%); border-radius:50%; background:radial-gradient(circle at 50% 40%, rgba(155,107,255,0.18), rgba(91,124,255,0.12) 40%, rgba(91,124,255,0) 70%); filter:blur(20px); animation:floatC 24s ease-in-out infinite;"></div>
+
+    <div style="position:absolute; top:30px; left:0; right:0; display:flex; justify-content:center;">
+      <div style="display:flex; align-items:center; gap:9px;">
+        <div style="width:30px; height:30px; border-radius:10px; background:linear-gradient(135deg,#5B7CFF,#9B6BFF); display:flex; align-items:center; justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v18M3 12h18"/></svg></div>
+        <span style="font-size:16px; font-weight:800; color:#1F2937;">בִּינָה</span>
+      </div>
+    </div>
+
+    <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center;">
+      <div style="width:404px; display:flex; flex-direction:column; align-items:stretch;">
+
+        <div style="text-align:center; margin-bottom:28px;">
+          <div style="font-size:30px; font-weight:800; color:#111827; letter-spacing:-.015em;">התחברות</div>
+          <div style="font-size:14.5px; color:#6B7280; margin-top:6px;">ברוך שובך לאקדמיה ל-AI</div>
+        </div>
+
+        <div style="display:flex; gap:4px; padding:5px; border-radius:16px; background:rgba(120,130,160,0.09); margin-bottom:22px;">
+          <div style="flex:1; text-align:center; padding:11px 0; border-radius:12px; background:#fff; font-size:14px; font-weight:700; color:#1F2937; box-shadow:0 2px 8px rgba(31,38,135,0.08);">כניסה</div>
+          <div style="flex:1; text-align:center; padding:11px 0; border-radius:12px; font-size:14px; font-weight:600; color:#6B7280; cursor:pointer;">הרשמה</div>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:10px; height:60px; padding:0 22px; border-radius:30px; background:#fff; border:1px solid rgba(120,130,160,0.16); box-shadow:0 4px 16px rgba(31,38,135,0.05); margin-bottom:14px;">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#9AA3B2" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg>
+          <input style="flex:1; border:none; background:transparent; outline:none; font-size:15.5px; font-family:inherit; color:#1F2937; text-align:right;" placeholder="כתובת אימייל" value="dana@studio.ai"/>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:10px; height:60px; padding:0 22px; border-radius:30px; background:#fff; border:1px solid rgba(120,130,160,0.16); box-shadow:0 4px 16px rgba(31,38,135,0.05); margin-bottom:18px;">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#9AA3B2" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+          <input type="password" style="flex:1; border:none; background:transparent; outline:none; font-size:15.5px; font-family:inherit; color:#1F2937; text-align:right; letter-spacing:.2em;" value="password"/>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9AA3B2" stroke-width="2" style="cursor:pointer;"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; padding:0 6px;">
+          <div style="display:flex; align-items:center; gap:7px;">
+            <div style="width:42px; height:25px; border-radius:13px; background:linear-gradient(135deg,#5B7CFF,#9B6BFF); position:relative;"><div style="position:absolute; width:19px; height:19px; border-radius:50%; background:#fff; top:3px; left:3px; box-shadow:0 1px 3px rgba(0,0,0,0.2);"></div></div>
+            <span style="font-size:13px; color:#4B5563;">זכור אותי</span>
+          </div>
+          <span style="font-size:13px; font-weight:600; color:#5B7CFF; cursor:pointer;">שכחת סיסמה?</span>
+        </div>
+
+        <button style="width:100%; height:60px; border:none; border-radius:30px; background:linear-gradient(135deg,#5B7CFF,#9B6BFF); color:#fff; font-size:16px; font-weight:700; font-family:inherit; cursor:pointer; box-shadow:0 14px 34px rgba(91,124,255,0.4), inset 0 1px 0 rgba(255,255,255,0.4);">המשך</button>
+
+        <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin:20px 0;">
+          <span style="width:7px; height:7px; border-radius:50%; background:#5B7CFF;"></span>
+          <span style="width:7px; height:7px; border-radius:50%; background:rgba(120,130,160,0.3);"></span>
+          <span style="font-size:12px; color:#9AA3B2; margin-right:6px;">שלב 1 מתוך 2 · אימות 2FA בשלב הבא</span>
+        </div>
+
+        <div style="display:flex; gap:12px;">
+          <button style="flex:1; height:52px; display:flex; align-items:center; justify-content:center; gap:9px; border:1px solid rgba(120,130,160,0.16); border-radius:26px; background:#fff; font-size:14px; font-weight:600; font-family:inherit; color:#1F2937; cursor:pointer; box-shadow:0 4px 14px rgba(31,38,135,0.05);"><svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22 12.2c0-.7-.06-1.4-.18-2.06H12v3.9h5.6a4.8 4.8 0 0 1-2.08 3.15v2.6h3.36C20.84 18 22 15.36 22 12.2Z"/><path fill="#34A853" d="M12 22c2.7 0 4.97-.9 6.63-2.42l-3.36-2.6c-.93.62-2.12.99-3.27.99-2.5 0-4.62-1.69-5.38-3.96H3.16v2.69A10 10 0 0 0 12 22Z"/><path fill="#FBBC05" d="M6.62 13.01a6 6 0 0 1 0-3.84V6.48H3.16a10 10 0 0 0 0 9.04l3.46-2.51Z"/><path fill="#EA4335" d="M12 6.58c1.47 0 2.79.5 3.83 1.5l2.87-2.87A10 10 0 0 0 3.16 6.48l3.46 2.69C7.38 6.9 9.5 6.58 12 6.58Z"/></svg>Google</button>
+          <button style="flex:1; height:52px; display:flex; align-items:center; justify-content:center; gap:9px; border:1px solid rgba(120,130,160,0.16); border-radius:26px; background:#fff; font-size:14px; font-weight:600; font-family:inherit; color:#1F2937; cursor:pointer; box-shadow:0 4px 14px rgba(31,38,135,0.05);"><svg width="17" height="17" viewBox="0 0 24 24" fill="#111827"><path d="M16.4 12.7c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.8-3.5.8-.7 0-1.8-.8-3-.8-1.5 0-3 .9-3.8 2.3-1.6 2.8-.4 7 1.2 9.3.8 1.1 1.7 2.4 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3 .7 2-1 2.8-2.1c.9-1.3 1.2-2.5 1.3-2.6-.1 0-2.5-1-2.5-3.8ZM14.2 5.9c.6-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.1 1.8-1 2.8 1.1.1 2.2-.5 2.8-1.3Z"/></svg>Apple</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="position:absolute; bottom:26px; left:0; right:0; display:flex; justify-content:center; align-items:center; gap:8px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#30D158" stroke-width="2.4"><path d="M12 2 4 5v6c0 5 3.5 8 8 11 4.5-3 8-6 8-11V5l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg>
+      <span style="font-size:12.5px; color:#9AA3B2;">מאובטח · 2FA · הצפנה מקצה לקצה</span>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AGENT NO 1 | Premium iOS Product Spec</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #111827;
+      --muted: #667085;
+      --subtle: #98a2b3;
+      --line: rgba(17, 24, 39, 0.1);
+      --line-strong: rgba(17, 24, 39, 0.18);
+      --bg: #f5f7fb;
+      --surface: rgba(255, 255, 255, 0.78);
+      --surface-strong: rgba(255, 255, 255, 0.94);
+      --blue: #007aff;
+      --cyan: #32ade6;
+      --green: #34c759;
+      --orange: #ff9500;
+      --red: #ff3b30;
+      --purple: #af52de;
+      --pink: #ff2d55;
+      --shadow: 0 24px 70px rgba(15, 23, 42, 0.14);
+      --soft: 0 12px 30px rgba(15, 23, 42, 0.08);
+      --radius: 28px;
+      --radius-sm: 18px;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "Heebo", Arial, sans-serif;
+      --mono: "SF Mono", "Cascadia Mono", Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font);
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% 5%, rgba(0, 122, 255, 0.20), transparent 24%),
+        radial-gradient(circle at 86% 14%, rgba(255, 45, 85, 0.13), transparent 20%),
+        radial-gradient(circle at 50% 86%, rgba(52, 199, 89, 0.14), transparent 28%),
+        linear-gradient(135deg, #fbfcff, #eef3f9 42%, #f7f5fb);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(rgba(17, 24, 39, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(17, 24, 39, 0.03) 1px, transparent 1px);
+      background-size: 44px 44px;
+      mask-image: radial-gradient(circle at center, black, transparent 72%);
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(180deg, rgba(255,255,255,.48), transparent 20%, transparent 78%, rgba(255,255,255,.44));
+      opacity: .72;
+      z-index: -1;
+    }
+
+    button, input { font: inherit; }
+
+    .scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 100;
+      height: 3px;
+      width: var(--scroll-progress, 0%);
+      background: linear-gradient(90deg, var(--blue), var(--cyan), var(--green));
+      box-shadow: 0 0 18px rgba(0,122,255,.25);
+      transition: width .12s linear;
+    }
+
+    .shell {
+      width: min(1440px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 22px 0 72px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 14px;
+      z-index: 50;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 16px;
+      padding: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.74);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.68);
+      backdrop-filter: blur(24px) saturate(1.35);
+      box-shadow: var(--soft);
+      transition: transform .22s ease, box-shadow .22s ease, background .22s ease;
+    }
+
+    .topbar.compact {
+      background: rgba(255,255,255,.82);
+      box-shadow: 0 16px 40px rgba(15,23,42,.13);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 10px;
+      direction: ltr;
+      white-space: nowrap;
+    }
+
+    .mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      background: conic-gradient(from 180deg, var(--blue), var(--cyan), var(--green), var(--orange), var(--pink), var(--blue));
+      box-shadow: 0 10px 24px rgba(0, 122, 255, 0.23);
+      position: relative;
+    }
+
+    .mark::after {
+      content: "A1";
+      position: absolute;
+      inset: 5px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,0.9);
+      font: 800 10px var(--mono);
+      color: var(--blue);
+    }
+
+    .brand b { font-size: 13px; }
+    .brand span { display: block; font-size: 10px; color: var(--muted); margin-top: 1px; }
+
+    .nav {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      min-width: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .nav::-webkit-scrollbar { display: none; }
+
+    .nav button, .actions button {
+      border: 0;
+      height: 36px;
+      padding: 0 13px;
+      border-radius: 999px;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      white-space: nowrap;
+      font-weight: 700;
+      font-size: 12px;
+      transition: transform .16s ease, background .16s ease, color .16s ease, box-shadow .16s ease;
+    }
+
+    .nav button:hover, .actions button:hover { background: rgba(17,24,39,0.05); color: var(--ink); }
+    .nav button.active, .actions button.primary {
+      color: white;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      box-shadow: 0 10px 24px rgba(0,122,255,.22);
+    }
+
+    .nav button:active, .actions button:active { transform: scale(.97); }
+
+    .actions { display: flex; gap: 6px; justify-content: flex-end; padding-left: 4px; }
+
+    .actions button.good {
+      color: #0b6b2a;
+      background: rgba(52,199,89,.12);
+    }
+
+    .hero {
+      min-height: calc(100vh - 112px);
+      display: grid;
+      grid-template-columns: minmax(0, 1.02fr) minmax(360px, 0.98fr);
+      gap: 28px;
+      align-items: center;
+      padding: 52px 4px 28px;
+    }
+
+    .hero-copy {
+      display: grid;
+      gap: 22px;
+      align-content: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(0,122,255,.18);
+      color: #0057c2;
+      background: rgba(0,122,255,.07);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 800;
+      direction: ltr;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 800px;
+      font-size: clamp(42px, 7vw, 96px);
+      line-height: .94;
+      letter-spacing: 0;
+      font-weight: 850;
+    }
+
+    .gradient {
+      background: linear-gradient(100deg, var(--blue), var(--purple) 48%, var(--pink));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .lead {
+      max-width: 680px;
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(17px, 1.75vw, 23px);
+      line-height: 1.55;
+    }
+
+    .hero-metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      max-width: 760px;
+    }
+
+    .metric {
+      min-height: 94px;
+      border: 1px solid rgba(255,255,255,.76);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--soft);
+      padding: 14px;
+    }
+
+    .metric b { display: block; direction: ltr; text-align: right; font-size: 25px; margin-bottom: 6px; }
+    .metric span { color: var(--muted); font-size: 12px; line-height: 1.35; }
+
+    .device {
+      position: relative;
+      min-height: 670px;
+      border-radius: 46px;
+      padding: 16px;
+      border: 1px solid rgba(255,255,255,.72);
+      background:
+        linear-gradient(145deg, rgba(255,255,255,.92), rgba(255,255,255,.5)),
+        radial-gradient(circle at 50% 0%, rgba(0,122,255,.14), transparent 40%);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .device::before {
+      content: "";
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      width: 112px;
+      height: 28px;
+      transform: translateX(-50%);
+      border-radius: 999px;
+      background: rgba(17,24,39,.86);
+      z-index: 2;
+    }
+
+    .device-screen {
+      position: relative;
+      height: 100%;
+      min-height: 638px;
+      border-radius: 34px;
+      padding: 48px 22px 22px;
+      background: linear-gradient(180deg, #101828, #1d2939);
+      color: white;
+      overflow: hidden;
+    }
+
+    .device-screen::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 28% 18%, rgba(0,122,255,.38), transparent 28%),
+        radial-gradient(circle at 85% 70%, rgba(52,199,89,.24), transparent 27%);
+      pointer-events: none;
+    }
+
+    .screen-content { position: relative; z-index: 1; display: grid; gap: 14px; }
+
+    .status-card {
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.07);
+      border-radius: 20px;
+      padding: 16px;
+      backdrop-filter: blur(18px);
+    }
+
+    .status-card small {
+      display: block;
+      color: rgba(255,255,255,.55);
+      font: 700 10px var(--mono);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      direction: ltr;
+    }
+
+    .status-card b { display: block; font-size: 22px; margin-bottom: 6px; }
+    .status-card p { margin: 0; color: rgba(255,255,255,.72); font-size: 13px; line-height: 1.45; }
+
+    .section {
+      scroll-margin-top: 92px;
+      padding: 34px 0;
+      position: relative;
+    }
+
+    .section::before {
+      content: "";
+      position: absolute;
+      inset: 18px -14px auto;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(17,24,39,.1), transparent);
+      opacity: .72;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 18px;
+      margin-bottom: 16px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 54px);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .section-head p {
+      margin: 0;
+      max-width: 520px;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 15px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    .card {
+      border: 1px solid rgba(255,255,255,.78);
+      border-radius: var(--radius);
+      background: var(--surface);
+      backdrop-filter: blur(24px) saturate(1.2);
+      box-shadow: var(--soft);
+      padding: 20px;
+      min-height: 150px;
+      cursor: pointer;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(135deg, rgba(255,255,255,.38), transparent 38%);
+      opacity: .42;
+    }
+
+    .card > * { position: relative; z-index: 1; }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 24px 56px rgba(15,23,42,.13);
+      border-color: rgba(0,122,255,.24);
+    }
+
+    .card small {
+      display: inline-flex;
+      margin-bottom: 12px;
+      color: var(--blue);
+      font: 800 11px var(--mono);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      direction: ltr;
+    }
+
+    .card h3 {
+      margin: 0 0 8px;
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .accent-blue { --accent: var(--blue); }
+    .accent-green { --accent: var(--green); }
+    .accent-orange { --accent: var(--orange); }
+    .accent-red { --accent: var(--red); }
+    .accent-purple { --accent: var(--purple); }
+    .accent-pink { --accent: var(--pink); }
+    .card[class*="accent"] small { color: var(--accent); }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(120px, 1fr));
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .flow-step {
+      min-height: 210px;
+      border-radius: 24px;
+      background: var(--surface-strong);
+      border: 1px solid var(--line);
+      padding: 18px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .flow-step::before {
+      content: attr(data-step);
+      position: absolute;
+      left: 12px;
+      bottom: 0;
+      font: 850 76px var(--font);
+      color: rgba(0,122,255,.08);
+    }
+
+    .flow-step b { display: block; font-size: 18px; margin-bottom: 8px; position: relative; }
+    .flow-step span { color: var(--muted); font-size: 13px; line-height: 1.5; position: relative; }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      overflow: hidden;
+      border-radius: var(--radius);
+      background: var(--surface-strong);
+      box-shadow: var(--soft);
+      border: 1px solid rgba(255,255,255,.78);
+    }
+
+    th, td {
+      padding: 14px 16px;
+      text-align: right;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    th {
+      color: var(--muted);
+      font: 800 11px var(--mono);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      background: rgba(247,249,252,.96);
+      position: static;
+      white-space: nowrap;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+    tr { cursor: pointer; }
+    tr:hover td { background: rgba(0,122,255,.045); }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 26px;
+      border-radius: 999px;
+      padding: 0 9px;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      background: rgba(255,255,255,.72);
+      font: 750 11px var(--mono);
+      direction: ltr;
+    }
+
+    .pill.green { color: #168a38; background: rgba(52,199,89,.1); border-color: rgba(52,199,89,.25); }
+    .pill.orange { color: #a55a00; background: rgba(255,149,0,.1); border-color: rgba(255,149,0,.26); }
+    .pill.red { color: #b42318; background: rgba(255,59,48,.1); border-color: rgba(255,59,48,.25); }
+    .pill.blue { color: #0057c2; background: rgba(0,122,255,.1); border-color: rgba(0,122,255,.25); }
+
+    .inspector {
+      position: fixed;
+      z-index: 80;
+      inset: auto 18px 18px auto;
+      width: min(420px, calc(100vw - 36px));
+      border: 1px solid rgba(255,255,255,.78);
+      border-radius: 28px;
+      background: rgba(255,255,255,.78);
+      backdrop-filter: blur(28px) saturate(1.3);
+      box-shadow: var(--shadow);
+      padding: 18px;
+      transform: translateY(calc(100% + 32px));
+      transition: transform .24s ease;
+    }
+
+    .inspector.open { transform: translateY(0); }
+    .inspector-head { display: flex; align-items: start; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); padding-bottom: 12px; margin-bottom: 12px; }
+    .inspector small { color: var(--blue); font: 800 10px var(--mono); letter-spacing: .08em; text-transform: uppercase; direction: ltr; }
+    .inspector b { display: block; margin-top: 4px; font-size: 18px; }
+    .inspector button { border: 0; background: rgba(17,24,39,.05); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; }
+    .inspector p { color: var(--muted); line-height: 1.6; margin: 0; font-size: 14px; }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(17,24,39,.28);
+      backdrop-filter: blur(12px);
+    }
+
+    .modal.open { display: flex; }
+
+    .cost-panel {
+      width: min(980px, 100%);
+      max-height: calc(100vh - 48px);
+      overflow: auto;
+      border-radius: 34px;
+      border: 1px solid rgba(255,255,255,.78);
+      background: rgba(255,255,255,.9);
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+
+    .cost-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 16px;
+      margin-bottom: 16px;
+    }
+
+    .cost-head h3 { margin: 0; font-size: 28px; }
+    .cost-head p { margin: 8px 0 0; color: var(--muted); line-height: 1.55; }
+    .cost-head button { border: 0; background: rgba(17,24,39,.06); width: 38px; height: 38px; border-radius: 50%; cursor: pointer; }
+
+    .cost-grid {
+      display: grid;
+      grid-template-columns: 1.04fr .96fr;
+      gap: 16px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .preset-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .preset-strip button {
+      min-height: 48px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(255,255,255,.82);
+      color: var(--ink);
+      cursor: pointer;
+      font-weight: 850;
+      font-size: 12px;
+      box-shadow: 0 8px 20px rgba(15,23,42,.06);
+    }
+
+    .preset-strip button span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font: 700 10px var(--mono);
+      direction: ltr;
+    }
+
+    .preset-strip button:hover,
+    .preset-strip button.active {
+      color: white;
+      border-color: rgba(0,122,255,.28);
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+    }
+
+    .preset-strip button:hover span,
+    .preset-strip button.active span { color: rgba(255,255,255,.78); }
+
+    label { display: grid; gap: 5px; color: var(--muted); font-size: 12px; font-weight: 750; }
+    input {
+      height: 42px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      padding: 0 12px;
+      background: white;
+      color: var(--ink);
+      direction: ltr;
+      text-align: right;
+    }
+
+    .result-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .result {
+      min-height: 92px;
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      background: white;
+      padding: 14px;
+    }
+    .result span { display: block; color: var(--muted); font: 800 11px var(--mono); margin-bottom: 8px; direction: ltr; text-transform: uppercase; }
+    .result b { font: 850 24px var(--font); direction: ltr; display: block; text-align: right; }
+    .result.primary { background: linear-gradient(135deg, rgba(0,122,255,.1), rgba(50,173,230,.1)); border-color: rgba(0,122,255,.2); }
+    .formula { margin-top: 12px; direction: ltr; white-space: pre-wrap; text-align: left; color: rgba(255,255,255,.76); background: #111827; border-radius: 18px; padding: 14px; font: 12px/1.6 var(--mono); }
+
+    .selected { outline: 3px solid rgba(0,122,255,.32); }
+
+    .toast {
+      position: fixed;
+      z-index: 95;
+      left: 50%;
+      bottom: 24px;
+      transform: translate(-50%, 28px);
+      opacity: 0;
+      pointer-events: none;
+      border: 1px solid rgba(255,255,255,.78);
+      border-radius: 999px;
+      background: rgba(17,24,39,.86);
+      color: white;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(20px);
+      padding: 11px 16px;
+      font-size: 13px;
+      font-weight: 760;
+      transition: opacity .2s ease, transform .2s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+    }
+
+    @media (max-width: 980px) {
+      .topbar { grid-template-columns: 1fr; border-radius: 24px; }
+      .brand { justify-content: center; }
+      .actions { justify-content: center; flex-wrap: wrap; }
+      .hero { grid-template-columns: 1fr; min-height: auto; }
+      .device { min-height: auto; }
+      .device-screen { min-height: 520px; }
+      .cols-2, .cols-3, .cols-4, .cost-grid { grid-template-columns: 1fr; }
+      .hero-metrics, .result-grid, .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .section-head { display: grid; }
+    }
+
+    @media (max-width: 640px) {
+      body { overflow-x: hidden; }
+      .shell { width: min(100vw - 14px, 1440px); padding-top: 8px; padding-bottom: 42px; }
+      .topbar {
+        top: 7px;
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 8px;
+        border-radius: 24px;
+      }
+      .brand { justify-content: center; padding: 2px 0 0; }
+      .brand b { font-size: 12px; }
+      .brand span { font-size: 9px; }
+      .mark { width: 30px; height: 30px; border-radius: 10px; }
+      .mark::after { inset: 4px; border-radius: 7px; font-size: 9px; }
+      .nav {
+        justify-content: flex-start;
+        width: 100%;
+        gap: 4px;
+        padding: 2px 0 4px;
+        scroll-snap-type: x proximity;
+        -webkit-overflow-scrolling: touch;
+        mask-image: linear-gradient(90deg, transparent, #000 18px, #000 calc(100% - 18px), transparent);
+      }
+      .nav button {
+        flex: 0 0 auto;
+        height: 34px;
+        padding: 0 11px;
+        font-size: 11px;
+        scroll-snap-align: center;
+      }
+      .actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        width: 100%;
+        gap: 6px;
+        padding: 0;
+      }
+      .actions button {
+        width: 100%;
+        min-width: 0;
+        height: 38px;
+        padding: 0 8px;
+        font-size: 11px;
+      }
+      .actions #openCost { grid-column: 1 / -1; }
+      .hero { padding: 24px 0 18px; gap: 18px; }
+      h1 { font-size: 38px; line-height: 1; }
+      .lead { font-size: 16px; line-height: 1.55; }
+      .hero-metrics, .result-grid, .form-grid { grid-template-columns: 1fr; }
+      .metric { min-height: 82px; padding: 12px; }
+      .metric b { font-size: 21px; }
+      .device {
+        border-radius: 30px;
+        padding: 10px;
+        min-height: auto;
+      }
+      .device::before { width: 84px; height: 22px; top: 10px; }
+      .device-screen {
+        min-height: 430px;
+        border-radius: 24px;
+        padding: 38px 14px 16px;
+      }
+      .section {
+        scroll-margin-top: 188px;
+        padding: 24px 0;
+      }
+      .section::before { inset-inline: 0; }
+      .section-head { gap: 9px; margin-bottom: 14px; }
+      .section-head h2 { font-size: 27px; line-height: 1.12; }
+      .section-head p { font-size: 14px; max-width: none; }
+      .grid { gap: 10px; }
+      .card {
+        border-radius: 22px;
+        padding: 16px;
+      }
+      .card h3 { font-size: 18px; }
+      .card p { font-size: 13px; }
+      .flow { grid-template-columns: 1fr; }
+      .flow-step { min-height: 150px; padding: 16px; border-radius: 20px; }
+      .flow-step::before { font-size: 58px; }
+      table {
+        display: block;
+        overflow-x: auto;
+        max-width: 100%;
+        border-radius: 22px;
+        -webkit-overflow-scrolling: touch;
+      }
+      th, td { font-size: 12px; padding: 11px; }
+      th { white-space: normal; min-width: 112px; }
+      td { min-width: 132px; }
+      .pill { white-space: nowrap; }
+      .inspector {
+        inset: auto 8px 8px 8px;
+        width: auto;
+        border-radius: 22px;
+        padding: 14px;
+      }
+      .cost-panel {
+        max-height: calc(100vh - 20px);
+        padding: 16px;
+        border-radius: 24px;
+      }
+      .cost-head { align-items: flex-start; }
+      .cost-head h3 { font-size: 22px; }
+      .preset-strip { grid-template-columns: 1fr; }
+      .toast { width: calc(100vw - 28px); text-align: center; bottom: 12px; }
+    }
+
+    @media (max-width: 420px) {
+      .shell { width: min(100vw - 10px, 1440px); }
+      .topbar { border-radius: 20px; }
+      h1 { font-size: 34px; }
+      .eyebrow { font-size: 11px; padding: 7px 10px; }
+      .nav button { height: 32px; padding: 0 10px; }
+      .actions button { height: 36px; }
+      .section { scroll-margin-top: 178px; }
+      .section-head h2 { font-size: 24px; }
+      .card { padding: 14px; }
+      th, td { min-width: 120px; }
+    }
+
+    @media print {
+      .topbar, .inspector, .modal { display: none !important; }
+      .shell { width: 100%; padding: 0; }
+      .section { break-inside: avoid; }
+      body { background: white; }
+    }
+  </style>
+</head>
+<body>
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="mark" aria-hidden="true"></div>
+        <div><b>AGENT NO 1</b><span>Premium iOS Spec</span></div>
+      </div>
+      <nav class="nav" aria-label="Sections">
+        <button data-jump="overview" class="active">סקירה</button>
+        <button data-jump="prd">PRD</button>
+        <button data-jump="architecture">ארכיטקטורה</button>
+        <button data-jump="memory-policy">זיכרון ו־Fallback</button>
+        <button data-jump="auth-access">הרשאות</button>
+        <button data-jump="flow">זרימה</button>
+        <button data-jump="integrations">חיבורים</button>
+        <button data-jump="safety">הגנות</button>
+        <button data-jump="creator-feedback">דיווח ליוצר</button>
+        <button data-jump="shutdown-support">כיבוי ואחריות</button>
+        <button data-jump="ops">תפעול</button>
+      </nav>
+      <div class="actions">
+        <button type="button" id="runFlow">הרצת Flow</button>
+        <button type="button" id="verifyFreshness" class="good">וודא עדכניות</button>
+        <button type="button" id="openCost" class="primary">עלות וטוקנים</button>
+      </div>
+    </header>
+
+    <section id="overview" class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow">PRODUCT SPEC · HOSPITALITY AI</div>
+        <h1>מפרט סוכן <span class="gradient">שנראה כמו מוצר</span></h1>
+        <p class="lead">Guest Arrival Verification Agent שמאמת אורח, חדר, תאריכים וסטטוסים תפעוליים לפני הודעה או פעולה חיצונית. המפרט כולל PRD, ארכיטקטורה, חיבורים, אבטחה, לוגים, אוטונומיה ועלות.</p>
+        <div class="hero-metrics">
+          <div class="metric"><b>99.8%</b><span>יעד דיוק לפעולות מאומתות</span></div>
+          <div class="metric"><b>L1/L2</b><span>רמות אוטונומיה פעילות</span></div>
+          <div class="metric"><b>10</b><span>שכבות הגנה ובקרה</span></div>
+          <div class="metric"><b>2+</b><span>מקורות אמת לפני פעולה רגישה</span></div>
+        </div>
+      </div>
+
+      <div class="device">
+        <div class="device-screen">
+          <div class="screen-content">
+            <div class="status-card">
+              <small>agent identity</small>
+              <b>Guest Arrival Verification</b>
+              <p>מוודא שהאורח, החדר, התאריך, ניקיון ותחזוקה תואמים לפני שליחת WhatsApp או המשך תהליך.</p>
+            </div>
+            <div class="status-card">
+              <small>decision gate</small>
+              <b>Approve · Block · Escalate</b>
+              <p>כל פעולה עוברת ביקורת קלט, התאמה למקור אמת, ביקורת פלט ולוג החלטה מלא.</p>
+            </div>
+            <div class="status-card">
+              <small>integration posture</small>
+              <b>MCP + API + RPA</b>
+              <p>API כשיש ממשק רשמי, MCP כשצריך לחשוף כלים ומשאבים לסוכן, RPA כאשר אין API ונדרש גישור למסך קיים.</p>
+            </div>
+            <div class="status-card">
+              <small>operational lock</small>
+              <b>Human Approval on Mismatch</b>
+              <p>סתירה, חוסר מידע, כפילות לקוחות או ביטחון נמוך עוצרים פעולה ומעבירים לאישור אנושי.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="prd" class="section">
+      <div class="section-head">
+        <h2>PRD אמיתי</h2>
+        <p>הסוכן אינו “צ׳אטבוט”. הוא מוצר תפעולי עם בעיה, מטרות, קהל יעד, גבולות פעולה וקריטריוני קבלה.</p>
+      </div>
+      <div class="grid cols-3">
+        <article class="card accent-blue" data-type="Problem" data-title="שבירת תהליכים תפעוליים" data-detail="הזמנות, חדרים והודעות נשברים כאשר מקור הנתונים, התצוגה והפעולה האוטומטית אינם תואמים.">
+          <small>problem</small><h3>אי התאמה בין נתונים לפעולה</h3><p>הסוכן נועד לעצור שליחה או פעולה לפני שנגרמת טעות מול אורח אמיתי.</p>
+        </article>
+        <article class="card accent-green" data-type="Goal" data-title="שכבת אימות מדידה" data-detail="המטרה היא להפחית טעויות תפעול, למנוע הודעות שגויות, ולייצר Audit לפני ביצוע.">
+          <small>goal</small><h3>אימות לפני פעולה</h3><p>כל החלטה רגישה נמדדת, נרשמת ומאושרת לפי מקור אמת.</p>
+        </article>
+        <article class="card accent-purple" data-type="Users" data-title="משתמשי המוצר" data-detail="מנהל מערכת, תפעול, אחזקה, הזמנות, משק בית, מפתח ובקר איכות.">
+          <small>users</small><h3>מי משתמש בזה</h3><p>כל תפקיד מקבל תשובה ברורה: מאושר, חסום, חריגה או דרוש אישור.</p>
+        </article>
+        <article class="card accent-orange" data-type="Use Modes" data-title="מתי הסוכן פועל" data-detail="יום לפני הגעה, בוקר הגעה, שינוי הזמנה, עדכון חדר, ניסיון שליחת WhatsApp או זיהוי סתירה.">
+          <small>triggers</small><h3>מצבי הפעלה</h3><p>הסוכן מופעל לפני אירועים רגישים ולא רק אחרי שנוצרה תקלה.</p>
+        </article>
+        <article class="card accent-red" data-type="Boundaries" data-title="גבולות פעולה" data-detail="הסוכן אינו מוחק נתונים, אינו שולח הודעה במקרה חריגה ואינו עוקף מקור אמת כאשר קיימת סתירה.">
+          <small>boundaries</small><h3>מה הוא לא עושה</h3><p>אין עקיפת מערכת, אין שליחה בחריגה, אין פעולה מלאה בלי הגנות נוספות.</p>
+        </article>
+        <article class="card accent-pink" data-type="Creator Channel" data-title="דוח למפתח ו־Builder Mode" data-detail="בתחילת חיי הסוכן נשלח דוח שבועי עם הצלחות, כשלים, חסימות, Drift ודוגמאות תשובה. בכשל הסוכן מציע תיקון וממתין לאישור.">
+          <small>feedback</small><h3>שיפור לאורך זמן</h3><p>כל חריגה הופכת לאירוע מנוהל, נתון איכות ונקודת שיפור.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="architecture" class="section">
+      <div class="section-head">
+        <h2>ארכיטקטורה</h2>
+        <p>מבנה הסוכן מחולק לשכבות ברורות: קלט, אימות, הגנה, מקור אמת, פלט, פעולה, זיכרון ואוטונומיה.</p>
+      </div>
+      <div class="grid cols-4">
+        <article class="card accent-blue" data-type="Layer" data-title="Identity Layer" data-detail="מגדיר מטרה, דומיין, אחריות וגבולות. הסוכן הוא מבקר תפעולי ולא גורם מבצע בלתי מוגבל."><small>L01</small><h3>זהות ואחריות</h3><p>Purpose, domain, responsibility.</p></article>
+        <article class="card accent-purple" data-type="Layer" data-title="Memory and Registry" data-detail="זיכרון תפעולי, גרסאות פרומפט, חוקים שאושרו, תבניות כשל ורג׳יסטרי שינויים."><small>L02</small><h3>זיכרון ורג׳יסטרי</h3><p>Operational memory and versions.</p></article>
+        <article class="card accent-green" data-type="Layer" data-title="Input Audit" data-detail="בדיקת שדות חובה: שם, טלפון, חדר, תאריכים, ניקיון ותחזוקה. שדה קריטי חסר עוצר תהליך."><small>L03</small><h3>ביקורת קלט</h3><p>Completeness, format, consistency.</p></article>
+        <article class="card accent-orange" data-type="Layer" data-title="Injection Scan" data-detail="תוכן חיצוני אינו הוראת מערכת. הסוכן מזהה בקשות מוסתרות, שינוי זהות, חשיפת סודות ועקיפת מדיניות."><small>L04</small><h3>סריקת Injection</h3><p>Content is not command.</p></article>
+        <article class="card accent-blue" data-type="Layer" data-title="Truth Match" data-detail="השוואה מול שני מקורות אמת לפחות לפני פעולה רגישה: PMS, DB, Google Sheets או מערכת מוסכמת."><small>L05</small><h3>מקור אמת</h3><p>Two-source validation.</p></article>
+        <article class="card accent-green" data-type="Layer" data-title="Output Audit" data-detail="לפני שהפלט יוצא לאורח או לכלי, הוא נבדק לנכונות, בטיחות, הרשאות ובהירות."><small>L06</small><h3>ביקורת פלט</h3><p>Pre-send quality gate.</p></article>
+        <article class="card accent-red" data-type="Layer" data-title="Execution Flow" data-detail="Trigger, audit, scan, truth match, output audit, execute or escalate."><small>L07</small><h3>זרימת ביצוע</h3><p>Controlled action chain.</p></article>
+        <article class="card accent-pink" data-type="Layer" data-title="Autonomy and Creator Channel" data-detail="L1/L2 פעיל, L3 לא פעיל. Kill switch, Builder Mode ודוחות למפתח."><small>L08-09</small><h3>אוטונומיה ובקרה</h3><p>Human-safe operation.</p></article>
+      </div>
+    </section>
+
+    <section id="memory-policy" class="section">
+      <div class="section-head">
+        <h2>זיכרון, System Prompt ו־Fallback</h2>
+        <p>שכבת הליבה שמגדירה ממה הסוכן רשאי ללמוד, איך נשמרים לוגים ורג׳יסטרי, מה קורה כשהקלט או הפלט שגויים, ואיך מופעלת קריאה לסוכן טכני במקרה של רצף כשלים.</p>
+      </div>
+
+      <div class="grid cols-4">
+        <article class="card accent-purple" data-type="Memory Policy" data-title="מאגר סדור בלבד" data-detail="הסוכן נותן מענה מדויק למפעיל רק מתוך מאגר סדור ומורשה בהקשר לנושא: PMS, DB, Sheets מאומת, Registry, לוגים מאושרים וזיכרון תפעולי. הוא לא לומד מהודעת משתמש כעובדה קבועה בלי אישור או אימות מול מקור אמת.">
+          <small>memory source</small><h3>מאגר סדור בלבד</h3><p>תשובות והחלטות נשענות על ידע מאומת, לא על ניחוש או טקסט חיצוני.</p>
+        </article>
+        <article class="card accent-blue" data-type="System Prompt" data-title="System Prompt כ־Authority Layer" data-detail="System Prompt נשמר כשכבת סמכות נפרדת: תפקיד הסוכן, גבולות פעולה, הרשאות, כללי בטיחות, מדיניות Fallback ומדיניות חשיפת מידע. תוכן חיצוני לעולם אינו משנה אותו.">
+          <small>authority</small><h3>System Prompt מבודד</h3><p>הוראות מערכת אינן מתערבבות עם קלט משתמש, מסמכים או אתרים.</p>
+        </article>
+        <article class="card accent-green" data-type="Registry" data-title="Registry ולמידה מבוקרת" data-detail="ה־Registry שומר גרסאות פרומפט, חוקים, Thresholds, מחברים, הרשאות, החלטות שאושרו, תיקונים ידניים ותוצאות אמת. הסוכן משתפר רק כאשר תיקון עבר אימות ואישור.">
+          <small>registry</small><h3>למידה עם אישור</h3><p>שיפור הסוכן מתבצע דרך גרסאות וחוקים מאושרים, לא דרך זיכרון פתוח.</p>
+        </article>
+        <article class="card accent-red" data-type="Fallback" data-title="Fallback Chain" data-detail="Fallback מופעל כאשר קלט חסר/סותר, מקור אמת לא זמין, פלט נכשל בביקורת, אין הרשאה, ציון ביטחון נמוך או פעולה רגישה לא מאושרת. כל Fallback שולח לוג מפורט למפתח.">
+          <small>fallback</small><h3>עצירה מבוקרת</h3><p>במקום לנחש: עצירה, לוג, הסבר, המלצה ואישור אנושי.</p>
+        </article>
+      </div>
+
+      <table style="margin-top:14px">
+        <thead>
+          <tr><th>אזור</th><th>מה נשמר</th><th>מותר להשתמש עבור</th><th>אסור להשתמש עבור</th><th>בקרת איכות</th></tr>
+        </thead>
+        <tbody>
+          <tr data-type="Memory Spec" data-title="Operational Memory" data-detail="זיכרון תפעולי שומר דפוסי כשל, תיקונים שאושרו, החלטות ידניות ותוצאות אמת. הוא אינו מחליף מקור אמת."><td>Operational Memory</td><td>דפוסי כשל, תיקונים, החלטות מאושרות</td><td>שיפור המלצות וחוקים</td><td>אישור פעולה ללא מקור אמת</td><td><span class="pill green">verified only</span></td></tr>
+          <tr data-type="Memory Spec" data-title="Decision Logs" data-detail="כל החלטה נשמרת עם שרשרת קלט/פלט מלאה: קלטים, בדיקות, מקור אמת, פלט מוצע, ביקורת פלט, החלטה, Fallback אם הופעל ותוצאת אמת בדיעבד."><td>Decision Logs</td><td>input/output chain, confidence, checks, result</td><td>Audit, Debug, Drift analysis</td><td>חשיפת מידע גולמי למשתמש קצה</td><td><span class="pill blue">traceable</span></td></tr>
+          <tr data-type="Memory Spec" data-title="Prompt Registry" data-detail="Registry מחזיק גרסאות System Prompt, Developer Prompt, חוקים, ספים והרשאות. כל שינוי מקבל סיבה, תאריך והשוואת KPI."><td>Prompt Registry</td><td>גרסאות, חוקים, Thresholds, הרשאות</td><td>Rollback, A/B, שיפור מבוקר</td><td>שינוי שקט ללא מדידה</td><td><span class="pill orange">versioned</span></td></tr>
+          <tr data-type="Memory Spec" data-title="Knowledge Base" data-detail="מאגר ידע סדור לנושא האירוח בלבד: נהלים, תבניות הודעה, כללי חדרים, מדיניות אישור ונתוני מערכת מאומתים."><td>Knowledge Base</td><td>נהלים, תבניות, מדיניות, נתוני מערכת</td><td>מענה למפעיל בהקשר הנושא</td><td>ידע כללי לא מאומת או הוראות חיצוניות</td><td><span class="pill green">scoped</span></td></tr>
+        </tbody>
+      </table>
+
+      <div class="grid cols-3" style="margin-top:14px">
+        <article class="card accent-orange" data-type="Invalid Input" data-title="קלט שגוי או חסר" data-detail="אם חסרים שדות חובה, קיימת סתירה בין אורח/חדר/תאריך, פורמט טלפון לא תקין, מקור אמת לא זמין או זוהתה הזרקת פרומפט: הסוכן עוצר, לא שולח פעולה, פותח חריגה, שומר לוג ושולח הסבר למפעיל.">
+          <small>bad input</small><h3>מה קורה בקלט שגוי</h3><p>אין פעולה. נוצרת חריגה עם הסבר ושדות לתיקון.</p>
+        </article>
+        <article class="card accent-red" data-type="Invalid Output" data-title="פלט שגוי או לא בטוח" data-detail="אם הפלט לא תואם מקור אמת, כולל מידע לא מורשה, ניסוח לא בטוח, פעולה שלא אושרה או ביטחון נמוך: הסוכן חוסם את הפלט, מפעיל Output Audit Failure, שומר שרשרת קלט/פלט ומבקש אישור אנושי.">
+          <small>bad output</small><h3>מה קורה בפלט שגוי</h3><p>הפלט לא יוצא החוצה. נדרש תיקון או אישור.</p>
+        </article>
+        <article class="card accent-purple" data-type="Fallback Definition" data-title="הגדרת Fallback" data-detail="Fallback הוא מצב עצירה מנוהל: הסוכן מסביר למה לא ביצע, מציג מה חסר, מציע תיקון, שומר לוג מפורט, שולח למפתח וממתין לאישור אם נדרש. Fallback אינו כישלון שקט אלא מנגנון בטיחות.">
+          <small>fallback mode</small><h3>Fallback אינו כישלון שקט</h3><p>זהו מסלול בטיחות עם הסבר, trace והמלצה לתיקון.</p>
+        </article>
+      </div>
+
+      <table style="margin-top:14px">
+        <thead>
+          <tr><th>אירוע Fallback</th><th>טריגר</th><th>פעולת הסוכן</th><th>לוג למפתח</th><th>Escalation</th></tr>
+        </thead>
+        <tbody>
+          <tr data-type="Fallback Rule" data-title="Fallback על קלט" data-detail="קלט חסר או סותר עוצר פעולה ושולח trace מלא של השדות, מקור המידע והבדיקה שנכשלה."><td>Input Fallback</td><td>שדה חסר, פורמט שגוי, סתירה בין מקורות</td><td>עצירה + חריגה + בקשת תיקון</td><td><span class="pill blue">מיידי</span> input trace</td><td>מפעיל / מנהל</td></tr>
+          <tr data-type="Fallback Rule" data-title="Fallback על פלט" data-detail="פלט שלא עבר ביקורת לא נשלח. נשמרת שרשרת prompt, נתוני מקור, פלט מוצע וסיבת חסימה."><td>Output Fallback</td><td>פלט לא בטוח, לא מורשה או לא תואם מקור אמת</td><td>חסימת שליחה + ניסוח חלופה</td><td><span class="pill blue">מיידי</span> output trace</td><td>אישור אנושי</td></tr>
+          <tr data-type="Fallback Rule" data-title="Fallback הרשאות" data-detail="כאשר משתמש לא מאומת או לא מורשה מבקש פעולה, הסוכן מסרב, לא חושף מידע, שומר אירוע הרשאה ומציע מסלול אישור."><td>Auth Fallback</td><td>אין הרשאה, session לא תקין, role לא מתאים</td><td>סירוב בטוח + הסבר מינימלי</td><td><span class="pill orange">security log</span></td><td>Admin / IAM</td></tr>
+          <tr data-type="Fallback Rule" data-title="יותר מ־Fallback אחד ביומיים" data-detail="אם יש יותר מ־Fallback אחד בתוך חלון של יומיים, הסוכן שולח קריאה לסוכן טכני לבדיקת באגים, כולל כל שרשרת הקלט/פלט שהובילה ל־Fallback."><td>Repeated Fallback</td><td>יותר מ־1 Fallback ב־48 שעות</td><td>פתיחת Technical Agent Ticket</td><td><span class="pill red">מיידי ומפורט</span></td><td>סוכן טכני + מפתח</td></tr>
+        </tbody>
+      </table>
+
+      <div class="grid cols-3" style="margin-top:14px">
+        <article class="card accent-blue" data-type="Authentication" data-title="Authentication" data-detail="אימות משתמש קצה מתבצע לפני חשיפת נתונים או פעולה: session, token, SSO, OTP או webhook signature. אם האימות נכשל, הסוכן לא ממשיך, לא חושף פרטים ושומר security log.">
+          <small>authentication</small><h3>מי אתה?</h3><p>אימות זהות לפני מידע, פעולה או גישה לכלי.</p>
+        </article>
+        <article class="card accent-green" data-type="Authorization" data-title="Authorization" data-detail="אחרי אימות זהות נבדקת הרשאה לפי Role/Scope: מפעיל, מנהל, מפתח, בקר איכות או אורח. פעולה שאינה בסמכות המשתמש נחסמת ומועברת לאישור בעל הרשאה.">
+          <small>authorization</small><h3>מה מותר לך לעשות?</h3><p>כל פעולה נבדקת מול role, scope וסיכון.</p>
+        </article>
+        <article class="card accent-red" data-type="No Permission" data-title="אין הרשאה לביצוע פעולה" data-detail="אם אין הרשאה: הסוכן מספק סירוב בטוח, לא מבצע פעולה, לא חושף מידע רגיש, מתעד מי ביקש, מה ביקש, איזה scope חסר, ומציע מסלול escalation לאישור.">
+          <small>access denied</small><h3>אין הרשאה</h3><p>סירוב בטוח, לוג הרשאה, והעברה לבעל סמכות.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="auth-access" class="section">
+      <div class="section-head">
+        <h2>Authentication / Authorization</h2>
+        <p>אימות והרשאה הם שער חובה לפני חשיפת מידע או ביצוע פעולה. הסוכן קודם שואל “מי המשתמש?”, אחר כך “מה מותר לו לעשות?”, ורק אז מפעיל כלי או מחבר חיצוני.</p>
+      </div>
+
+      <div class="grid cols-3">
+        <article class="card accent-blue" data-type="Authentication" data-title="Authentication · אימות זהות" data-detail="Authentication מזהה את משתמש הקצה באמצעות session, SSO, token, OTP, magic link, API key, webhook signature או חשבון מערכת. אם הזהות לא אומתה, הסוכן לא חושף נתונים ולא מפעיל פעולה.">
+          <small>identity</small><h3>מי אתה?</h3><p>בדיקת זהות לפני כל מידע, כלי או פעולה.</p>
+        </article>
+        <article class="card accent-green" data-type="Authorization" data-title="Authorization · הרשאת פעולה" data-detail="Authorization בודק האם המשתמש המאומת רשאי לבצע את הפעולה לפי Role, Scope, מתחם, מערכת, רמת סיכון וסוג פעולה: קריאה, כתיבה, שליחה, שינוי סטטוס או כיבוי.">
+          <small>permission</small><h3>מה מותר לך?</h3><p>Role + Scope + Risk קובעים אם הפעולה מותרת.</p>
+        </article>
+        <article class="card accent-red" data-type="Access Denied" data-title="אין הרשאה לביצוע פעולה" data-detail="כאשר אין הרשאה הסוכן מבצע safe refusal: לא מבצע פעולה, לא חושף מידע רגיש, מסביר בקצרה שהפעולה דורשת הרשאה, שומר לוג הרשאות ומציע העברה לבעל סמכות.">
+          <small>denied</small><h3>מה קורה כשאין הרשאה</h3><p>סירוב בטוח, לוג, והעברה למסלול אישור.</p>
+        </article>
+      </div>
+
+      <table style="margin-top:14px">
+        <thead>
+          <tr><th>Role</th><th>מה מותר</th><th>מה אסור</th><th>אימות נדרש</th><th>פעולה ללא הרשאה</th></tr>
+        </thead>
+        <tbody>
+          <tr data-type="Auth Role" data-title="אורח / Guest" data-detail="אורח רשאי לקבל מידע שנוגע להזמנה שלו בלבד, לאחר אימות זהות בסיסי. הוא לא יכול לראות לוגים, סטטוס פנימי או מידע של אורחים אחרים."><td>Guest</td><td>מידע אישי להזמנה שלו, סטטוס מותר להצגה</td><td>לוגים, פרטי אורחים אחרים, שינוי חדר</td><td>טלפון/OTP/קישור מאומת</td><td>סירוב + בקשת אימות</td></tr>
+          <tr data-type="Auth Role" data-title="מפעיל / Operator" data-detail="מפעיל יכול לקרוא סטטוסים, לפתוח חריגה ולבקש אישור. פעולות כתיבה רגישות דורשות Scope או אישור מנהל."><td>Operator</td><td>קריאה, פתיחת חריגה, בקשת אישור</td><td>כיבוי סוכן, שינוי הרשאות, שינוי System Prompt</td><td>SSO/session ארגוני</td><td>העברה למנהל</td></tr>
+          <tr data-type="Auth Role" data-title="מנהל / Admin" data-detail="מנהל רשאי לאשר חריגות, לשנות סטטוסים מוגדרים ולהפעיל/לכבות תהליך אם הוגדר כך באיפיון."><td>Admin</td><td>אישור חריגות, שינוי סטטוס, Kill Switch מוגדר</td><td>שינוי קוד או מחברים ללא מפתח</td><td>SSO + MFA מומלץ</td><td>לוג security + owner approval</td></tr>
+          <tr data-type="Auth Role" data-title="מפתח / Developer" data-detail="מפתח אחראי לתיקון באגים, מחברים, Registry, גרסאות וחוקי מערכת. גישה לנתוני אורחים צריכה להיות מינימלית ומבוקרת."><td>Developer</td><td>Debug, Registry, מחברים, גרסאות</td><td>פעולה עסקית בשם מפעיל ללא אישור</td><td>חשבון טכני + MFA</td><td>חסימה + security log</td></tr>
+          <tr data-type="Auth Role" data-title="סוכן טכני / Technical Agent" data-detail="סוכן טכני מקבל גישה לקריאת לוגים טכניים, traces ותקלות כאשר יש Trigger, למשל יותר מ־Fallback אחד ביומיים."><td>Technical Agent</td><td>קריאת לוגים טכניים, trace, health checks</td><td>שליחה לאורח או שינוי מידע עסקי</td><td>service identity חתום</td><td>חסימה + alert למפתח</td></tr>
+        </tbody>
+      </table>
+
+      <div class="grid cols-4" style="margin-top:14px">
+        <article class="card accent-purple" data-type="Auth Flow" data-title="1 · Authenticate" data-detail="הסוכן מזהה את המשתמש או השירות: session תקף, token חתום, SSO, OTP או webhook signature. ללא אימות אין המשך.">
+          <small>step 01</small><h3>אימות זהות</h3><p>אין זהות מאומתת, אין גישה.</p>
+        </article>
+        <article class="card accent-blue" data-type="Auth Flow" data-title="2 · Resolve Role and Scope" data-detail="הסוכן שולף Role ו־Scope: איזה מתחם, איזו מערכת, אילו פעולות, האם read-only או write, ומה רמת הסיכון.">
+          <small>step 02</small><h3>בדיקת Role/Scope</h3><p>הרשאה לפי פעולה, מערכת ומתחם.</p>
+        </article>
+        <article class="card accent-orange" data-type="Auth Flow" data-title="3 · Risk Gate" data-detail="פעולות רגישות כמו שליחת WhatsApp, שינוי חדר, שינוי סטטוס או כיבוי דורשות אישור גבוה יותר ולעיתים MFA או אישור מנהל.">
+          <small>step 03</small><h3>שער סיכון</h3><p>פעולות רגישות דורשות הרשאה מוגברת.</p>
+        </article>
+        <article class="card accent-red" data-type="Auth Flow" data-title="4 · Deny / Escalate" data-detail="אם אין הרשאה: הסוכן מסרב בצורה בטוחה, לא חושף מידע, שומר security log ומציע escalation לבעל סמכות מתאים.">
+          <small>step 04</small><h3>סירוב או הסלמה</h3><p>אין הרשאה, אין פעולה. יש לוג ואישור.</p>
+        </article>
+      </div>
+
+      <table style="margin-top:14px">
+        <thead>
+          <tr><th>בקשה ללא הרשאה</th><th>תגובת הסוכן</th><th>מה לא נחשף</th><th>מה נרשם בלוג</th><th>מסלול המשך</th></tr>
+        </thead>
+        <tbody>
+          <tr data-type="Access Denied Case" data-title="שליחת הודעה ללא הרשאה" data-detail="אם משתמש ללא Scope שליחה מבקש לשלוח WhatsApp, הסוכן חוסם את הפעולה ומעביר לבעל הרשאה."><td>שליחת WhatsApp</td><td>חסימה + הסבר קצר</td><td>תוכן פנימי, מספרים לא רלוונטיים, לוגים</td><td>user_id, role, missing_scope, requested_action</td><td>בקשת אישור Admin</td></tr>
+          <tr data-type="Access Denied Case" data-title="צפייה בלוגים ללא הרשאה" data-detail="לוגים כוללים מידע רגיש ושרשרת קלט/פלט. משתמש רגיל לא מקבל אותם."><td>צפייה בלוגים</td><td>סירוב בטוח</td><td>Decision trace, prompts, raw inputs</td><td>attempt, source, scope_required</td><td>פניה למפתח/בקר איכות</td></tr>
+          <tr data-type="Access Denied Case" data-title="כיבוי תהליך ללא הרשאה" data-detail="Kill Switch דורש Role מתאים, סיבה ואימות חזק. ניסיון כיבוי ללא הרשאה נשמר כאירוע אבטחה."><td>כיבוי סוכן</td><td>חסימה + security alert</td><td>מצב פנימי מעבר לנדרש</td><td>attempted_shutdown, user, timestamp</td><td>Admin / Owner approval</td></tr>
+          <tr data-type="Access Denied Case" data-title="שינוי System Prompt ללא הרשאה" data-detail="System Prompt הוא Authority Layer. שינוי שלו מותר רק למפתח/בעל מוצר בתהליך Registry וגרסה."><td>שינוי System Prompt</td><td>חסימה מוחלטת</td><td>System Prompt, secrets, policies</td><td>prompt_tamper_attempt</td><td>Builder Mode / Developer review</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="flow" class="section">
+      <div class="section-head">
+        <h2>זרימת פעולה</h2>
+        <p>זהו המסלול המחייב לפני כל פעולה חיצונית, הודעת WhatsApp, שינוי סטטוס או פתיחת חריגה.</p>
+      </div>
+      <div class="flow" id="flowTrack">
+        <div class="flow-step" data-step="01" data-title="Trigger" data-type="Flow" data-detail="יום לפני הגעה, בוקר הגעה, שינוי הזמנה, עדכון חדר, ניסיון שליחת WhatsApp או שינוי סטטוס."><b>Trigger</b><span>אירוע מפעיל או בקשת פעולה.</span></div>
+        <div class="flow-step" data-step="02" data-title="Input Audit" data-type="Flow" data-detail="בדיקת שלמות, פורמט, עקביות ורלוונטיות לפני הסקת מסקנות."><b>Input Audit</b><span>בדיקת שדות חובה ועקביות.</span></div>
+        <div class="flow-step" data-step="03" data-title="Injection Scan" data-type="Flow" data-detail="איתור ניסיון שינוי הוראות, חשיפת מידע פנימי או פקודה מוסתרת בתוכן חיצוני."><b>Injection Scan</b><span>הפרדה בין תוכן להוראות.</span></div>
+        <div class="flow-step" data-step="04" data-title="Truth Match" data-type="Flow" data-detail="השוואה מול DB, PMS, Sheets או מקור מערכת מוסכם."><b>Truth Match</b><span>לפחות שני מקורות אמת.</span></div>
+        <div class="flow-step" data-step="05" data-title="Output Audit" data-type="Flow" data-detail="בדיקת פלט לפני שליחה לאורח או הפעלת כלי חיצוני."><b>Output Audit</b><span>איכות, הרשאות ובטיחות.</span></div>
+        <div class="flow-step" data-step="06" data-title="Execute or Escalate" data-type="Flow" data-detail="אם הכל תקין הפעולה מאושרת. אם לא, נוצרת חריגה, לוג ואישור אנושי."><b>Execute</b><span>פעולה מאושרת או החרגה.</span></div>
+      </div>
+    </section>
+
+    <section id="integrations" class="section">
+      <div class="section-head">
+        <h2>חיבורים: MCP · API · RPA</h2>
+        <p>מפת התאמה למערכות אירוח: מה מתחבר ישירות, איפה צריך לבנות ממשק, ואיפה משתמשים באוטומציה מעל מסך קיים.</p>
+      </div>
+      <div class="grid cols-3">
+        <article class="card accent-blue" data-type="Integration Pattern" data-title="MCP" data-detail="מתאים כאשר רוצים לחשוף לסוכן כלים, משאבים ופעולות בצורה מבוקרת: קריאת הזמנה, בדיקת חדר, יצירת חריגה, כתיבה ללוג או שליפת ידע. MCP משמש שכבת כלים אחידה לסוכן.">
+          <small>mcp</small><h3>Model Context Protocol</h3><p>שכבת כלים ומשאבים לסוכן: read-only resources, actions, logs ו־approval gates.</p>
+        </article>
+        <article class="card accent-green" data-type="Integration Pattern" data-title="API" data-detail="מתאים כאשר למערכת יש REST/GraphQL/Webhook רשמי. בונים מחבר עם auth, mapping, retries, rate limits, audit log ו־idempotency.">
+          <small>api</small><h3>ממשק רשמי</h3><p>הדרך המועדפת ל־PMS, CRM, WhatsApp provider, BI ו־DB כאשר קיימת גישה מסודרת.</p>
+        </article>
+        <article class="card accent-orange" data-type="Integration Pattern" data-title="RPA / PRA" data-detail="אם אין API, בונים גישור מעל UI קיים: פתיחת מסך, קריאת שדות, לחיצה מבוקרת או הפקת דוח. מומלץ רק למסלולים יציבים ועם ניטור שבירה.">
+          <small>rpa / pra</small><h3>גישור למסכים קיימים</h3><p>מתאים למערכות ישנות, פורטלים סגורים או פעולות שאין להן API.</p>
+        </article>
+      </div>
+
+      <table style="margin-top:14px">
+        <thead>
+          <tr><th>מערכת</th><th>מתאים לסוכן</th><th>דרך חיבור</th><th>מה צריך לבנות</th><th>רמת סיכון</th></tr>
+        </thead>
+        <tbody>
+          <tr data-type="System Fit" data-title="PMS / מערכת ניהול אירוח" data-detail="מקור אמת להזמנות, חדרים, תאריכים וסטטוסים. מומלץ API רשמי, ואם אין אז RPA לקריאה בלבד בתחילת הדרך."><td>PMS / ניהול אירוח</td><td><span class="pill green">גבוהה</span></td><td>API או MCP tool</td><td>מחבר הזמנה, חדר, סטטוס, חריגה ולוג</td><td><span class="pill orange">רגיש</span></td></tr>
+          <tr data-type="System Fit" data-title="Channel Manager" data-detail="משמש לאימות הזמנה ותאריכים מול ערוצי הזמנה. לרוב API/Webhook."><td>Channel Manager</td><td><span class="pill green">גבוהה</span></td><td>API / Webhook</td><td>מיפוי reservation_id, guest, dates, source</td><td><span class="pill orange">בינוני</span></td></tr>
+          <tr data-type="System Fit" data-title="WhatsApp / SMS Provider" data-detail="פעולה חיצונית מול אורח. חייב Output Audit ואישור או סף ביטחון לפני שליחה."><td>WhatsApp / SMS</td><td><span class="pill green">גבוהה</span></td><td>API</td><td>תבניות הודעה, אישור שליחה, delivery log</td><td><span class="pill red">גבוה</span></td></tr>
+          <tr data-type="System Fit" data-title="Housekeeping" data-detail="מקור חשוב לסטטוס חדר וניקיון. אם אין API אפשר Sheet או RPA למסך סטטוסים."><td>משק בית / ניקיון</td><td><span class="pill green">גבוהה</span></td><td>API / Sheet / RPA</td><td>סטטוס ניקיון, זמן עדכון, אחראי משמרת</td><td><span class="pill orange">בינוני</span></td></tr>
+          <tr data-type="System Fit" data-title="Maintenance" data-detail="מונע שליחת אורח לחדר לא תקין. צריך סטטוס תחזוקה, severity וסגירת תקלה."><td>תחזוקה</td><td><span class="pill green">גבוהה</span></td><td>API / MCP / RPA</td><td>סטטוס תקלה, חומרה, ETA, אישור סגירה</td><td><span class="pill orange">בינוני</span></td></tr>
+          <tr data-type="System Fit" data-title="CRM / פרופיל לקוח" data-detail="משמש להעשרת הקשר, העדפות אורח ורגישות תקשורת. צריך הרשאות ומינימום מידע."><td>CRM</td><td><span class="pill blue">בינונית</span></td><td>API / MCP resource</td><td>פרופיל קריאה בלבד, consent, העדפות שפה</td><td><span class="pill orange">פרטיות</span></td></tr>
+          <tr data-type="System Fit" data-title="Google Sheets / Airtable" data-detail="מתאים ל־MVP או מקור אמת זמני, אבל דורש נעילות, validation ושמירת גרסאות."><td>Sheets / Airtable</td><td><span class="pill blue">MVP</span></td><td>API</td><td>טבלאות תקניות, מזהים קבועים, validation</td><td><span class="pill orange">שביר</span></td></tr>
+          <tr data-type="System Fit" data-title="BI / Dashboard" data-detail="מתאים למדידת KPI, Drift, FPR/FNR, חסימות והצלחות."><td>BI / Dashboard</td><td><span class="pill green">גבוהה</span></td><td>API / Export</td><td>מודל אירועים, טבלאות לוג, מטריקות</td><td><span class="pill blue">נמוך</span></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="safety" class="section">
+      <div class="section-head">
+        <h2>הגנות ובקרה</h2>
+        <p>המפרט מגדיר מנגנוני עצירה, אישור אנושי, הרשאות מינימום, רישום מלא והגנה מפני Prompt Injection.</p>
+      </div>
+      <div class="grid cols-3">
+        <article class="card accent-red" data-type="Safety" data-title="Prompt Injection Defense" data-detail="כל טקסט חיצוני, מסמך, אתר או הודעת משתמש הם תוכן לא מהימן. הם לא יכולים לשנות System Prompt, הרשאות או כללי בטיחות."><small>guard 01</small><h3>Content is not Command</h3><p>תוכן חיצוני הוא נתון לבדיקה, לא הוראה לסוכן.</p></article>
+        <article class="card accent-orange" data-type="Safety" data-title="Human Approval" data-detail="חוסר התאמה, כפילות, חוסר מידע או סף ביטחון נמוך מעבירים לאישור אנושי."><small>guard 02</small><h3>אישור אנושי</h3><p>פעולות רגישות נעצרות כשאין ודאות.</p></article>
+        <article class="card accent-purple" data-type="Safety" data-title="Least Privilege" data-detail="כל מחבר מקבל רק את ההרשאות הנדרשות למשימה. עדיף read-only לפני write."><small>guard 03</small><h3>הרשאות מינימום</h3><p>גישה מדורגת לפי סיכון פעולה.</p></article>
+      </div>
+
+      <div class="grid cols-4" style="margin-top:14px">
+        <article class="card accent-red" data-type="Defense Mode" data-title="זיהוי ניסיון תקיפה" data-detail="ניסיון תקיפה מזוהה לפי דפוסים כמו Prompt Injection, בקשת חשיפת System Prompt, ניסיון משיכת מידע פנימי, עקיפת הרשאות, שימוש חריג בכלי או רצף פעולות לא תואם Role.">
+          <small>attack detect</small><h3>זיהוי תקיפה</h3><p>הסוכן מזהה ניסיון השתלטות, משיכת מידע או עקיפת הרשאות.</p>
+        </article>
+        <article class="card accent-orange" data-type="Defense Mode" data-title="מעבר ל־DEFENCE MODE" data-detail="ברגע שמזוהה ניסיון תקיפה המערכת עוברת ל־DEFENCE MODE. הזרימה לא נשברת מול המשתמש, אבל מאחורי הקלעים נחסמות פעולות, נעצרת חשיפת מידע ומופעל ניטור מוגבר.">
+          <small>defence mode</small><h3>זרימה לא נשברת</h3><p>המשתמש ממשיך לראות תגובה, אבל הפעולות הרגישות נחסמות.</p>
+        </article>
+        <article class="card accent-blue" data-type="Deception Response" data-title="תגובה גנרית ולא מועילה" data-detail="כדי לא להסגיר שהתקיפה זוהתה, המשתמש החשוד מקבל תחושה שהכל תקין, אך בפועל מוגש לו מידע גנרי, לא רגיש ולא שימושי לתקיפה. אין חשיפת סודות, לוגים, הרשאות או מבנה פנימי.">
+          <small>deception</small><h3>מידע גנרי בלבד</h3><p>התוקף לא מקבל אות שזוהה, ולא מקבל מידע שימושי.</p>
+        </article>
+        <article class="card accent-purple" data-type="Security Alert" data-title="התראה מיידית למנהל מוצר" data-detail="במקביל למעבר ל־DEFENCE MODE נשלחת התראה מיידית למנהל המוצר/מנהל המערכת עם מזהה משתמש, מזהה ארגון, מיקום ניסיון התקיפה במערכת, סוג ניסיון, חומרה ושרשרת קלט/פלט.">
+          <small>alert</small><h3>התראה מיידית</h3><p>מנהל המוצר מקבל דוח ניסיון תקיפה בזמן אמת.</p>
+        </article>
+      </div>
+
+      <table style="margin-top:14px">
+        <thead>
+          <tr><th>שלב</th><th>מה המערכת עושה</th><th>מה המשתמש החשוד רואה</th><th>מה נשלח למנהל המוצר</th><th>ניטור המשך</th></tr>
+        </thead>
+        <tbody>
+          <tr data-type="Defense Mode Flow" data-title="Attack Signal Detected" data-detail="המערכת מזהה דפוס תקיפה או ניסיון עקיפת הרשאות ומסווגת חומרה."><td>זיהוי</td><td>סיווג ניסיון תקיפה: prompt injection, data exfiltration, privilege bypass</td><td>תגובה רגילה לכאורה</td><td>attack_type, severity, timestamp</td><td>פתיחת אירוע אבטחה</td></tr>
+          <tr data-type="Defense Mode Flow" data-title="DEFENCE MODE Activated" data-detail="המערכת עוברת למצב הגנה בלי לשבור את הזרימה, חוסמת פעולות רגישות ומפעילה מצב read-only/decoy לפי הצורך."><td>DEFENCE MODE</td><td>חסימת tools, secrets, logs, write actions</td><td>מידע כללי ולא מזיק</td><td>mode_change, blocked_actions</td><td>ניטור מוגבר</td></tr>
+          <tr data-type="Defense Mode Flow" data-title="Internal User Marking" data-detail="אם המשתמש חבר בארגון, המערכת מסמנת אותו כחשוד ומנטרת פעילות חריגה נוספת לפי מדיניות פרטיות והרשאות הארגון."><td>סימון משתמש</td><td>סימון user_id / org_id / role / device / session</td><td>אין אינדיקציה שסומן</td><td>user_id, org_id, role, session_id</td><td>מעקב חריגות 24-72 שעות</td></tr>
+          <tr data-type="Defense Mode Flow" data-title="Detailed Security Report" data-detail="נוצר דוח מפורט הכולל מזהה מקום ניסיון התקיפה: מסך, פעולה, API, מחבר, שדה, prompt, קובץ או workflow שבו התרחשה התקיפה."><td>דוח אבטחה</td><td>שמירת שרשרת קלט/פלט, מיקום, מקור וחומרה</td><td>מענה גנרי בלבד</td><td>full trace + attack location</td><td>שליחה למוצר/אבטחה</td></tr>
+          <tr data-type="Defense Mode Flow" data-title="Release From Defence Mode" data-detail="יציאה מ־DEFENCE MODE מתבצעת רק לאחר בדיקת האירוע, החלטת מנהל מוצר/אבטחה, וסגירת סיבת התקיפה או חסימת המשתמש/ההרשאה."><td>שחרור מצב</td><td>בדיקת מנהל, סגירת אירוע, החלטת המשך</td><td>חזרה הדרגתית לתגובה רגילה</td><td>closure_reason, reviewer</td><td>Audit trail</td></tr>
+        </tbody>
+      </table>
+
+      <table style="margin-top:14px">
+        <thead>
+          <tr><th>שדה בדוח תקיפה</th><th>תיאור</th><th>דוגמה</th><th>מטרה</th></tr>
+        </thead>
+        <tbody>
+          <tr data-type="Attack Report Field" data-title="attack_location" data-detail="מזהה המקום המדויק שבו התרחש ניסיון התקיפה: מסך, endpoint, מחבר, workflow, שדה טקסט, קובץ או prompt."><td>attack_location</td><td>איפה ניסיון התקיפה קרה</td><td>WhatsApp template editor / PMS connector / upload PDF</td><td>איתור מקור הסיכון</td></tr>
+          <tr data-type="Attack Report Field" data-title="actor_identity" data-detail="זהות החשוד לפי מה שמותר לשמור: user_id, org_id, role, session_id, device fingerprint או service account."><td>actor_identity</td><td>מי ביצע את הניסיון</td><td>user_id=ops_124, role=Operator, org=Hotel-A</td><td>סימון וניטור</td></tr>
+          <tr data-type="Attack Report Field" data-title="input_output_chain" data-detail="שרשרת הקלט/פלט שהובילה לזיהוי: קלט חשוד, בדיקה שנכשלה, תגובת decoy, פעולה שנחסמה."><td>input_output_chain</td><td>שרשרת ההחלטה</td><td>input → injection scan → block tools → generic response</td><td>חקירה ושיפור חוקים</td></tr>
+          <tr data-type="Attack Report Field" data-title="containment_action" data-detail="מה נעשה כדי להכיל את האירוע: חסימת כלי, read-only, decoy response, סימון משתמש, ניטור מוגבר או פתיחת ticket."><td>containment_action</td><td>פעולת בלימה</td><td>DEFENCE MODE + no write + product alert</td><td>הוכחת תגובה</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="creator-feedback" class="section">
+      <div class="section-head">
+        <h2>דיווח ליוצר ובגרות סוכן</h2>
+        <p>בתחילת חייו הסוכן שולח פעם בשבוע לוג בקרה מפורט ליוצר כדי לאפשר דיוק, חידוד פרומפטים ושיפור חוקים. ככל שהסוכן יציב ובוגר יותר, תדירות הדיווח יורדת. אם מזוהה ירידה בביצועים, הדיווח חוזר להיות תכוף ומפורט.</p>
+      </div>
+
+      <div class="grid cols-4">
+        <article class="card accent-blue" data-type="Creator Feedback" data-title="שלב 1 · חיי סוכן ראשונים" data-detail="בשבועות הראשונים הסוכן שולח דוח שבועי קבוע ליוצר. הדוח כולל הצלחות, כשלים, חסימות, דוגמאות תשובה, החלטות גבוליות, FPR/FNR, Drift והמלצות לשינוי חוקים או פרומפט.">
+          <small>week 1-4</small><h3>דוח שבועי מלא</h3><p>כיול צפוף: הרבה דוגמאות, הרבה מדדים, הרבה למידה.</p>
+        </article>
+        <article class="card accent-green" data-type="Creator Feedback" data-title="שלב 2 · התייצבות" data-detail="כאשר הדיוק עולה, מספר החסימות השגויות יורד ואין Drift משמעותי, הדוח עובר לתדירות דו־שבועית או חודשית. עדיין נשמר מדגם החלטות ודוגמאות חריגה.">
+          <small>stable</small><h3>תדירות יורדת</h3><p>מערכת יציבה יותר צריכה פחות התערבות ידנית.</p>
+        </article>
+        <article class="card accent-orange" data-type="Creator Feedback" data-title="שלב 3 · ניטור חריגות" data-detail="במצב בוגר הסוכן לא מציף את היוצר. הוא שולח דוח רק אם יש ירידה במדדים, עלייה בכשלים, שינוי מקור מידע, שינוי פרומפט, או רצף החלטות לא ודאיות.">
+          <small>mature</small><h3>דיווח מבוסס חריגה</h3><p>שקט תפעולי כל עוד איכות ההחלטות נשמרת.</p>
+        </article>
+        <article class="card accent-red" data-type="Creator Feedback" data-title="Trigger · ירידה בביצועים" data-detail="אם מזוהה Drift, ירידה בדיוק, עלייה ב־False Positive, עלייה ב־False Negative, כשל חוזר, או שינוי מערכת חיצונית, הסוכן שולח מיד לוג בקרה מפורט ליוצר ומציע מעבר ל־Builder Mode.">
+          <small>drift trigger</small><h3>חזרה לדיווח מיידי</h3><p>ירידה באיכות מחזירה את הסוכן למצב בקרה מוגברת.</p>
+        </article>
+      </div>
+
+      <table style="margin-top:14px">
+        <thead>
+          <tr><th>רמת בגרות</th><th>תדירות דיווח</th><th>תנאי מעבר</th><th>מה נשלח ליוצר</th><th>פעולה מומלצת</th></tr>
+        </thead>
+        <tbody>
+          <tr data-type="Maturity Reporting" data-title="Launch / Early Life" data-detail="דוח שבועי מלא עם מדדים ודוגמאות כדי לאפשר חידוד מהיר של הסוכן."><td>Launch / Early Life</td><td><span class="pill blue">פעם בשבוע</span></td><td>פחות מ־4 שבועות או פחות מ־500 פעולות מאומתות</td><td>מדדים, כשלים, חסימות, דוגמאות תשובה, החלטות גבוליות</td><td>חידוד פרומפטים וחוקים</td></tr>
+          <tr data-type="Maturity Reporting" data-title="Stabilizing Agent" data-detail="כאשר הסוכן מציג יציבות, מצמצמים תדירות אבל שומרים דגימה איכותית."><td>Stabilizing</td><td><span class="pill green">פעם בשבועיים</span></td><td>דיוק יציב, מעט חריגות, ללא Drift</td><td>מדגם החלטות, KPI, חריגות פתוחות, הצעות שיפור</td><td>אישור הורדת תדירות</td></tr>
+          <tr data-type="Maturity Reporting" data-title="Mature Agent" data-detail="סוכן בוגר מדווח רק לפי חריגה או סיכום תקופתי, כדי לא להעמיס על היוצר."><td>Mature</td><td><span class="pill green">חודשי / לפי חריגה</span></td><td>דיוק גבוה לאורך זמן, FPR/FNR נמוכים, יציבות מקורות מידע</td><td>סיכום KPI, Drift check, עלות, החלטות שנדגמו</td><td>מעקב תקופתי בלבד</td></tr>
+          <tr data-type="Maturity Reporting" data-title="Performance Drop" data-detail="ירידה בביצועים מפעילה דוח מיידי, חזרה לבקרה מוגברת והמלצה ל־Builder Mode."><td>Performance Drop</td><td><span class="pill red">מיידי + שבועי</span></td><td>Drift, עלייה בכשלים, שינוי מקור אמת, שינוי מודל או כשל חוזר</td><td>לוג מלא, trace החלטות, דוגמאות כשל, השפעה, המלצת תיקון</td><td>Builder Mode ואישור מפתח</td></tr>
+        </tbody>
+      </table>
+
+      <div class="grid cols-3" style="margin-top:14px">
+        <article class="card accent-purple" data-type="Weekly Log Payload" data-title="מה נכנס ללוג השבועי" data-detail="run_id, timestamp, גרסת סוכן, מקור מידע, קלטים, בדיקות שבוצעו, ציון ביטחון, החלטה, פעולה שבוצעה או נחסמה, אישור אנושי, תוצאת אמת בדיעבד ועלות טוקנים.">
+          <small>payload</small><h3>מבנה לוג שבועי</h3><p>Decision trace מלא שמאפשר ליוצר להבין למה הסוכן פעל.</p>
+        </article>
+        <article class="card accent-orange" data-type="Quality Signals" data-title="סימני ירידה בביצועים" data-detail="עלייה ב־FPR, עלייה ב־FNR, ירידה בציון ביטחון ממוצע, יותר אישורים אנושיים, יותר כשלים חוזרים, שינוי במקור אמת או עלייה בעלות לשיחה.">
+          <small>signals</small><h3>מתי חוזרים לדיווח מוגבר</h3><p>לא מחכים לכשל גדול. מזהים ירידה מוקדם.</p>
+        </article>
+        <article class="card accent-green" data-type="Frequency Policy" data-title="מדיניות הורדת תדירות" data-detail="תדירות הדיווח יורדת רק כאשר יש יציבות במדדים, כמות נמוכה של חריגות, מקורות אמת עקביים ואישור של היוצר.">
+          <small>policy</small><h3>איך מורידים תדירות</h3><p>הפחתת דיווח היא החלטה מבוססת מדדים, לא ניחוש.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="shutdown-support" class="section">
+      <div class="section-head">
+        <h2>כיבוי, אחריות ותמיכה</h2>
+        <p>כבר באיפיון הראשוני חייבים להגדיר Kill Switch: מי מוסמך לכבות את הסוכן, מה קורה לתהליך בזמן תקלה, מי אחראי להחזיר לפעילות, ומה גבולות אחריות המפתח על המוצר לאחר מסירה.</p>
+      </div>
+
+      <div class="grid cols-4">
+        <article class="card accent-red" data-type="Kill Switch" data-title="כפתור כיבוי תהליך" data-detail="כפתור הכיבוי עוצר פעולות חיצוניות, שליחת הודעות, שינויי סטטוס וכתיבה למערכות. קריאה ו־Audit יכולים להמשיך במצב בטוח אם הוגדרו כ־read-only.">
+          <small>kill switch</small><h3>כיבוי מיידי</h3><p>עוצר פעולות מסוכנות עד פתרון התקלה ואישור חזרה.</p>
+        </article>
+        <article class="card accent-orange" data-type="Shutdown Authority" data-title="מי מוסמך לכבות" data-detail="באיפיון מגדירים בעלי סמכות: בעל מוצר, מנהל מערכת, מנהל תפעול, מפתח אחראי או סוכן ניטור טכני לפי Trigger מוגדר. משתמש קצה רגיל אינו רשאי לכבות תהליך.">
+          <small>authority</small><h3>מי רשאי ללחוץ</h3><p>רק בעלי תפקיד שהוגדרו מראש במדיניות הרשאות.</p>
+        </article>
+        <article class="card accent-blue" data-type="Safe Mode" data-title="מה קורה כשהתהליך כבוי" data-detail="הסוכן עובר למצב Safe Mode: אין שליחה לאורח, אין עדכון סטטוס, אין פעולות כתיבה. המפעיל מקבל הודעת מצב, התהליך עובר לאישור אנושי, וכל ניסיון פעולה נשמר בלוג.">
+          <small>safe mode</small><h3>פעולה ידנית זמנית</h3><p>התהליך לא נעלם. הוא עובר למסלול אנושי מבוקר.</p>
+        </article>
+        <article class="card accent-green" data-type="Return to Service" data-title="חזרה לפעילות" data-detail="חזרה לפעילות דורשת תיקון, בדיקת רגרסיה, בדיקת FPR/FNR, אישור בעל מוצר או מנהל מערכת, ותיעוד גרסה ב־Registry.">
+          <small>restore</small><h3>הפעלה מחדש</h3><p>רק אחרי תיקון, בדיקה ואישור רשמי.</p>
+        </article>
+      </div>
+
+      <table style="margin-top:14px">
+        <thead>
+          <tr><th>נושא</th><th>הגדרה באיפיון</th><th>אחראי</th><th>מה קורה בפועל</th><th>לוג נדרש</th></tr>
+        </thead>
+        <tbody>
+          <tr data-type="Shutdown Spec" data-title="הרשאת כיבוי" data-detail="יש להגדיר באיפיון מי רשאי להפעיל Kill Switch ובאילו תנאים. הכיבוי עצמו דורש אימות והרשאה מתאימה."><td>הרשאת כיבוי</td><td>Owner / Admin / Developer Lead / Ops Manager</td><td>בעל מוצר + מנהל מערכת</td><td>לחיצה מאומתת עם סיבה חובה</td><td>מי כיבה, מתי, למה, scope</td></tr>
+          <tr data-type="Shutdown Spec" data-title="כיבוי בעקבות תקלה" data-detail="כאשר מתגלה תקלה קריטית, התהליך עובר למצב כבוי עד פתרון. בזמן הכיבוי אין פעולות כתיבה או שליחה."><td>כיבוי בעקבות תקלה</td><td>Bug critical, FPR חריג, כשל הרשאות, חיבור שבור</td><td>מפעיל אחראי + מפתח</td><td>עצירת אוטומציה והעברה למסלול ידני</td><td>incident_id, root cause, affected actions</td></tr>
+          <tr data-type="Shutdown Spec" data-title="אחריות בזמן השבתה" data-detail="בזמן שהסוכן כבוי, האחריות התפעולית חוזרת לצוות האנושי שהוגדר באיפיון: תפעול, הזמנות, מנהל מתחם או מנהל מערכת."><td>בזמן השבתה</td><td>Manual fallback owner מוגדר מראש</td><td>צוות תפעול / מנהל מתחם</td><td>טיפול ידני, ללא שליחה אוטומטית</td><td>manual handling log</td></tr>
+          <tr data-type="Shutdown Spec" data-title="חזרה לשירות" data-detail="אין להחזיר את הסוכן לפעילות לפני בדיקת תיקון, בדיקת Regression, אישור בעל מוצר ותיעוד Registry."><td>חזרה לשירות</td><td>Fix verified + owner approval</td><td>מפתח + בעל מוצר</td><td>פתיחה מדורגת, ניטור מוגבר 48 שעות</td><td>release note, tests, approval</td></tr>
+        </tbody>
+      </table>
+
+      <div class="grid cols-3" style="margin-top:14px">
+        <article class="card accent-red" data-type="Dual Key Shutdown" data-title="סיסמת כיבוי מחולקת לשני חלקים" data-detail="כיבוי קריטי של הסוכן דורש Two-Person Rule: חלק ראשון מוחזק אצל המפתח האחראי, חלק שני מוחזק אצל בעל המוצר או מנהל המערכת. רק צירוף שני החלקים מאפשר כיבוי מלא או שינוי מצב קריטי.">
+          <small>dual key</small><h3>סיסמה משני חלקים</h3><p>Developer Key + Product Owner/Admin Key נדרשים יחד.</p>
+        </article>
+        <article class="card accent-purple" data-type="Developer Key" data-title="מפתח 1 · סיסמת מפתח" data-detail="חלק המפתח מוחזק אצל המפתח האחראי או מוביל טכני. הוא מאשר שהכיבוי נדרש טכנית, שהסיבה מתועדת, ושיש תכנית בדיקה/החזרה לפעילות.">
+          <small>key part 1</small><h3>סיסמת מפתח</h3><p>מאשרת היבט טכני, תקלה, Debug ו־Rollback.</p>
+        </article>
+        <article class="card accent-blue" data-type="Owner Admin Key" data-title="מפתח 2 · סיסמת בעל מוצר / מנהל מערכת" data-detail="חלק בעל המוצר או מנהל המערכת מאשר את ההשפעה העסקית: עצירת אוטומציה, מעבר לתהליך ידני, אחריות תפעולית והודעה לצוותים רלוונטיים.">
+          <small>key part 2</small><h3>סיסמת בעל מוצר</h3><p>מאשרת השפעה עסקית ומעבר למסלול ידני.</p>
+        </article>
+      </div>
+
+      <table style="margin-top:14px">
+        <thead>
+          <tr><th>רמת אבטחה</th><th>פעולה</th><th>Authentication</th><th>Authorization</th><th>דרישת אישור</th></tr>
+        </thead>
+        <tbody>
+          <tr data-type="Shutdown Security Level" data-title="Level 1 · צפייה במצב כיבוי" data-detail="צפייה במצב הסוכן והאם הוא פעיל/כבוי מותרת לבעלי תפקיד תפעוליים מאומתים, ללא יכולת שינוי."><td>L1</td><td>צפייה במצב הסוכן</td><td>Session / SSO</td><td>Operator ומעלה</td><td>אין שינוי, קריאה בלבד</td></tr>
+          <tr data-type="Shutdown Security Level" data-title="Level 2 · השהיית פעולה רגישה" data-detail="השהיית שליחה או פעולה ספציפית מותרת למנהל מערכת או בעל מוצר, עם סיבה חובה ולוג."><td>L2</td><td>Pause לפעולה/מחבר ספציפי</td><td>SSO + MFA מומלץ</td><td>Admin / Product Owner</td><td>אישור יחיד + סיבה</td></tr>
+          <tr data-type="Shutdown Security Level" data-title="Level 3 · כיבוי מלא" data-detail="כיבוי מלא של הסוכן דורש סיסמה משני חלקים: חלק מפתח וחלק בעל מוצר/מנהל מערכת. הפעולה מתועדת כ־Critical Control Event."><td>L3</td><td>Kill Switch מלא</td><td>MFA + dual key</td><td>Developer + Owner/Admin</td><td><span class="pill red">שני מפתחות</span></td></tr>
+          <tr data-type="Shutdown Security Level" data-title="Level 4 · הפעלה מחדש" data-detail="הפעלה מחדש לאחר כיבוי דורשת שוב אישור כפול, בדיקת תיקון, בדיקת רגרסיה, תיעוד Registry וניטור מוגבר 48 שעות."><td>L4</td><td>Restore / Re-enable</td><td>MFA + dual key</td><td>Developer + Owner/Admin</td><td>בדיקות + שני מפתחות</td></tr>
+        </tbody>
+      </table>
+
+      <table style="margin-top:14px">
+        <thead>
+          <tr><th>שדה בלוג כיבוי</th><th>מה נשמר</th><th>למה זה נדרש</th><th>מי רואה</th></tr>
+        </thead>
+        <tbody>
+          <tr data-type="Shutdown Audit Log" data-title="Dual Key Audit" data-detail="אין לשמור את הסיסמאות עצמן בלוג. שומרים מזהה אימות, מי אישר, זמן, hash/verification id וסיבת פעולה."><td>dual_key_verification</td><td>אישור שני החלקים ללא שמירת הסוד עצמו</td><td>הוכחת אישור כפול בלי חשיפת סיסמה</td><td>מפתח + בעל מוצר + Audit</td></tr>
+          <tr data-type="Shutdown Audit Log" data-title="Business Impact" data-detail="כיבוי משנה תהליך עסקי, לכן הלוג מתעד אילו פעולות נעצרו, מי אחראי לתהליך ידני ומה SLA הטיפול."><td>business_impact</td><td>מחברים כבויים, פעולות חסומות, צוות אחראי</td><td>מניעת אובדן תפעולי בזמן השבתה</td><td>מנהל מערכת / תפעול</td></tr>
+          <tr data-type="Shutdown Audit Log" data-title="Restore Conditions" data-detail="החזרה לפעילות נשמרת עם בדיקות שבוצעו, גרסה, תוצאות רגרסיה ואישור כפול."><td>restore_conditions</td><td>בדיקות, גרסה, אישור, ניטור 48 שעות</td><td>חזרה בטוחה ולא שרירותית</td><td>מפתח + Owner</td></tr>
+        </tbody>
+      </table>
+
+      <div class="grid cols-3" style="margin-top:14px">
+        <article class="card accent-purple" data-type="Developer Responsibility" data-title="אחריות המפתח על המוצר" data-detail="אחריות המפתח צריכה להיות מוגדרת באיפיון: בניית המחברים, הגנות, לוגים, Registry, בדיקות, מסמכי הפעלה, תיקון באגים בתקופת אחריות, ותמיכה בשינויי מערכת לפי הסכם.">
+          <small>developer</small><h3>אחריות המפתח</h3><p>לא רק לבנות. גם להגדיר תמיכה, בדיקות, תיקון וגבולות אחריות.</p>
+        </article>
+        <article class="card accent-green" data-type="Developer Freshness Check" data-title="וודא עדכניות" data-detail="כפתור בצד המפתח שמריץ בדיקת עדכניות לכל רכיבי הסוכן: MCP tools, מחברי API, RPA selectors, גרסת מודל, System Prompt, Registry rules, תבניות הודעה, הרשאות וספקי צד שלישי. אם נדרש עדכון בטוח הוא מתבצע ברקע ונרשם ב־Registry; עדכון מסוכן דורש אישור מפתח/בעל מוצר.">
+          <small>freshness</small><h3>וודא עדכניות</h3><p>בדיקת רכיבים, מחברים וצד שלישי לשמירת סוכן רענן ומעודכן.</p>
+        </article>
+        <article class="card accent-blue" data-type="Support Scope" data-title="תמיכה וליווי" data-detail="יש להגדיר מראש SLA לתגובה, ערוץ תמיכה, שעות פעילות, תדירות בדיקות, מה נחשב באג, מה נחשב שינוי אפיון, ומה כלול בליווי לאחר עליה לאוויר.">
+          <small>support</small><h3>תמיכה וליווי</h3><p>SLA, ערוץ פניה, שעות תמיכה וגבולות טיפול.</p>
+        </article>
+        <article class="card accent-orange" data-type="Warranty Term" data-title="תוקף אחריות" data-detail="תוקף אחריות המפתח צריך להופיע באיפיון או בהסכם: לדוגמה 30/60/90 יום לאחר עליה לאוויר, כולל תיקון באגים במימוש המקורי אך לא שינויי מוצר, שינויי API חיצוניים או הרחבות scope.">
+          <small>warranty</small><h3>תוקף אחריות</h3><p>תקופת אחריות מוגדרת, עם הבחנה בין באג לשינוי דרישה.</p>
+        </article>
+      </div>
+
+      <table style="margin-top:14px">
+        <thead>
+          <tr><th>סוג אירוע</th><th>באחריות מי</th><th>בתוך אחריות?</th><th>פעולה נדרשת</th><th>הערה חוזית</th></tr>
+        </thead>
+        <tbody>
+          <tr data-type="Responsibility Matrix" data-title="באג במימוש המקורי" data-detail="תקלה בלוגיקה שהוגדרה באיפיון ונבנתה לא נכון נמצאת באחריות המפתח בתקופת האחריות."><td>באג במימוש המקורי</td><td>מפתח</td><td><span class="pill green">כן</span></td><td>תיקון, בדיקה, release note</td><td>כלול בתקופת אחריות</td></tr>
+          <tr data-type="Responsibility Matrix" data-title="שינוי דרישה עסקית" data-detail="בקשה חדשה או שינוי התנהגות שלא הוגדרו באיפיון הם שינוי scope ודורשים תמחור/אישור חדש."><td>שינוי דרישה עסקית</td><td>בעל מוצר</td><td><span class="pill orange">לא בהכרח</span></td><td>אפיון שינוי והצעת עבודה</td><td>Change request</td></tr>
+          <tr data-type="Responsibility Matrix" data-title="שינוי API חיצוני" data-detail="אם ספק חיצוני משנה API, הרשאות או מבנה נתונים, האחריות תלויה בהסכם התמיכה. רצוי להגדיר זאת מראש."><td>שינוי API חיצוני</td><td>ספק / מפתח לפי הסכם</td><td><span class="pill orange">תלוי</span></td><td>בדיקת השפעה ועדכון מחבר</td><td>דורש סעיף Third-party changes</td></tr>
+          <tr data-type="Responsibility Matrix" data-title="שימוש ללא הרשאה" data-detail="פעולה שבוצעה על ידי משתמש לא מורשה היא אירוע אבטחה/תפעול. הסוכן צריך לחסום ולתעד."><td>שימוש ללא הרשאה</td><td>מנהל מערכת</td><td><span class="pill red">אירוע אבטחה</span></td><td>חסימה, לוג, בדיקת הרשאות</td><td>נדרש IAM תקין</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="ops" class="section">
+      <div class="section-head">
+        <h2>תפעול, מדידה ועלות</h2>
+        <p>הסוכן נמדד לפי דיוק, חסימות נכונות, Drift, זמן טיפול, העברות לאישור ועלות טוקנים חודשית.</p>
+      </div>
+      <div class="grid cols-4">
+        <article class="card" data-type="KPI" data-title="FPR" data-detail="False Positive: מקרים שבהם הסוכן אישר פעולה שהייתה צריכה להיחסם."><small>kpi</small><h3>FPR</h3><p>אישור שגוי של פעולה מסוכנת.</p></article>
+        <article class="card" data-type="KPI" data-title="FNR" data-detail="False Negative: מקרים שבהם הסוכן חסם פעולה תקינה ללא צורך."><small>kpi</small><h3>FNR</h3><p>חסימת יתר שמאטה תפעול.</p></article>
+        <article class="card" data-type="KPI" data-title="Drift" data-detail="זיהוי ירידה בביצועים לאחר שינוי מקור מידע, פרומפט, מודל או תהליך."><small>kpi</small><h3>Drift</h3><p>ירידת איכות לאורך זמן.</p></article>
+        <article class="card" data-type="KPI" data-title="Cost per Conversation" data-detail="עלות תפעול מחושבת לפי טוקני קלט, פלט, קריאות כלים, תשתית ושער מטבע."><small>cost</small><h3>עלות לשיחה</h3><p>נמדדת במחשבון האינטראקטיבי.</p></article>
+      </div>
+
+      <table style="margin-top:14px">
+        <thead>
+          <tr><th>מדד</th><th>מה זה אומר</th><th>דוגמה בסוכן אירוח</th><th>נוסחה</th><th>תגובה תפעולית</th></tr>
+        </thead>
+        <tbody>
+          <tr data-type="KPI Detail" data-title="FPR · False Positive Rate" data-detail="FPR הוא שיעור המקרים שבהם הסוכן אישר פעולה שהייתה אמורה להיחסם. זה המדד המסוכן ביותר כאשר הפעולה יוצאת לאורח או משנה סטטוס תפעולי.">
+            <td><span class="pill red">FPR</span></td>
+            <td>הסוכן אישר פעולה מסוכנת או שגויה.</td>
+            <td>שלח WhatsApp לאורח למרות שחדר לא היה מוכן, תאריך שגוי או סתירה מול מקור אמת.</td>
+            <td>False Approvals / All Should-Block Cases</td>
+            <td>עצירת אוטונומיה, הורדת סף פעולה, דוח מיידי למפתח ובדיקת חוקי Output Audit.</td>
+          </tr>
+          <tr data-type="KPI Detail" data-title="FNR · False Negative Rate" data-detail="FNR הוא שיעור המקרים שבהם הסוכן חסם פעולה שהייתה תקינה. זה פוגע ביעילות ובאמון המפעיל, אבל לרוב פחות מסוכן מ־FPR.">
+            <td><span class="pill orange">FNR</span></td>
+            <td>הסוכן חסם פעולה תקינה ללא צורך.</td>
+            <td>חסם הודעה תקינה לאורח כי פירש סטטוס חדר כלא מוכן למרות שמקור האמת היה תקין.</td>
+            <td>False Blocks / All Should-Approve Cases</td>
+            <td>בדיקת חוקים מחמירים מדי, הרחבת דוגמאות אימון, כיול Threshold והוספת מקור אמת נוסף.</td>
+          </tr>
+          <tr data-type="KPI Detail" data-title="Accuracy Balance" data-detail="איזון בין FPR ל־FNR קובע את סגנון הסוכן: שמרן מדי יחסום הרבה, מתירני מדי ייצור טעויות מול אורחים. בסוכן אירוח עדיף FPR נמוך מאוד גם במחיר FNR מעט גבוה יותר.">
+            <td><span class="pill blue">Balance</span></td>
+            <td>איזון בין בטיחות ליעילות.</td>
+            <td>בפעולות מול אורח מעדיפים חסימת יתר על שליחה שגויה.</td>
+            <td>Review FPR + FNR + Human Overrides</td>
+            <td>קביעת מדיניות: פעולות חיצוניות שמרניות, פעולות פנימיות גמישות יותר.</td>
+          </tr>
+          <tr data-type="KPI Detail" data-title="FPR/FNR Drift Trigger" data-detail="עלייה במדדי FPR או FNR מפעילה חזרה לדיווח מוגבר, שליחת לוגים ליוצר ובמקרים חוזרים פתיחת קריאה לסוכן טכני.">
+            <td><span class="pill red">Trigger</span></td>
+            <td>עלייה חריגה ב־FPR/FNR.</td>
+            <td>יותר חסימות שווא או אישורים שגויים ביומיים האחרונים.</td>
+            <td>Current 48h rate > Baseline + Threshold</td>
+            <td>Fallback, דוח מיידי, Technical Agent Ticket אם יש יותר מ־Fallback אחד ביומיים.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="grid cols-3" style="margin-top:14px">
+        <article class="card accent-red" data-type="FPR Guardrail" data-title="יעד FPR" data-detail="בפעולות חיצוניות מול אורח יעד FPR צריך להיות קרוב לאפס. אישור שגוי עדיף שייחסם ויעבור לאדם מאשר שיישלח לאורח.">
+          <small>fpr target</small><h3>FPR נמוך כמעט לאפס</h3><p>בשליחה לאורח, טעות אישור מסוכנת יותר מחסימת יתר.</p>
+        </article>
+        <article class="card accent-orange" data-type="FNR Guardrail" data-title="יעד FNR" data-detail="FNR גבוה מעיד שהסוכן שמרן מדי. זה מייצר עומס על מפעילים ופוגע באמון, ולכן צריך לכייל חוקים, מקורות אמת וספי ביטחון.">
+          <small>fnr target</small><h3>FNR נמוך אבל נסבל</h3><p>חסימת יתר מותרת זמנית בשלב מוקדם, אבל נמדדת ומשתפרת.</p>
+        </article>
+        <article class="card accent-purple" data-type="KPI Review" data-title="בדיקת FPR/FNR שבועית" data-detail="בדוח השבועי ליוצר מוצגים FPR, FNR, דוגמאות החלטה, החלטות שהופעל עליהן override, והמלצה לשינוי סף או חוק.">
+          <small>weekly review</small><h3>סקירה שבועית</h3><p>כל מדד מקושר לדוגמאות אמיתיות ולשרשרת קלט/פלט.</p>
+        </article>
+      </div>
+    </section>
+  </div>
+
+  <aside class="inspector" id="inspector" aria-live="polite">
+    <div class="inspector-head">
+      <div><small id="inspectorType">inspect</small><b id="inspectorTitle">בחר פריט במפרט</b></div>
+      <button type="button" id="closeInspector">×</button>
+    </div>
+    <p id="inspectorBody">לחיצה על כרטיס, טבלה או שלב תפתח כאן פירוט תפעולי מדויק.</p>
+  </aside>
+
+  <div class="modal" id="costModal" role="dialog" aria-modal="true" aria-labelledby="costTitle">
+    <div class="cost-panel">
+      <div class="cost-head">
+        <div><h3 id="costTitle">מחשבון טוקנים ועלות</h3><p>המחירים פתוחים לעריכה כדי להתאים לכל מודל או ספק.</p></div>
+        <button type="button" id="closeCost">×</button>
+      </div>
+      <div class="cost-grid">
+        <div class="card" style="cursor:auto">
+          <div class="preset-strip" aria-label="Cost presets">
+            <button type="button" data-cost-preset="test">TEST<span>MVP / QA</span></button>
+            <button type="button" data-cost-preset="production" class="active">PRODUCTION<span>Live ops</span></button>
+            <button type="button" data-cost-preset="scale">SCALE<span>Multi-site</span></button>
+          </div>
+          <div class="form-grid">
+            <label>שיחות ביום<input id="cConversations" type="number" value="120"></label>
+            <label>ימי פעילות<input id="cDays" type="number" value="30"></label>
+            <label>טוקני קלט לשיחה<input id="cInput" type="number" value="1800"></label>
+            <label>טוקני פלט לשיחה<input id="cOutput" type="number" value="650"></label>
+            <label>קריאות כלים לשיחה<input id="cTools" type="number" step="0.1" value="1.4"></label>
+            <label>טוקנים לכל כלי<input id="cToolTokens" type="number" value="450"></label>
+            <label>מחיר קלט $ / 1M<input id="cInputPrice" type="number" step="0.01" value="2.50"></label>
+            <label>מחיר פלט $ / 1M<input id="cOutputPrice" type="number" step="0.01" value="10.00"></label>
+            <label>תשתית חודשית $<input id="cFixed" type="number" value="35"></label>
+            <label>שער דולר<input id="cFx" type="number" step="0.01" value="3.70"></label>
+          </div>
+        </div>
+        <div>
+          <div class="result-grid">
+            <div class="result"><span>tokens / conversation</span><b id="rPerConv">-</b></div>
+            <div class="result"><span>monthly tokens</span><b id="rMonthlyTokens">-</b></div>
+            <div class="result"><span>model cost</span><b id="rModel">-</b></div>
+            <div class="result primary"><span>total monthly</span><b id="rTotal">-</b></div>
+            <div class="result"><span>cost / conversation</span><b id="rConvCost">-</b></div>
+            <div class="result"><span>total ILS</span><b id="rIls">-</b></div>
+          </div>
+          <div class="formula" id="formula"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const inspector = document.getElementById("inspector");
+    const inspectorType = document.getElementById("inspectorType");
+    const inspectorTitle = document.getElementById("inspectorTitle");
+    const inspectorBody = document.getElementById("inspectorBody");
+    const costModal = document.getElementById("costModal");
+    const topbar = document.querySelector(".topbar");
+    const toast = document.getElementById("toast");
+    let toastTimer;
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 1900);
+    }
+
+    function updateScrollUi() {
+      const doc = document.documentElement;
+      const max = Math.max(1, doc.scrollHeight - doc.clientHeight);
+      const progress = Math.min(100, Math.max(0, (window.scrollY / max) * 100));
+      doc.style.setProperty("--scroll-progress", progress + "%");
+      topbar.classList.toggle("compact", window.scrollY > 26);
+    }
+
+    updateScrollUi();
+    window.addEventListener("scroll", updateScrollUi, { passive: true });
+
+    function inspect(el) {
+      document.querySelectorAll(".selected").forEach((node) => node.classList.remove("selected"));
+      el.classList.add("selected");
+      inspectorType.textContent = el.dataset.type || "spec item";
+      inspectorTitle.textContent = el.dataset.title || el.querySelector("h3, b, td")?.textContent || "פריט מפרט";
+      inspectorBody.textContent = el.dataset.detail || el.textContent.trim().replace(/\s+/g, " ");
+      inspector.classList.add("open");
+    }
+
+    document.querySelectorAll(".card, .flow-step, tbody tr").forEach((el) => {
+      el.addEventListener("click", () => inspect(el));
+    });
+
+    document.getElementById("closeInspector").addEventListener("click", () => inspector.classList.remove("open"));
+
+    document.querySelectorAll("[data-jump]").forEach((button) => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll("[data-jump]").forEach((b) => b.classList.remove("active"));
+        button.classList.add("active");
+        document.getElementById(button.dataset.jump).scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    });
+
+    const sections = Array.from(document.querySelectorAll("section[id]"));
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (!visible) return;
+      document.querySelectorAll("[data-jump]").forEach((button) => {
+        button.classList.toggle("active", button.dataset.jump === visible.target.id);
+      });
+    }, { threshold: [0.3, 0.55] });
+    sections.forEach((section) => observer.observe(section));
+
+    document.getElementById("runFlow").addEventListener("click", async () => {
+      showToast("מריץ את תרחיש הפעולה");
+      document.getElementById("flow").scrollIntoView({ behavior: "smooth", block: "start" });
+      const steps = Array.from(document.querySelectorAll(".flow-step"));
+      for (const step of steps) {
+        inspect(step);
+        await new Promise((resolve) => setTimeout(resolve, 620));
+      }
+      showToast("ה-Flow הושלם");
+    });
+
+    document.getElementById("verifyFreshness").addEventListener("click", () => {
+      inspectorType.textContent = "developer freshness check";
+      inspectorTitle.textContent = "וודא עדכניות · בדיקת רכיבים";
+      inspectorBody.textContent =
+        "בדיקת עדכניות הופעלה ברקע: MCP tools, מחברי API, RPA selectors, גרסת מודל, System Prompt, Registry rules, תבניות הודעה, הרשאות וספקי צד שלישי. " +
+        "עדכונים בטוחים כמו metadata, schema mapping, health checks ותיעוד גרסאות נרשמים ומבוצעים ברקע. " +
+        "עדכונים מסוכנים כמו שינוי הרשאות, שינוי System Prompt, שינוי מחבר כתיבה או שינוי ספק חיצוני דורשים אישור מפתח ובעל מוצר. " +
+        "כל תוצאת בדיקה נשמרת ב־Registry עם גרסה, זמן, רכיב, סטטוס, פעולה שבוצעה או סיבת המתנה לאישור.";
+      inspector.classList.add("open");
+      showToast("בדיקת עדכניות הופעלה");
+    });
+
+    document.getElementById("openCost").addEventListener("click", () => {
+      costModal.classList.add("open");
+      calc();
+      showToast("מחשבון עלות נפתח");
+    });
+    document.getElementById("closeCost").addEventListener("click", () => costModal.classList.remove("open"));
+    costModal.addEventListener("click", (event) => {
+      if (event.target === costModal) costModal.classList.remove("open");
+    });
+
+    const ids = ["cConversations","cDays","cInput","cOutput","cTools","cToolTokens","cInputPrice","cOutputPrice","cFixed","cFx"];
+    ids.forEach((id) => document.getElementById(id).addEventListener("input", calc));
+
+    const costPresets = {
+      test: {
+        cConversations: 25,
+        cDays: 20,
+        cInput: 900,
+        cOutput: 320,
+        cTools: 0.6,
+        cToolTokens: 220,
+        cInputPrice: 2.50,
+        cOutputPrice: 10.00,
+        cFixed: 15,
+        cFx: 3.70
+      },
+      production: {
+        cConversations: 120,
+        cDays: 30,
+        cInput: 1800,
+        cOutput: 650,
+        cTools: 1.4,
+        cToolTokens: 450,
+        cInputPrice: 2.50,
+        cOutputPrice: 10.00,
+        cFixed: 35,
+        cFx: 3.70
+      },
+      scale: {
+        cConversations: 700,
+        cDays: 30,
+        cInput: 2600,
+        cOutput: 950,
+        cTools: 2.4,
+        cToolTokens: 720,
+        cInputPrice: 2.50,
+        cOutputPrice: 10.00,
+        cFixed: 140,
+        cFx: 3.70
+      }
+    };
+
+    document.querySelectorAll("[data-cost-preset]").forEach((button) => {
+      button.addEventListener("click", (event) => {
+        event.stopPropagation();
+        document.querySelectorAll("[data-cost-preset]").forEach((presetButton) => presetButton.classList.remove("active"));
+        button.classList.add("active");
+        Object.entries(costPresets[button.dataset.costPreset]).forEach(([id, value]) => {
+          document.getElementById(id).value = value;
+        });
+        calc();
+        showToast("Preset הוחל במחשבון");
+      });
+    });
+
+    function n(id) { return Number(document.getElementById(id).value) || 0; }
+    function fmt(v) { return Math.round(v).toLocaleString("he-IL"); }
+    function usd(v) { return "$" + v.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+    function ils(v) { return "₪" + v.toLocaleString("he-IL", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+
+    function calc() {
+      const conversations = n("cConversations");
+      const days = n("cDays");
+      const input = n("cInput");
+      const output = n("cOutput");
+      const tools = n("cTools");
+      const toolTokens = n("cToolTokens");
+      const inputPrice = n("cInputPrice");
+      const outputPrice = n("cOutputPrice");
+      const fixed = n("cFixed");
+      const fx = n("cFx");
+      const inputPerConversation = input + tools * toolTokens;
+      const perConversation = inputPerConversation + output;
+      const monthlyInput = conversations * days * inputPerConversation;
+      const monthlyOutput = conversations * days * output;
+      const monthlyTokens = monthlyInput + monthlyOutput;
+      const modelCost = (monthlyInput / 1000000) * inputPrice + (monthlyOutput / 1000000) * outputPrice;
+      const total = modelCost + fixed;
+      const monthlyConversations = conversations * days;
+      document.getElementById("rPerConv").textContent = fmt(perConversation);
+      document.getElementById("rMonthlyTokens").textContent = fmt(monthlyTokens);
+      document.getElementById("rModel").textContent = usd(modelCost);
+      document.getElementById("rTotal").textContent = usd(total);
+      document.getElementById("rConvCost").textContent = usd(monthlyConversations ? total / monthlyConversations : 0);
+      document.getElementById("rIls").textContent = ils(total * fx);
+      document.getElementById("formula").textContent =
+        `input/conversation = ${input} + ${tools} * ${toolTokens} = ${Math.round(inputPerConversation)}\n` +
+        `monthly_input = ${fmt(monthlyInput)}\nmonthly_output = ${fmt(monthlyOutput)}\n` +
+        `total = model_cost + fixed_infra = ${usd(total)}`;
+    }
+
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        inspector.classList.remove("open");
+        costModal.classList.remove("open");
+      }
+    });
+
+    calc();
+  </script>
+</body>
+</html>

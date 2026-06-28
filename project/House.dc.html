@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Heebo', system-ui, sans-serif; -webkit-font-smoothing: antialiased; color: #2E2E48; }
+  @keyframes floatA { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(30px,-34px) scale(1.06); } }
+  @keyframes floatB { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-32px,26px) scale(1.05); } }
+  @keyframes driftC { 0%,100% { transform: translate(0,0); } 50% { transform: translate(20px,30px); } }
+  @keyframes twinkle { 0%,100% { opacity:.25; transform:scale(1); } 50% { opacity:.9; transform:scale(1.5); } }
+  @keyframes risein { from { opacity:0; transform:translateY(22px); } to { opacity:1; transform:translateY(0); } }
+  .pz { transition: transform .72s cubic-bezier(.5,0,.2,1), opacity .6s ease, filter .6s ease; }
+  @media (prefers-reduced-motion: reduce) { .pz { transition: opacity .3s ease; } }
+</style>
+</helmet>
+<div dir="rtl" id="stage" style="position:relative; min-height:100vh; overflow:hidden; background:linear-gradient(165deg,#F4F3FC 0%,#EFF0FA 45%,#ECF8F4 100%);">
+
+  <div style="position:absolute; inset:0; pointer-events:none; z-index:0;">
+    <div style="position:absolute; width:640px; height:640px; right:-180px; top:-220px; border-radius:50%; background:radial-gradient(circle at 40% 40%,rgba(214,199,255,0.55),transparent 70%); filter:blur(46px); animation:floatA 24s ease-in-out infinite;"></div>
+    <div style="position:absolute; width:560px; height:560px; left:-170px; bottom:-200px; border-radius:50%; background:radial-gradient(circle at 50% 50%,rgba(182,239,212,0.5),transparent 70%); filter:blur(48px); animation:floatB 28s ease-in-out infinite;"></div>
+    <div style="position:absolute; width:420px; height:420px; left:30%; top:14%; border-radius:50%; background:radial-gradient(circle,rgba(255,217,194,0.4),transparent 70%); filter:blur(50px); animation:driftC 32s ease-in-out infinite;"></div>
+    <sc-for list="{{ stars }}" as="s" hint-placeholder-count="14">
+      <div style="position:absolute; left:{{ s.x }}; top:{{ s.y }}; width:{{ s.size }}; height:{{ s.size }}; border-radius:50%; background:#fff; box-shadow:0 0 8px rgba(159,180,245,0.8); animation:twinkle {{ s.dur }} ease-in-out {{ s.delay }} infinite;"></div>
+    </sc-for>
+  </div>
+
+  <div id="scene" class="pz" style="position:relative; z-index:1; min-height:100vh; transform:translate(var(--px,0px),var(--py,0px)); transform-origin:center center; opacity:1; will-change:transform;">
+
+    <div style="position:relative; max-width:1180px; margin:0 auto; padding:38px 40px 60px;">
+
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+        <div style="display:flex; align-items:center; gap:13px;">
+          <div style="width:46px; height:46px; border-radius:15px; background:linear-gradient(135deg,#9FB4F5,#C3A8EE); display:flex; align-items:center; justify-content:center; box-shadow:0 10px 24px rgba(159,180,245,0.5);"><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v18M3 12h18"/></svg></div>
+          <div><div style="font-size:21px; font-weight:800; color:#2E2E48; line-height:1;">בִּינָה</div><div style="font-size:11px; font-weight:600; color:#A6AABE; letter-spacing:.18em; margin-top:3px;">AI ACADEMY</div></div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="display:inline-flex; align-items:center; gap:8px; height:42px; padding:0 15px; border-radius:14px; background:rgba(255,255,255,0.6); border:1px solid rgba(255,255,255,0.85); backdrop-filter:blur(20px);"><span style="width:8px; height:8px; border-radius:50%; background:#2E9E72;"></span><span style="font-size:12.5px; font-weight:700; color:#2E7E5E;">{{ roleLabel }}</span></div>
+          <div style="width:42px; height:42px; border-radius:13px; background:linear-gradient(135deg,#FFC8A8,#FFAFC8); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:16px;">ד</div>
+        </div>
+      </div>
+
+      <div style="text-align:center; margin:36px 0 30px; animation:risein .6s ease;">
+        <div style="font-size:42px; font-weight:900; color:#2E2E48; letter-spacing:-.02em; line-height:1.1;">הבית של בִּינָה</div>
+        <div style="font-size:16px; color:#7A7A92; margin-top:10px; max-width:520px; margin-right:auto; margin-left:auto; line-height:1.5;">כל חדר הוא עולם. בחר לאן להיכנס — והממשק ייפתח סביבך.</div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(12,1fr); grid-auto-rows:148px; gap:16px;">
+        <sc-for list="{{ rooms }}" as="r" hint-placeholder-count="8">
+          <div onClick="{{ r.enter }}" style="grid-column:span {{ r.col }}; grid-row:span {{ r.row }}; position:relative; overflow:hidden; border-radius:24px; background:{{ r.bg }}; border:1px solid rgba(255,255,255,0.7); box-shadow:0 12px 30px rgba(80,70,140,0.08); cursor:pointer; padding:20px; display:flex; flex-direction:column; justify-content:space-between; transition:transform .32s cubic-bezier(.34,1.35,.5,1), box-shadow .32s ease;" style-hover="transform:translateY(-7px) scale(1.015); box-shadow:0 26px 52px rgba(80,70,140,0.2);">
+            <div style="position:absolute; width:160px; height:160px; left:-30px; bottom:-50px; border-radius:50%; background:{{ r.glow }}; filter:blur(26px); pointer-events:none;"></div>
+            <div style="position:relative; display:flex; align-items:flex-start; justify-content:space-between;">
+              <div style="width:46px; height:46px; border-radius:14px; background:{{ r.iconGrad }}; display:flex; align-items:center; justify-content:center; box-shadow:0 8px 18px {{ r.iconShadow }};"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ r.icon }}"/></svg></div>
+              <sc-if value="{{ r.badge }}" hint-placeholder-val=""><span style="min-width:22px; height:22px; padding:0 7px; border-radius:11px; background:#FF6B8A; color:#fff; font-size:11.5px; font-weight:800; display:flex; align-items:center; justify-content:center;">{{ r.badge }}</span></sc-if>
+            </div>
+            <div style="position:relative;">
+              <div style="font-size:{{ r.titleSize }}; font-weight:800; color:#2E2E48; line-height:1.15;">{{ r.title }}</div>
+              <div style="font-size:12.5px; color:#6C6C88; margin-top:4px; line-height:1.4;">{{ r.sub }}</div>
+            </div>
+            <div style="position:absolute; top:18px; left:18px; width:30px; height:30px; border-radius:10px; background:rgba(255,255,255,0.55); display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity .25s ease;" class="enterarrow"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#5E5AA8" stroke-width="2.4"><path d="M9 6l6 6-6 6"/></svg></div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="text-align:center; margin-top:30px; font-size:12.5px; color:#A6AABE;">לחץ על חדר כדי להיכנס · {{ roomCount }} מרחבים פעילים</div>
+    </div>
+  </div>
+
+  <sc-if value="{{ zooming }}" hint-placeholder-val="">
+    <div style="position:fixed; inset:0; z-index:5; display:flex; align-items:center; justify-content:center; pointer-events:none;">
+      <div style="display:flex; flex-direction:column; align-items:center; gap:16px; animation:risein .4s ease;">
+        <div style="width:70px; height:70px; border-radius:22px; background:{{ enterGrad }}; display:flex; align-items:center; justify-content:center; box-shadow:0 16px 40px rgba(120,110,190,0.4);"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ enterIcon }}"/></svg></div>
+        <div style="font-size:17px; font-weight:800; color:#2E2E48;">נכנס ל{{ enterTitle }}…</div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+class Component extends DCLogic {
+  state = { zoom: null, mx: 0, my: 0 };
+
+  componentDidMount() {
+    this._scene = document.getElementById('scene');
+    this._mv = (e) => {
+      if (this.state.zoom || !this._scene) return;
+      const px = ((e.clientX / window.innerWidth) - 0.5) * -16;
+      const py = ((e.clientY / window.innerHeight) - 0.5) * -12;
+      this._scene.style.setProperty('--px', px.toFixed(1) + 'px');
+      this._scene.style.setProperty('--py', py.toFixed(1) + 'px');
+    };
+    window.addEventListener('mousemove', this._mv, { passive: true });
+  }
+  componentWillUnmount() { window.removeEventListener('mousemove', this._mv); clearTimeout(this._t); }
+
+  renderVals() {
+    const roomsRaw = [
+      { key: 'Login', title: 'כניסה מאובטחת', sub: 'התחברות · 2FA · SSO', icon: 'M4 4h16v16H4zM4 9h16', col: 4, row: 1, titleSize: '17px',
+        iconGrad: 'linear-gradient(135deg,#9FB4F5,#C3A8EE)', iconShadow: 'rgba(159,180,245,0.4)', bg: 'rgba(255,255,255,0.66)', glow: 'radial-gradient(circle,rgba(159,180,245,0.4),transparent 70%)', href: 'Login.dc.html' },
+      { key: 'Dashboard', title: 'הקורסים שלי', sub: 'התקדמות · שיעורים · מבחנים · יומן', icon: 'M3 11l9-8 9 8M5 10v10h14V10M9 20v-6h6v6', col: 5, row: 2, titleSize: '22px',
+        iconGrad: 'linear-gradient(135deg,#7FD3C0,#9AD9F0)', iconShadow: 'rgba(127,211,192,0.4)', bg: 'linear-gradient(150deg,#DCE6FF,#EAE0FB)', glow: 'radial-gradient(circle,rgba(127,211,192,0.45),transparent 70%)', href: 'Dashboard.dc.html' },
+      { key: 'Instructor', title: 'קונסולת מרצה', sub: 'תלמידים · שבי · מבחנים', icon: 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM2 20a7 7 0 0 1 14 0M17 11a3 3 0 0 0 0-6M22 20a7 7 0 0 0-5-6.7', col: 3, row: 1, titleSize: '16px', badge: '3',
+        iconGrad: 'linear-gradient(135deg,#C3A8EE,#E0A8E8)', iconShadow: 'rgba(195,168,238,0.4)', bg: 'rgba(255,255,255,0.66)', glow: 'radial-gradient(circle,rgba(195,168,238,0.4),transparent 70%)', href: 'Instructor.dc.html' },
+      { key: 'Record', title: 'שידור חי', sub: 'בקרת שידור · גרפיקה', icon: 'M2 4h20v16H2zM11 13l4 2.5-4 2.5z', col: 3, row: 1, titleSize: '16px',
+        iconGrad: 'linear-gradient(135deg,#FFB37A,#FF7A9C)', iconShadow: 'rgba(255,140,150,0.4)', bg: 'rgba(255,255,255,0.66)', glow: 'radial-gradient(circle,rgba(255,180,150,0.4),transparent 70%)', href: 'Record.dc.html' },
+      { key: 'Studio', title: 'סטודיו AI', sub: 'תסריט → וידאו', icon: 'M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.5-4.8 2.5.9-5.4L3.2 7.7l5.4-.8z', col: 4, row: 1, titleSize: '17px',
+        iconGrad: 'linear-gradient(135deg,#9FB4F5,#7FD3C0)', iconShadow: 'rgba(140,200,200,0.4)', bg: 'rgba(255,255,255,0.66)', glow: 'radial-gradient(circle,rgba(127,211,192,0.4),transparent 70%)', href: 'Studio.dc.html' },
+      { key: 'Media', title: 'מדיה ושיווק', sub: 'סוכן תוכן · 5 גרסאות', icon: 'M3 3h18v18H3zM3 9h18', col: 3, row: 1, titleSize: '16px',
+        iconGrad: 'linear-gradient(135deg,#F5B8C8,#E0A8E8)', iconShadow: 'rgba(225,168,232,0.4)', bg: 'rgba(255,255,255,0.66)', glow: 'radial-gradient(circle,rgba(225,168,232,0.4),transparent 70%)', href: 'Media.dc.html' },
+      { key: 'Admin', title: 'ניהול המכללה', sub: 'מדריכים · כספים · חוזים', icon: 'M3 21h18M5 21V7l8-4 8 4v14M9 9v.01M9 13v.01M9 17v.01', col: 5, row: 1, titleSize: '17px',
+        iconGrad: 'linear-gradient(135deg,#9FB4F5,#C3A8EE)', iconShadow: 'rgba(159,180,245,0.4)', bg: 'linear-gradient(150deg,#E6ECFF,#F0E6FB)', glow: 'radial-gradient(circle,rgba(159,180,245,0.4),transparent 70%)', href: 'Admin.dc.html' },
+      { key: 'SystemHealth', title: 'בריאות המערכת', sub: 'ניטור · תיקון עצמי', icon: 'M22 12h-4l-3 9L9 3l-3 9H2', col: 4, row: 1, titleSize: '16px',
+        iconGrad: 'linear-gradient(135deg,#7FD3C0,#9AD9F0)', iconShadow: 'rgba(127,211,192,0.4)', bg: 'rgba(255,255,255,0.66)', glow: 'radial-gradient(circle,rgba(127,211,192,0.4),transparent 70%)', href: 'SystemHealth.dc.html' },
+    ];
+
+    const z = this.state.zoom;
+    const rooms = roomsRaw.map((r, i) => ({
+      ...r,
+      enter: (e) => {
+        if (this.state.zoom) return;
+        const scene = this._scene || document.getElementById('scene');
+        if (scene && e && e.currentTarget) {
+          const rect = e.currentTarget.getBoundingClientRect();
+          const cx = rect.left + rect.width / 2;
+          const cy = rect.top + rect.height / 2;
+          // dive straight into the clicked room
+          scene.style.transformOrigin = cx + 'px ' + cy + 'px';
+          scene.style.transform = 'scale(2.8)';
+          scene.style.opacity = '0.12';
+          scene.style.filter = 'blur(4px)';
+        }
+        this.setState({ zoom: r.key });
+        clearTimeout(this._t);
+        this._t = setTimeout(() => { window.location.href = r.href; }, 720);
+      },
+    }));
+
+    const zoomRoom = roomsRaw.find(r => r.key === z);
+
+    const stars = Array.from({ length: 14 }, (_, i) => ({
+      x: (7 + (i * 53) % 92) + '%', y: (8 + (i * 37) % 84) + '%',
+      size: (3 + (i % 3)) + 'px', dur: (3 + (i % 4)) + 's', delay: (i % 5 * 0.6) + 's',
+    }));
+
+    return {
+      rooms, stars, roomCount: roomsRaw.length, roleLabel: 'מחובר · תלמיד',
+      zooming: !!z,
+      enterTitle: zoomRoom ? zoomRoom.title : '', enterIcon: zoomRoom ? zoomRoom.icon : '',
+      enterGrad: zoomRoom ? zoomRoom.iconGrad : 'linear-gradient(135deg,#9FB4F5,#C3A8EE)',
+    };
+  }
+}
+</script>
+</body>
+</html>

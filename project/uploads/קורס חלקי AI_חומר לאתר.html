@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>קורס: בניית והפעלת סוכני AI בארגון</title>
+<style>
+  :root{
+    --bg:#0b1020; --panel:#121a32; --panel2:#1a2546; --line:#27325a;
+    --txt:#e8ecf8; --muted:#9aa6c8; --brand:#6c8cff; --brand2:#22d3ee;
+    --ok:#34d399; --bad:#f87171; --warn:#fbbf24;
+    --shadow:0 10px 40px rgba(0,0,0,.45); --r:18px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:"Segoe UI",system-ui,Arial,sans-serif;background:
+    radial-gradient(1200px 600px at 90% -10%,rgba(108,140,255,.18),transparent),
+    radial-gradient(1000px 500px at -10% 10%,rgba(34,211,238,.12),transparent),var(--bg);
+    color:var(--txt);min-height:100vh}
+  a{color:var(--brand2)}
+  .app{display:grid;grid-template-columns:300px 1fr;min-height:100vh}
+  /* Sidebar */
+  aside{background:linear-gradient(180deg,var(--panel),#0e1530);border-left:1px solid var(--line);
+    padding:22px 16px;position:sticky;top:0;height:100vh;overflow:auto}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;margin-bottom:4px}
+  .brand .logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--brand),var(--brand2));
+    display:grid;place-items:center;font-size:18px}
+  .sub{color:var(--muted);font-size:12px;margin-bottom:18px}
+  .prog{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:18px}
+  .bar{height:8px;border-radius:99px;background:#0a1126;overflow:hidden;margin-top:8px}
+  .bar > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--brand2));transition:.5s}
+  nav .navitem{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:12px;cursor:pointer;
+    color:var(--muted);font-size:14px;border:1px solid transparent;margin-bottom:4px;transition:.15s}
+  nav .navitem:hover{background:var(--panel2);color:var(--txt)}
+  nav .navitem.active{background:linear-gradient(135deg,rgba(108,140,255,.22),rgba(34,211,238,.12));
+    color:#fff;border-color:var(--line)}
+  nav .navitem .ix{width:26px;height:26px;border-radius:8px;background:#0a1126;display:grid;place-items:center;
+    font-size:12px;font-weight:700;flex:none}
+  nav .navitem.done .ix{background:var(--ok);color:#04210f}
+  nav .navitem.exam{margin-top:10px;border:1px dashed var(--line)}
+  /* Main */
+  main{padding:40px 48px;max-width:980px}
+  .crumb{color:var(--muted);font-size:13px;margin-bottom:6px}
+  h1{font-size:30px;margin:0 0 8px;line-height:1.2}
+  h2{font-size:22px;margin:30px 0 12px}
+  h3{font-size:17px;margin:20px 0 8px;color:#cfd8f7}
+  p{line-height:1.85;color:#dde3f5}
+  .lead{font-size:17px;color:var(--muted)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:22px 24px;
+    margin:16px 0;box-shadow:var(--shadow)}
+  .grid{display:grid;gap:14px}
+  .g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr 1fr}
+  @media(max-width:820px){.g2,.g3{grid-template-columns:1fr}}
+  .tile{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .tile .t{font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+  .pill{display:inline-block;font-size:12px;color:#04210f;background:var(--brand2);padding:3px 10px;border-radius:99px;font-weight:700}
+  .tag{display:inline-block;font-size:12px;color:var(--muted);border:1px solid var(--line);padding:3px 10px;border-radius:99px;margin:2px}
+  ul.clean{list-style:none;padding:0;margin:10px 0}
+  ul.clean li{padding:8px 0;border-bottom:1px dashed var(--line);line-height:1.6}
+  ul.clean li:last-child{border:0}
+  .ok-li::before{content:"✅ ";}
+  .no-li::before{content:"⛔ ";}
+  .vs{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:820px){.vs{grid-template-columns:1fr}}
+  .vs .bad-box{border-color:#5b2330;background:rgba(248,113,113,.08)}
+  .vs .ok-box{border-color:#1d4d3a;background:rgba(52,211,153,.08)}
+  pre{background:#070c1c;border:1px solid var(--line);border-radius:12px;padding:16px;overflow:auto;
+    color:#cfe3ff;font-size:13px;line-height:1.6;direction:ltr;text-align:left}
+  .note{border-right:4px solid var(--brand);background:rgba(108,140,255,.08);padding:12px 16px;border-radius:10px;margin:14px 0}
+  .warnbox{border-right:4px solid var(--warn);background:rgba(251,191,36,.08);padding:12px 16px;border-radius:10px;margin:14px 0}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}
+  th,td{border:1px solid var(--line);padding:10px 12px;text-align:right}
+  th{background:var(--panel2)}
+  /* Quiz */
+  .quiz{margin-top:8px}
+  .q{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;margin:14px 0}
+  .q .qt{font-weight:700;margin-bottom:12px}
+  .opt{display:block;padding:12px 14px;border:1px solid var(--line);border-radius:11px;margin:8px 0;cursor:pointer;transition:.12s;background:var(--panel2)}
+  .opt:hover{border-color:var(--brand)}
+  .opt.sel{border-color:var(--brand);background:rgba(108,140,255,.16)}
+  .opt.correct{border-color:var(--ok);background:rgba(52,211,153,.16)}
+  .opt.wrong{border-color:var(--bad);background:rgba(248,113,113,.16)}
+  .explain{margin-top:10px;font-size:13px;color:var(--muted);display:none}
+  .explain.show{display:block}
+  .btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand2));
+    color:#06122e;font-weight:800;border:0;border-radius:12px;padding:13px 22px;cursor:pointer;font-size:15px}
+  .btn:hover{filter:brightness(1.08)}
+  .btn.ghost{background:transparent;color:var(--txt);border:1px solid var(--line)}
+  .navrow{display:flex;justify-content:space-between;gap:12px;margin-top:30px}
+  .score{font-size:42px;font-weight:800}
+  .center{text-align:center}
+  .hero{background:linear-gradient(135deg,rgba(108,140,255,.16),rgba(34,211,238,.08));
+    border:1px solid var(--line);border-radius:24px;padding:34px;margin-bottom:18px}
+  .stat{display:flex;gap:18px;flex-wrap:wrap;margin-top:16px}
+  .stat .s{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 18px;text-align:center;flex:1;min-width:120px}
+  .stat .s b{display:block;font-size:24px;color:var(--brand2)}
+  .badge-done{color:var(--ok);font-weight:700}
+  .hidden{display:none}
+  .reset{color:var(--muted);font-size:12px;cursor:pointer;text-decoration:underline;margin-top:14px;display:inline-block}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div class="brand"><span class="logo">🧠</span> קורס סוכני AI</div>
+    <div class="sub">בנייה, הפעלה וניהול סוכנים בארגון</div>
+    <div class="prog">
+      <div style="display:flex;justify-content:space-between;font-size:13px">
+        <span>התקדמות</span><span id="progTxt">0%</span>
+      </div>
+      <div class="bar"><i id="progBar"></i></div>
+    </div>
+    <nav id="nav"></nav>
+    <span class="reset" onclick="resetProgress()">איפוס התקדמות</span>
+  </aside>
+  <main id="main"></main>
+</div>
+
+<script>
+/* ============ תוכן הקורס ============ */
+const COURSE = [
+  {
+    id:"intro", icon:"🚀", title:"מבוא: AIOps — שירות חי",
+    html:`
+      <p class="lead">להעלות AI לאוויר זה רק קו הזינוק. AIOps הוא כל מה שעושים <b>אחרי</b> ההשקה כדי שה־AI יישאר מדויק, בטוח ושימושי לאורך זמן.</p>
+      <div class="card">
+        <h3>הסיפור במשפט אחד</h3>
+        <p>מערכת AI אינה פרויקט שמסתיים ביום ההשקה — היא <b>שירות חי</b> שצריך למדוד, לתחזק ולשפר.</p>
+        <div class="grid g3">
+          <div class="tile"><div class="t">👀 רואים</div>עוקבים אחרי המערכת וההשפעה העסקית שלה.</div>
+          <div class="tile"><div class="t">🔎 מזהים</div>מגלים הידרדרות לפני שהלקוח מתלונן.</div>
+          <div class="tile"><div class="t">🛠️ מתקנים</div>מעדכנים או חוזרים אחורה בצורה מבוקרת.</div>
+        </div>
+      </div>
+      <h2>למה זה חשוב?</h2>
+      <div class="vs">
+        <div class="tile bad-box"><div class="t">⛔ בלי AIOps</div>
+          <ul class="clean">
+            <li class="no-li">מפרסמים מודל ושוכחים ממנו</li>
+            <li class="no-li">מגלים בעיה רק כשלקוח מתלונן</li>
+            <li class="no-li">לא ברור מי אחראי</li>
+            <li class="no-li">עדכונים נעשים בלחץ</li>
+          </ul>
+        </div>
+        <div class="tile ok-box"><div class="t">✅ עם AIOps</div>
+          <ul class="clean">
+            <li class="ok-li">ניטור רציף ואוטומטי</li>
+            <li class="ok-li">זיהוי מוקדם של בעיות</li>
+            <li class="ok-li">עדכונים בטוחים ומתועדים</li>
+            <li class="ok-li">אחריות ותגובה ברורות</li>
+          </ul>
+        </div>
+      </div>
+      <h2>מחזור החיים אחרי ה־Launch</h2>
+      <div class="card"><table>
+        <tr><th>שלב</th><th>מה קורה</th></tr>
+        <tr><td>01 · פריסה</td><td>המודל עולה לייצור ומתחיל לקבל שימוש אמיתי</td></tr>
+        <tr><td>02 · ניטור</td><td>עוקבים אחרי נתונים, ביצועים ותוצאות</td></tr>
+        <tr><td>03 · זיהוי</td><td>מזהים Drift, חריגות או ירידה עסקית</td></tr>
+        <tr><td>04 · עדכון</td><td>בודקים ומפרסמים מודל חדש בהדרגה</td></tr>
+        <tr><td>05 · למידה</td><td>מתעדים, מפיקים לקחים ומשפרים את התהליך</td></tr>
+      </table><p class="center"><span class="pill">זהו מעגל שחוזר שוב ושוב</span></p></div>
+    `,
+    quiz:[
+      {q:"מהי המשמעות העיקרית של AIOps?",
+       o:["התקנת המודל בשרת חזק יותר","כל מה שעושים אחרי ההשקה כדי שה-AI יישאר מדויק ובטוח","כתיבת קוד המודל","בחירת מודל השפה"],
+       a:1,e:"AIOps = תפעול ה-AI לאורך זמן: ניטור, זיהוי, תיקון ולמידה — לא רק ההשקה."},
+      {q:"איזה משפט נכון לגבי מערכת AI?",
+       o:["היא פרויקט חד-פעמי שמסתיים בהשקה","היא שירות חי שצריך מדידה ותחזוקה מתמשכת","אין צורך לנטר אותה אם השרת עובד","היא מתנהגת בדיוק כמו מערכת IT רגילה"],
+       a:1,e:"מערכת AI היא שירות חי — העולם משתנה ולכן צריך לתחזק ולשפר כל הזמן."},
+      {q:"מה הסיכון הגדול בגישת 'מפרסמים ושוכחים'?",
+       o:["המודל יעבוד מהר מדי","מגלים בעיות רק כשהלקוח מתלונן","המודל יתפוס יותר מדי זיכרון","אין סיכון ממשי"],
+       a:1,e:"בלי ניטור, בעיות מתגלות מאוחר — דרך תלונת לקוח, ולא דרך זיהוי מוקדם."}
+    ]
+  },
+  {
+    id:"silent", icon:"🔇", title:"תקלה שקטה + 4 שכבות ניטור",
+    html:`
+      <p class="lead">מערכת AI יכולה לעבוד "ירוק" לגמרי — ובכל זאת לטעות בשקט. זו הסכנה הכי גדולה.</p>
+      <h2>AI לא מתנהג כמו IT רגיל</h2>
+      <div class="card"><table>
+        <tr><th>נושא</th><th>מערכת רגילה</th><th>מערכת AI</th></tr>
+        <tr><td>תוצאה</td><td>אותו קלט = אותה תוצאה</td><td>תוצאה הסתברותית, עשויה להשתנות</td></tr>
+        <tr><td>תקלה</td><td>המערכת עולה או נופלת</td><td>עובדת — אבל טועה בשקט</td></tr>
+        <tr><td>עדכון</td><td>שינוי קוד</td><td>אימון מחדש על נתונים חדשים</td></tr>
+        <tr><td>מדידה</td><td>זמינות ומהירות</td><td>גם איכות ודיוק התוצאות</td></tr>
+      </table></div>
+      <div class="warnbox">🔇 <b>תקלה שקטה:</b> צ'אטבוט זמין ומהיר, אך נותן תשובות שגויות על מדיניות החזרים חדשה. השרת עובד — אבל השירות נכשל.</div>
+      <h2>ארבע שכבות הניטור</h2>
+      <p>כדי להבין את מצב המערכת באמת — בודקים ארבע שכבות. כל אחת יכולה להיכשל בנפרד.</p>
+      <div class="grid g2">
+        <div class="tile"><div class="t">🏗️ תשתית</div>זמינות, זמן תגובה, CPU וזיכרון.</div>
+        <div class="tile"><div class="t">📊 נתונים</div>איכות, נפח, ערכים חסרים ושינוי בהתפלגות.</div>
+        <div class="tile"><div class="t">🤖 מודל</div>דיוק, F1, איכות תחזיות ו-Bias.</div>
+        <div class="tile"><div class="t">💼 עסק</div>המרות, חיסכון, שגיאות והשפעה אמיתית.</div>
+      </div>
+      <div class="note">📌 כלל אצבע: דשבורד שאומר רק "המערכת ירוקה" אינו מספיק. צריך לדעת גם האם התוצאה <b>טובה</b> והאם היא מייצרת <b>ערך</b>.</div>
+    `,
+    quiz:[
+      {q:"מהי 'תקלה שקטה' במערכת AI?",
+       o:["השרת נופל ללא הודעה","המערכת עובדת אך מחזירה תוצאות שגויות","המודל איטי מאוד","אין חיבור לאינטרנט"],
+       a:1,e:"תקלה שקטה = המערכת פועלת כרגיל אבל טועה — בלי שגיאה גלויה."},
+      {q:"איזו שכבת ניטור עוסקת בהמרות, חיסכון והשפעה אמיתית?",
+       o:["תשתית","נתונים","מודל","עסק"],
+       a:3,e:"השכבה העסקית מודדת את הערך האמיתי: המרות, חיסכון, השפעה."},
+      {q:"למה לא מספיק דשבורד שמראה 'המערכת ירוקה'?",
+       o:["כי הוא יקר","כי הוא לא מודד אם התוצאה טובה ומייצרת ערך","כי הוא איטי","כי אסור לפי רגולציה"],
+       a:1,e:"זמינות לא מעידה על איכות — צריך למדוד גם נכונות וערך עסקי."},
+      {q:"מה ההבדל המרכזי בין תקלה ב-IT רגיל לתקלה ב-AI?",
+       o:["אין הבדל","ב-AI התקלה תמיד גלויה","ב-AI התקלה עשויה להיות ירידה הדרגתית וסמויה באיכות","ב-IT רגיל אי אפשר לתקן"],
+       a:2,e:"ב-AI התקלה לרוב שקטה והדרגתית, בניגוד לנפילה גלויה ב-IT."}
+    ]
+  },
+  {
+    id:"drift", icon:"📉", title:"Drift + תגובה ועדכון בטוח",
+    html:`
+      <p class="lead">Drift = המודל נשאר כפי שהיה, אבל המציאות (הנתונים או הקשר לתוצאה) השתנתה.</p>
+      <h2>שלושה סוגי Drift</h2>
+      <div class="grid g3">
+        <div class="tile"><div class="t">📥 Data Drift</div>הנתונים שנכנסים שונים מאלה שעליהם המודל אומן. למשל: סוג לקוחות חדש.</div>
+        <div class="tile"><div class="t">🔗 Concept Drift</div>הקשר בין הנתונים לתוצאה השתנה. למשל: דפוסי הונאה חדשים.</div>
+        <div class="tile"><div class="t">📈 Prediction Drift</div>התפלגות התחזיות של המודל השתנתה באופן חריג.</div>
+      </div>
+      <div class="note">🎣 דוגמה ל-Concept Drift: רמאים לומדים איך מודל ההונאות מזהה אותם ומשנים התנהגות. הנתונים נראים תקינים, אבל הקשר בין פעולה חשודה להונאה השתנה.</div>
+      <div class="warnbox">❓ האם Drift תמיד תקלה? <b>לא.</b> לפעמים השינוי אמיתי ורצוי. Drift הוא אות לבדיקה — לא פסק דין אוטומטי.</div>
+      <h2>תגובה לתקלה — 5 צעדים</h2>
+      <div class="card"><ul class="clean">
+        <li><b>1. מסווגים</b> — קריטי, בינוני או נמוך?</li>
+        <li><b>2. עוצרים נזק</b> — Fallback ידני או בלימת המודל.</li>
+        <li><b>3. חוקרים</b> — נתונים, מודל, תשתית או סביבה?</li>
+        <li><b>4. מתקנים</b> — בדיקות, אישור והחזרה מבוקרת.</li>
+        <li><b>5. לומדים</b> — Post-Mortem בלי לחפש אשמים.</li>
+      </ul><p class="center"><span class="pill">המטרה: תגובה מתוכננת, לא פאניקה</span></p></div>
+      <h2>עדכון בטוח — בלי לשבור הכול</h2>
+      <div class="grid g3">
+        <div class="tile"><div class="t">🌓 Shadow</div>המודל החדש רץ אך לא משפיע על המשתמש.</div>
+        <div class="tile"><div class="t">🐤 Canary</div>רק אחוז קטן מהתנועה (למשל 5%) עובר אליו.</div>
+        <div class="tile"><div class="t">↩️ Rollback</div>תמיד מוכנים לחזור מהר לגרסה קודמת.</div>
+      </div>
+      <div class="note">⚖️ מודל חדש יכול להיות טוב <b>בממוצע</b> ורע ל<b>קבוצה מסוימת</b> — לכן בודקים בהדרגה.</div>
+    `,
+    quiz:[
+      {q:"רמאים משנים את התנהגותם כדי לעקוף מודל הונאות. איזה Drift זה?",
+       o:["Data Drift","Concept Drift","Prediction Drift","אין כאן Drift"],
+       a:1,e:"הקשר בין הפעולה לתוצאה (הונאה) השתנה — זהו Concept Drift."},
+      {q:"מהי שיטת Canary Release?",
+       o:["הרצת המודל החדש בלי השפעה על משתמשים","העברת אחוז קטן מהתנועה למודל החדש","חזרה לגרסה קודמת","אימון המודל מחדש"],
+       a:1,e:"Canary = חשיפה הדרגתית של אחוז קטן מהמשתמשים למודל החדש."},
+      {q:"מה הצעד הראשון בתגובה לתקלה?",
+       o:["לחזור אחורה מיד","לסווג את חומרת הבעיה","לפטר את האחראי","להודיע לכל הלקוחות"],
+       a:1,e:"קודם מסווגים חומרה (קריטי/בינוני/נמוך) כדי להגיב נכון."},
+      {q:"האם Drift הוא תמיד תקלה?",
+       o:["כן, תמיד","לא — לפעמים השינוי אמיתי ורצוי, וה-Drift הוא אות לבדיקה","רק ב-Data Drift","רק בסופי שבוע"],
+       a:1,e:"Drift הוא אות שמחייב בדיקה, לא בהכרח כשל."}
+    ]
+  },
+  {
+    id:"gov", icon:"⚖️", title:"ממשל, אחריות ומדדים",
+    html:`
+      <p class="lead">AI טוב חייב להיות גם בטוח והוגן. ממשל מצליח כשברור מי אחראי, איך מאשרים שינויים, ואיך מגנים על אנשים.</p>
+      <h2>ארבעת עמודי הממשל</h2>
+      <div class="grid g2">
+        <div class="tile"><div class="t">🔐 פרטיות</div>אילו נתונים נאספים, מי ניגש אליהם וכמה זמן שומרים?</div>
+        <div class="tile"><div class="t">⚖️ Bias</div>האם קבוצות מסוימות מקבלות תוצאות פחות טובות?</div>
+        <div class="tile"><div class="t">💡 Explainability</div>האם אפשר להסביר למה המודל החליט כך?</div>
+        <div class="tile"><div class="t">🧾 Audit Trail</div>האם מתועד מי שינה מה, מתי ולמה?</div>
+      </div>
+      <div class="warnbox">📚 לקח מאמזון: מודל גיוס שאומן על נתוני עבר למד להפלות נשים. לכן בודקים ביצועים גם לפי <b>תתי-קבוצות</b> — לא רק ממוצע כללי.</div>
+      <div class="note">🇪🇺 <b>EU AI Act:</b> ככל שהמערכת משפיעה יותר על חיי אדם, כך נדרשים יותר תיעוד, בדיקות ופיקוח אנושי. רגולציה היא שכבת הגנה — לא רק בירוקרטיה.</div>
+      <h2>מדדים שמספרים אם אנחנו מצליחים</h2>
+      <div class="card"><table>
+        <tr><th>מדד</th><th>מה הוא מודד</th></tr>
+        <tr><td>MTTD</td><td>כמה זמן עבר עד שזיהינו את הבעיה</td></tr>
+        <tr><td>MTTR</td><td>כמה זמן עבר עד שהשירות תוקן</td></tr>
+        <tr><td>Model Uptime</td><td>כמה זמן המודל גם זמין וגם מדויק</td></tr>
+        <tr><td>Drift Rate</td><td>כמה אירועי Drift משמעותיים זוהו</td></tr>
+      </table></div>
+    `,
+    quiz:[
+      {q:"מה בודק עמוד ה-Explainability?",
+       o:["כמה מהר המודל רץ","האם אפשר להסביר למה המודל החליט כך","כמה נתונים נאספו","מי האחראי"],
+       a:1,e:"Explainability = היכולת להסביר את החלטות המודל."},
+      {q:"מה מודד MTTR?",
+       o:["זמן עד זיהוי הבעיה","זמן עד תיקון השירות","אחוז ה-Drift","דיוק המודל"],
+       a:1,e:"MTTR = Mean Time To Repair — הזמן עד שהשירות תוקן."},
+      {q:"מה הלקח ממקרה הגיוס של אמזון?",
+       o:["לא לאמן מודלים בכלל","לבדוק ביצועים לפי תתי-קבוצות ולא רק ממוצע","להשתמש רק בנתונים חדשים","לבטל פיקוח אנושי"],
+       a:1,e:"ממוצע טוב יכול להסתיר אפליה של קבוצה — בודקים תתי-קבוצות."},
+      {q:"לפי גישת ה-EU AI Act, מתי נדרש יותר פיקוח?",
+       o:["כשהמערכת זולה","ככל שהמערכת משפיעה יותר על חיי אדם","רק במערכות פיננסיות","אף פעם"],
+       a:1,e:"רמת הפיקוח עולה עם רמת ההשפעה על בני אדם."}
+    ]
+  },
+  {
+    id:"sysprompt", icon:"🛡️", title:"System Prompt לסוכן אמין",
+    html:`
+      <p class="lead">סוכן אמין מוגדר היטב: תפקיד ברור, גבולות ברזל, גישת Zero Trust ואישור אדם בנקודות רגישות. נשתמש בדוגמת <b>Knowledge Guard Agent</b>.</p>
+      <h2>הגדרת תפקיד</h2>
+      <div class="vs">
+        <div class="tile ok-box"><div class="t">✅ מה הסוכן עושה</div>
+          <ul class="clean">
+            <li class="ok-li">קורא מאגר ידע מאושר בלבד</li>
+            <li class="ok-li">עונה רק כשיש תמיכה ברורה במידע</li>
+            <li class="ok-li">מסמן רמת ביטחון לכל תשובה</li>
+            <li class="ok-li">שומר לוג מפורט ונקודות שחזור</li>
+          </ul>
+        </div>
+        <div class="tile bad-box"><div class="t">⛔ גבולות ברזל</div>
+          <ul class="clean">
+            <li class="no-li">לא ממציא תשובות</li>
+            <li class="no-li">לא משלים מידע חסר "לפי תחושה"</li>
+            <li class="no-li">לא חושף מידע רגיש בלי הרשאה</li>
+            <li class="no-li">לא מבצע פעולה קריטית בלי אישור אדם</li>
+          </ul>
+        </div>
+      </div>
+      <div class="note">🎯 שני העקרונות שאתה תמיד חוזר עליהם: הסוכן <b>לא הוזה</b> (לא ממציא) ו<b>לא "מרגיש אלוהים"</b> (נשאר בגבולות התפקיד והרשאות).</div>
+      <h2>גישת Zero Trust</h2>
+      <p>אף קלט, משתמש, מסמך או סוכן אחר אינם נחשבים אמינים אוטומטית. מאמתים הרשאות, מסננים מידע רגיש, ומעבירים לאישור אדם כשהסיכון גבוה.</p>
+      <h2>דוגמה: עצירה חכמה (Critical Error)</h2>
+      <pre>IF confidence_score &lt; 70%
+   OR source_conflict = true
+   OR sensitive_data_detected = true
+   OR action_risk = "high"
+THEN:
+   stop_response()
+   create_recovery_point()
+   save_audit_log()
+   send_to_human_approval()</pre>
+      <h2>Audit Trail — כל פעולה נשמרת</h2>
+      <pre>{
+  "user_question": "...",
+  "knowledge_sources": ["policy_doc_04","faq_12"],
+  "confidence": 91,
+  "risk_level": "low",
+  "sensitive_data_removed": true,
+  "human_approval": false,
+  "timestamp": "2026-06-04 14:30"
+}</pre>
+      <div class="note">🧠 קונטקסט (Memory): שומרים רק מידע שימושי להמשך, מפרידים בין זמני למתמשך, ומשתמשים בו כדי <b>לדייק — לא לנחש</b>.</div>
+    `,
+    quiz:[
+      {q:"מהי גישת Zero Trust בסוכן?",
+       o:["לסמוך על כל מי שמחובר","אף קלט/משתמש/מסמך אינו אמין אוטומטית — מאמתים תמיד","לחסום את כל המשתמשים","לתת הרשאות מלאות לסוכנים אחרים"],
+       a:1,e:"Zero Trust = לא סומכים אוטומטית על אף גורם, מאמתים כל פעם."},
+      {q:"מה צריך לקרות כש-confidence נמוך מ-70% או שזוהה מידע רגיש?",
+       o:["להמשיך רגיל","לעצור, ליצור נקודת שחזור, לשמור לוג ולהעביר לאישור אדם","למחוק את השאלה","להמציא תשובה סבירה"],
+       a:1,e:"ספים נמוכים/סיכון גבוה מפעילים עצירה + אישור אדם + תיעוד."},
+      {q:"איזו התנהגות מבטאת סוכן ש'מרגיש אלוהים'?",
+       o:["שומר לוג","מבצע פעולה קריטית בלי אישור וחורג מהרשאותיו","מסמן רמת ביטחון","עונה רק מהמאגר"],
+       a:1,e:"חריגה מההרשאות ופעולה קריטית ללא אישור = בדיוק מה שאסור."},
+      {q:"מה מטרת ה-Audit Trail?",
+       o:["להאיץ את הסוכן","לאפשר להבין בדיעבד מה קרה, למה ומאיזה מקור","להחליף את המודל","לחסוך זיכרון"],
+       a:1,e:"Audit Trail מתעד כל החלטה כדי לאפשר חקירה ואחריותיות."}
+    ]
+  },
+  {
+    id:"chain", icon:"🔗", title:"שרשרת סוכנים + API MCP",
+    html:`
+      <p class="lead">מערכות אמיתיות בנויות מ<b>שרשרת סוכנים</b> שכל אחד מאמת לפני שהוא מעביר הלאה — ומ<b>שרת MCP</b> שנותן ל-LLM ידיים לפעול בעולם.</p>
+      <h2>Agent 01 — HTTP Update Validator</h2>
+      <p>סוכן שער הכניסה. לא סומך על אף קריאה. כל בקשת HTTP עוברת אימות מקור, אימות משתמש, הרשאות, בדיקת מבנה נתונים, והשוואת <b>DB מול Front</b>.</p>
+      <pre>You are Agent 01: HTTP Update Validator.
+Rules:
+1. Treat every HTTP request as untrusted until verified.
+2. Validate signature, token, timestamp, source, schema.
+3. Identify the actor and check role-based permissions.
+4. Compare frontend payload with database state.
+5. Mask sensitive info; save audit log; create recovery point.
+6. If any critical check fails -> stop & human approval.
+7. Forward to Agent 02 only when ALL checks are TRUE.</pre>
+      <h2>Decision Gate — כלל המעבר לסוכן הבא</h2>
+      <pre>IF  source_verified AND actor_authenticated
+AND permission_allowed AND payload_schema_valid
+AND db_front_consistency AND sensitive_data_filtered
+AND risk_level != "HIGH"
+THEN  create_recovery_point(); save_audit_log(); forward_to_agent_02()
+ELSE  stop_chain(); save_audit_log(); send_to_human_review()</pre>
+      <h3>הזרימה המלאה (n8n)</h3>
+      <p>Webhook → Schema Check → Auth & Permissions → DB vs Front → Privacy Filter → Decision Gate → (TRUE) Agent 02 כללים עסקיים → Agent 03 Commit+Recovery → Agent 04 התראה בטוחה → Agent 05 תיעוד ולמידה → Respond. כל FALSE/סיכון גבוה ⇐ Human Approval.</p>
+      <h2>API MCP Server — לתת ל-LLM ידיים</h2>
+      <div class="vs">
+        <div class="tile bad-box"><div class="t">⛔ הבעיה היום</div>ה-LLM יודע לנסח בקשת API מושלמת — אבל לא יכול לשלוח אותה. כל אינטגרציה דורשת wrapper וקוד ייעודי.</div>
+        <div class="tile ok-box"><div class="t">✅ עם MCP</div>כלי גנרי אחד: המודל בוחר URL, שיטה, אותנטיקציה ו-body — והשרת מבצע, מפענח ומחזיר תשובה מובנית. אפס קוד ייעודי לכל שירות.</div>
+      </div>
+      <h3>שלוש דרכים להזדהות</h3>
+      <table>
+        <tr><th>סוג</th><th>שימוש</th></tr>
+        <tr><td>bearer</td><td>טוקן ב-Authorization header (GitHub, OpenAI ורוב ה-APIs)</td></tr>
+        <tr><td>basic</td><td>שם משתמש + סיסמה (מערכות ותיקות/פנים-ארגוניות)</td></tr>
+        <tr><td>api_key</td><td>מפתח ב-header לבחירה (ברירת מחדל X-API-Key)</td></tr>
+      </table>
+      <div class="note">🔒 בנוי בטוח מהיסוד: אפס מפתחות בקוד (רק environment variables), HTTPS בלבד, הגנת Timeout, ואימות URL לפני כל בקשה.</div>
+    `,
+    quiz:[
+      {q:"מתי Agent 01 מעביר את הבקשה לסוכן הבא?",
+       o:["תמיד","רק כאשר כל הבדיקות מחזירות TRUE והסיכון אינו גבוה","כשהמשתמש מבקש יפה","אחרי 30 שניות"],
+       a:1,e:"Decision Gate מעביר הלאה רק כש-כל התנאים TRUE ו-risk != HIGH."},
+      {q:"מה הבעיה ש-API MCP Server פותר?",
+       o:["ה-LLM איטי","ה-LLM יודע לנסח בקשת API אך לא יכול לשלוח אותה בלי קוד ייעודי","אין מספיק מודלים","העלות גבוהה"],
+       a:1,e:"MCP נותן ל-LLM 'ידיים' — כלי גנרי לביצוע קריאות API בלי wrapper לכל שירות."},
+      {q:"איך נכון לאחסן סודות/מפתחות בשרת ה-MCP?",
+       o:["בתוך הקוד","ב-environment variables בלבד","בקובץ טקסט פתוח","בהודעה למשתמש"],
+       a:1,e:"אפס מפתחות בקוד — סודות אך ורק דרך environment variables."},
+      {q:"מהי בדיקת 'DB מול Front' של Agent 01?",
+       o:["השוואת מהירות","ודאות שהנתונים שמוצגים במסך תואמים למסד הנתונים","בדיקת צבעים","בדיקת שרת"],
+       a:1,e:"משווים את ה-payload מהפרונט למצב ב-DB כדי לזהות סתירות."}
+    ]
+  }
+];
+
+const FINAL = [
+  {q:"AIOps מתחיל...",o:["לפני כתיבת הקוד","אחרי שהמודל עולה לאוויר","רק כשיש תקלה","בשלב המכירה"],a:1,e:"AIOps עוסק בכל מה שאחרי ההשקה."},
+  {q:"תקלה שקטה היא...",o:["נפילת שרת","מערכת שעובדת אך טועה בלי שגיאה גלויה","איטיות רשת","שגיאת הרשאה"],a:1,e:"זה הסיכון הייחודי ל-AI."},
+  {q:"איזו שכבת ניטור מודדת Bias?",o:["תשתית","נתונים","מודל","עסק"],a:2,e:"דיוק, F1 ו-Bias שייכים לשכבת המודל."},
+  {q:"שינוי בקשר בין נתונים לתוצאה נקרא...",o:["Data Drift","Concept Drift","Prediction Drift","Server Drift"],a:1,e:"Concept Drift = הקשר השתנה."},
+  {q:"Shadow Mode פירושו...",o:["המודל החדש רץ בלי להשפיע על המשתמש","חזרה לגרסה ישנה","חסימת המודל","אחוז קטן מהתנועה"],a:0,e:"ב-Shadow המודל רץ במקביל ללא השפעה."},
+  {q:"מדד MTTD מודד...",o:["זמן עד תיקון","זמן עד זיהוי הבעיה","אחוז Drift","זמינות"],a:1,e:"MTTD = Mean Time To Detect."},
+  {q:"עיקרון מרכזי בסוכן אמין:",o:["לנחש כשחסר מידע","לא להמציא ולא לחרוג מההרשאות","לענות תמיד במהירות","לשמור כל מידע אישי"],a:1,e:"לא הוזה ולא 'מרגיש אלוהים'."},
+  {q:"Zero Trust אומר ש...",o:["סומכים על משתמשים מחוברים","שום גורם אינו אמין אוטומטית","אין צורך בלוגים","הסוכן פועל לבד"],a:1,e:"מאמתים כל גורם, תמיד."},
+  {q:"מתי שולחים לאישור אדם?",o:["בכל שאלה","כשהפעולה משנה כסף/הרשאות או רמת הביטחון נמוכה","אף פעם","רק בלילה"],a:1,e:"נקודות סיכון/חוסר ודאות => Human Approval."},
+  {q:"Agent 01 בשרשרת מעביר הלאה...",o:["תמיד","רק כש-כל הבדיקות TRUE והסיכון לא גבוה","אחרי timeout","לפי בחירת המשתמש"],a:1,e:"Decision Gate על כל התנאים."},
+  {q:"API MCP Server נותן ל-LLM...",o:["יותר זיכרון","יכולת לבצע קריאות API אמיתיות בלי קוד ייעודי","מודל גדול יותר","ממשק גרפי"],a:1,e:"'ידיים' לפעול בעולם דרך כלי גנרי."},
+  {q:"אחסון סודות נכון:",o:["בקוד","ב-environment variables בלבד","בהערה","בלוג"],a:1,e:"אפס מפתחות בקוד."},
+  {q:"האם Drift הוא תמיד תקלה?",o:["כן","לא — לעיתים שינוי אמיתי, תמיד אות לבדיקה","רק Data Drift","רק בעסק"],a:1,e:"Drift = אות לבדיקה."},
+  {q:"מה מבטא Audit Trail?",o:["מהירות","תיעוד מלא של מי/מה/מתי/למה","עיצוב","גיבוי קוד"],a:1,e:"שקיפות ואחריותיות."},
+  {q:"עדכון בטוח מאופיין ב...",o:["החלפה מיידית של 100%","הדרגתיות + יכולת Rollback","בלי בדיקות","רק בסופ\"ש"],a:1,e:"Canary/Shadow/Gradual + Rollback."}
+];
+
+/* ============ מנוע ============ */
+const state = JSON.parse(localStorage.getItem('aicourse')||'{}');
+function save(){localStorage.setItem('aicourse',JSON.stringify(state));}
+let current = 'home';
+
+function pct(){
+  const total = COURSE.length+1;
+  let done = COURSE.filter(m=>state['quiz_'+m.id]!=null).length + (state['final']!=null?1:0);
+  return Math.round(done/total*100);
+}
+function renderNav(){
+  const nav=document.getElementById('nav');
+  let h=`<div class="navitem ${current==='home'?'active':''}" onclick="go('home')"><span class="ix">🏠</span> דף הבית</div>`;
+  COURSE.forEach((m,i)=>{
+    const done=state['quiz_'+m.id]!=null;
+    h+=`<div class="navitem ${current===m.id?'active':''} ${done?'done':''}" onclick="go('${m.id}')">
+        <span class="ix">${done?'✓':(i+1)}</span> ${m.title}</div>`;
+  });
+  const fdone=state['final']!=null;
+  h+=`<div class="navitem exam ${current==='final'?'active':''} ${fdone?'done':''}" onclick="go('final')">
+      <span class="ix">${fdone?'✓':'🎓'}</span> מבחן מסכם</div>`;
+  nav.innerHTML=h;
+  document.getElementById('progBar').style.width=pct()+'%';
+  document.getElementById('progTxt').innerText=pct()+'%';
+}
+function go(id){current=id;window.scrollTo(0,0);render();}
+
+function render(){
+  renderNav();
+  const main=document.getElementById('main');
+  if(current==='home') return renderHome(main);
+  if(current==='final') return renderFinal(main);
+  const i=COURSE.findIndex(m=>m.id===current);
+  renderModule(main,COURSE[i],i);
+}
+
+function renderHome(main){
+  const passed=COURSE.filter(m=>(state['quiz_'+m.id]||0)>=70).length;
+  main.innerHTML=`
+   <div class="hero">
+     <span class="tag">קורס אינטראקטיבי · עברית</span>
+     <h1>בניית והפעלת סוכני AI בארגון</h1>
+     <p class="lead">מסלול מלא מ-AIOps וניטור, דרך Drift ועדכון בטוח, ממשל ואחריות — ועד בניית סוכנים אמינים, שרשרת סוכנים מאובטחת ושרת MCP. עם מבחני ידע אחרי כל מודול ומבחן מסכם.</p>
+     <div class="stat">
+       <div class="s"><b>${COURSE.length}</b>מודולים</div>
+       <div class="s"><b>${COURSE.reduce((a,m)=>a+m.quiz.length,0)+FINAL.length}</b>שאלות</div>
+       <div class="s"><b>70+</b>ציון מעבר</div>
+       <div class="s"><b>${passed}/${COURSE.length}</b>הושלמו</div>
+     </div>
+     <div style="margin-top:20px"><button class="btn" onclick="go('${COURSE[0].id}')">${pct()>0?'המשך ללמוד':'מתחילים ללמוד'} ←</button></div>
+   </div>
+   <h2>תוכן הקורס</h2>
+   <div class="grid g2">
+     ${COURSE.map((m,i)=>{const sc=state['quiz_'+m.id];
+        return `<div class="tile" style="cursor:pointer" onclick="go('${m.id}')">
+          <div class="t">${m.icon} ${i+1}. ${m.title}</div>
+          <div style="color:var(--muted);font-size:13px">${m.quiz.length} שאלות
+          ${sc!=null?`· <span class="${sc>=70?'badge-done':''}">ציון: ${sc}%</span>`:''}</div>
+        </div>`}).join('')}
+   </div>
+   <div class="note" style="margin-top:20px">💡 ההתקדמות והציונים נשמרים אוטומטית בדפדפן הזה. אפשר לעצור ולחזור בכל עת.</div>
+  `;
+}
+
+function renderModule(main,m,i){
+  main.innerHTML=`
+    <div class="crumb">מודול ${i+1} מתוך ${COURSE.length}</div>
+    <h1>${m.icon} ${m.title}</h1>
+    ${m.html}
+    <h2>🧪 מבחן ידע — ${m.title}</h2>
+    <div class="quiz" id="quiz"></div>
+    <div class="navrow">
+      <button class="btn ghost" onclick="go('${i>0?COURSE[i-1].id:'home'}')">→ ${i>0?'מודול קודם':'דף הבית'}</button>
+      <button class="btn" id="submitBtn" onclick="grade('${m.id}',${i})">בדיקת המבחן</button>
+    </div>
+  `;
+  buildQuiz(m.quiz,'quiz');
+}
+
+function buildQuiz(quiz,containerId){
+  const c=document.getElementById(containerId);
+  c.innerHTML=quiz.map((q,qi)=>`
+    <div class="q" data-q="${qi}">
+      <div class="qt">${qi+1}. ${q.q}</div>
+      ${q.o.map((o,oi)=>`<label class="opt" onclick="pick('${containerId}',${qi},${oi})" data-o="${oi}">${o}</label>`).join('')}
+      <div class="explain" id="${containerId}_ex_${qi}">💬 ${q.e}</div>
+    </div>`).join('');
+}
+const picks={};
+function pick(cid,qi,oi){
+  picks[cid+qi]=oi;
+  const box=document.querySelector(`#${cid} .q[data-q="${qi}"]`);
+  if(box.classList.contains('locked'))return;
+  box.querySelectorAll('.opt').forEach(o=>o.classList.remove('sel'));
+  box.querySelector(`.opt[data-o="${oi}"]`).classList.add('sel');
+}
+function gradeQuiz(quiz,cid){
+  let correct=0;
+  quiz.forEach((q,qi)=>{
+    const box=document.querySelector(`#${cid} .q[data-q="${qi}"]`);
+    box.classList.add('locked');
+    const sel=picks[cid+qi];
+    box.querySelectorAll('.opt').forEach(o=>{
+      const oi=+o.dataset.o;
+      if(oi===q.a)o.classList.add('correct');
+      if(oi===sel&&sel!==q.a)o.classList.add('wrong');
+    });
+    document.getElementById(`${cid}_ex_${qi}`).classList.add('show');
+    if(sel===q.a)correct++;
+  });
+  return Math.round(correct/quiz.length*100);
+}
+function grade(id,i){
+  const m=COURSE[i];
+  const unanswered=m.quiz.some((q,qi)=>picks['quiz'+qi]==null);
+  if(unanswered && !confirm('יש שאלות שלא ענית עליהן. לבדוק בכל זאת?'))return;
+  const score=gradeQuiz(m.quiz,'quiz');
+  state['quiz_'+id]=score;save();renderNav();
+  const btn=document.getElementById('submitBtn');
+  const next=i<COURSE.length-1?COURSE[i+1].id:'final';
+  btn.outerHTML=`<div class="card center" style="border-color:${score>=70?'var(--ok)':'var(--bad)'}">
+     <div class="score" style="color:${score>=70?'var(--ok)':'var(--bad)'}">${score}%</div>
+     <p>${score>=70?'כל הכבוד! עברת את המודול 🎉':'כדאי לחזור על החומר ולנסות שוב 💪'}</p>
+     <button class="btn" onclick="go('${next}')">${next==='final'?'למבחן המסכם':'למודול הבא'} ←</button>
+   </div>`;
+  Object.keys(picks).forEach(k=>{if(k.startsWith('quiz'))delete picks[k];});
+}
+
+function renderFinal(main){
+  main.innerHTML=`
+    <div class="crumb">מבחן מסכם</div>
+    <h1>🎓 מבחן ידע מסכם</h1>
+    <p class="lead">${FINAL.length} שאלות מכל הקורס. ציון מעבר 70%. בהצלחה!</p>
+    <div class="quiz" id="fquiz"></div>
+    <div class="navrow">
+      <button class="btn ghost" onclick="go('home')">→ דף הבית</button>
+      <button class="btn" id="fbtn" onclick="gradeFinal()">סיום ובדיקה</button>
+    </div>`;
+  buildQuiz(FINAL,'fquiz');
+}
+function gradeFinal(){
+  const unanswered=FINAL.some((q,qi)=>picks['fquiz'+qi]==null);
+  if(unanswered && !confirm('יש שאלות שלא ענית עליהן. לסיים בכל זאת?'))return;
+  const score=gradeQuiz(FINAL,'fquiz');
+  state['final']=score;save();renderNav();
+  const grade = score>=90?'מצוין':score>=70?'עובר':'לא עובר';
+  document.getElementById('fbtn').outerHTML=`<div class="card center" style="border-color:${score>=70?'var(--ok)':'var(--bad)'}">
+     <div class="score" style="color:${score>=70?'var(--ok)':'var(--bad)'}">${score}%</div>
+     <p style="font-size:18px">${grade} ${score>=70?'🏆':''}</p>
+     <p>${score>=70?'סיימת את הקורס! יש לך תמונה מלאה של בניית והפעלת סוכני AI בארגון.':'כמעט שם — חזור על המודולים שבהם הציון נמוך ונסה שוב.'}</p>
+     <button class="btn ghost" onclick="go('home')">חזרה לדף הבית</button>
+   </div>`;
+  Object.keys(picks).forEach(k=>{if(k.startsWith('fquiz'))delete picks[k];});
+}
+function resetProgress(){if(confirm('לאפס את כל ההתקדמות והציונים?')){localStorage.removeItem('aicourse');for(const k in state)delete state[k];go('home');}}
+
+render();
+</script>
+</body>
+</html>

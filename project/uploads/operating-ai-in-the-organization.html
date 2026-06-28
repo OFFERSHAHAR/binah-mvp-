@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>הפעלת AI בארגון | מדריך מלא ופשוט</title>
+  <style>
+    :root {
+      --ink: #15212b;
+      --muted: #61717d;
+      --paper: #f5f1e8;
+      --card: #fffdf8;
+      --navy: #123b4a;
+      --teal: #0e8179;
+      --mint: #bce7d6;
+      --coral: #ef6a5b;
+      --gold: #f0b84b;
+      --line: #d9ded8;
+      --shadow: 0 18px 50px rgba(18, 59, 74, .12);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: Arial, "Segoe UI", sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      overflow: hidden;
+    }
+
+    button { font: inherit; }
+    .deck { min-height: 100vh; }
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      padding: 42px clamp(28px, 6vw, 92px) 28px;
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: opacity .28s ease, transform .28s ease;
+      overflow-y: auto;
+      background:
+        radial-gradient(circle at 8% 12%, rgba(188, 231, 214, .65), transparent 24%),
+        radial-gradient(circle at 92% 88%, rgba(240, 184, 75, .18), transparent 22%),
+        var(--paper);
+    }
+    .slide.active { opacity: 1; transform: none; pointer-events: auto; }
+    .slide::before {
+      content: "";
+      position: absolute;
+      top: 0; right: 0;
+      width: 9px; height: 100%;
+      background: var(--teal);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      color: var(--teal);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+    .eyebrow::before { content: ""; width: 24px; height: 3px; background: var(--coral); }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { font-size: clamp(48px, 8vw, 104px); line-height: .96; letter-spacing: -.055em; margin-bottom: 26px; }
+    h2 { font-size: clamp(34px, 5vw, 68px); line-height: 1.02; letter-spacing: -.04em; margin: 12px 0 18px; max-width: 1050px; }
+    h3 { font-size: 20px; margin-bottom: 9px; }
+    .lead { font-size: clamp(19px, 2.1vw, 29px); line-height: 1.5; color: var(--muted); max-width: 980px; }
+    .big-line { font-size: clamp(28px, 4vw, 58px); font-weight: 900; line-height: 1.16; max-width: 1100px; }
+    .accent { color: var(--teal); }
+    .coral { color: var(--coral); }
+    .small { font-size: 14px; color: var(--muted); }
+
+    .content { align-self: center; width: 100%; padding: 18px 0 22px; }
+    .grid { display: grid; gap: 18px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .card {
+      background: rgba(255, 253, 248, .9);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 7px 22px rgba(18, 59, 74, .06);
+    }
+    .card strong { color: var(--navy); }
+    .card p { margin-bottom: 0; color: var(--muted); line-height: 1.45; }
+    .card .icon { font-size: 29px; margin-bottom: 12px; }
+    .card.good { border-top: 5px solid var(--teal); }
+    .card.bad { border-top: 5px solid var(--coral); }
+    .card.gold { border-top: 5px solid var(--gold); }
+    .card.navy { border-top: 5px solid var(--navy); }
+
+    .compare { display: grid; grid-template-columns: 1fr 80px 1fr; align-items: stretch; gap: 15px; }
+    .vs { display: grid; place-items: center; font-size: 24px; font-weight: 900; color: var(--coral); }
+    ul.clean { padding: 0; margin: 14px 0 0; list-style: none; }
+    ul.clean li { position: relative; padding: 7px 27px 7px 0; line-height: 1.38; }
+    ul.clean li::before { content: "✓"; position: absolute; right: 0; color: var(--teal); font-weight: 900; }
+    .bad ul.clean li::before { content: "×"; color: var(--coral); }
+
+    .flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; align-items: stretch; }
+    .step {
+      position: relative;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      padding: 18px 16px;
+      min-height: 126px;
+    }
+    .step b { display: block; color: var(--teal); font-size: 14px; margin-bottom: 7px; }
+    .step p { margin: 0; color: var(--muted); line-height: 1.4; }
+
+    .meter { height: 13px; border-radius: 999px; overflow: hidden; background: #dfe5e1; margin-top: 10px; }
+    .meter span { display: block; height: 100%; background: linear-gradient(90deg, var(--teal), var(--mint)); border-radius: inherit; }
+    .quote {
+      padding: 24px 28px;
+      border-right: 7px solid var(--coral);
+      background: rgba(255,255,255,.6);
+      border-radius: 16px;
+      font-size: clamp(22px, 3vw, 40px);
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .matrix { width: 100%; border-collapse: separate; border-spacing: 0 8px; font-size: clamp(14px, 1.45vw, 19px); }
+    .matrix th { text-align: right; color: var(--teal); padding: 5px 12px; }
+    .matrix td { background: rgba(255,253,248,.9); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 13px 12px; }
+    .matrix td:first-child { border-right: 1px solid var(--line); border-radius: 0 12px 12px 0; font-weight: 800; }
+    .matrix td:last-child { border-left: 1px solid var(--line); border-radius: 12px 0 0 12px; }
+
+    .timeline { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+    .timeline .step { min-height: 145px; }
+    .timeline .step::after { content: ""; position: absolute; left: -13px; top: 38px; width: 13px; height: 3px; background: var(--gold); }
+    .timeline .step:last-child::after { display: none; }
+
+    .footer { display: flex; justify-content: space-between; gap: 20px; align-items: end; color: var(--muted); font-size: 13px; }
+    .tag { display: inline-block; padding: 7px 11px; border-radius: 999px; background: var(--mint); color: var(--navy); font-weight: 800; margin: 3px; }
+    .controls {
+      position: fixed;
+      z-index: 20;
+      bottom: 20px;
+      left: 22px;
+      display: flex;
+      gap: 8px;
+      direction: ltr;
+    }
+    .controls button {
+      width: 42px; height: 42px;
+      border: 1px solid rgba(18,59,74,.2);
+      border-radius: 50%;
+      color: var(--navy);
+      background: rgba(255,253,248,.88);
+      cursor: pointer;
+      box-shadow: var(--shadow);
+    }
+    .controls button:hover { background: white; transform: translateY(-1px); }
+    .progress { position: fixed; z-index: 30; top: 0; right: 0; height: 5px; width: 0; background: var(--coral); transition: width .25s ease; }
+    .counter { position: fixed; z-index: 20; bottom: 26px; right: 28px; color: var(--muted); font-size: 13px; }
+    .copyright {
+      position: fixed;
+      z-index: 20;
+      bottom: 25px;
+      right: 50%;
+      transform: translateX(50%);
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .cover { background: var(--navy); color: #f8f3e8; }
+    .cover::before { background: var(--coral); }
+    .cover .lead, .cover .small, .cover .footer { color: #c8d6d7; }
+    .cover .eyebrow { color: var(--mint); }
+    .cover .orb {
+      position: absolute; left: 7vw; top: 13vh;
+      width: min(36vw, 470px); aspect-ratio: 1;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, var(--mint), var(--teal) 52%, #0b2f3a 53%);
+      opacity: .95;
+      box-shadow: 0 0 0 34px rgba(188,231,214,.07), 0 0 0 70px rgba(188,231,214,.035);
+    }
+    .cover .content { position: relative; z-index: 2; max-width: 760px; }
+
+    @media (max-width: 900px) {
+      .grid.three, .grid.four, .flow, .timeline { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .compare { grid-template-columns: 1fr; }
+      .vs { min-height: 30px; }
+      .slide { padding: 28px 22px 80px; }
+      .cover .orb { opacity: .25; width: 80vw; left: -22vw; }
+      .timeline .step::after { display: none; }
+    }
+    @media (max-width: 560px) {
+      .grid.two, .grid.three, .grid.four, .flow, .timeline { grid-template-columns: 1fr; }
+      h1 { font-size: 50px; }
+      h2 { font-size: 36px; }
+      .matrix { font-size: 12px; }
+      .matrix th:nth-child(3), .matrix td:nth-child(3) { display: none; }
+    }
+    @media print {
+      body { overflow: visible; }
+      .slide { position: relative; opacity: 1; transform: none; pointer-events: auto; min-height: 100vh; page-break-after: always; }
+      .controls, .progress, .counter { display: none; }
+      .copyright { position: absolute; }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" id="progress"></div>
+  <main class="deck" id="deck">
+    <section class="slide cover active">
+      <div class="orb"></div>
+      <header><span class="eyebrow">מדריך מלא למנהלים ולצוותים</span></header>
+      <div class="content">
+        <h1>הפעלת AI<br><span class="coral">בארגון</span></h1>
+        <p class="lead">המדריך הפשוט ל־AIOps, ניטור, עדכון מודלים, רגולציה, צוותים והטמעה ארגונית.</p>
+        <p class="small">מצגת מסכמת המבוססת על AIOPS.pdf • ללא צורך ברקע טכני</p>
+      </div>
+      <footer class="footer"><span>השתמשו בחצים במקלדת כדי לעבור בין השקפים</span><span>01</span></footer>
+    </section>
+
+    <section class="slide">
+      <header><span class="eyebrow">הסיפור במשפט אחד</span><h2>להעלות AI לאוויר זה רק <span class="coral">קו הזינוק</span></h2></header>
+      <div class="content">
+        <div class="quote">AIOps הוא כל מה שצריך לעשות כדי שה־AI יישאר מדויק, בטוח ושימושי לאורך זמן.</div>
+        <div class="grid three" style="margin-top:22px">
+          <div class="card good"><h3>רואים</h3><p>עוקבים אחרי המערכת וההשפעה העסקית שלה.</p></div>
+          <div class="card gold"><h3>מזהים</h3><p>מגלים הידרדרות לפני שהלקוח מתלונן.</p></div>
+          <div class="card navy"><h3>מתקנים</h3><p>מעדכנים או חוזרים אחורה בצורה מבוקרת.</p></div>
+        </div>
+      </div>
+      <footer class="footer"><span>רעיון מרכזי</span><span>02</span></footer>
+    </section>
+
+    <section class="slide">
+      <header><span class="eyebrow">למה זה חשוב</span><h2>מה קורה בלי AIOps?</h2></header>
+      <div class="content compare">
+        <div class="card bad">
+          <h3>בלי תפעול מסודר</h3>
+          <ul class="clean">
+            <li>מפרסמים מודל ושוכחים ממנו</li>
+            <li>מגלים בעיה רק כשלקוח מתלונן</li>
+            <li>לא ברור מי אחראי</li>
+            <li>עדכונים נעשים בלחץ</li>
+          </ul>
+        </div>
+        <div class="vs">מול</div>
+        <div class="card good">
+          <h3>עם AIOps</h3>
+          <ul class="clean">
+            <li>ניטור רציף ואוטומטי</li>
+            <li>זיהוי מוקדם של בעיות</li>
+            <li>עדכונים בטוחים ומתועדים</li>
+            <li>אחריות ותגובה ברורות</li>
+          </ul>
+        </div>
+      </div>
+      <footer class="footer"><span>לא עוד פרויקט חד־פעמי, אלא שירות חי</span><span>03</span></footer>
+    </section>
+
+    <section class="slide">
+      <header><span class="eyebrow">הבדל קריטי</span><h2>AI לא מתנהג כמו מערכת IT רגילה</h2></header>
+      <div class="content">
+        <table class="matrix">
+          <thead><tr><th>נושא</th><th>מערכת רגילה</th><th>מערכת AI</th></tr></thead>
+          <tbody>
+            <tr><td>תוצאה</td><td>אותו קלט = אותה תוצאה</td><td>יכולות להיות תוצאות שונות</td></tr>
+            <tr><td>תקלה</td><td>המערכת עולה או נופלת</td><td>המערכת עובדת, אבל טועה בשקט</td></tr>
+            <tr><td>עדכון</td><td>שינוי קוד</td><td>אימון מחדש על נתונים חדשים</td></tr>
+            <tr><td>מדידה</td><td>זמינות ומהירות</td><td>גם איכות ודיוק התוצאות</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <footer class="footer"><span>האויב הגדול: תקלה שקטה</span><span>04</span></footer>
+    </section>
+
+    <section class="slide">
+      <header><span class="eyebrow">מחזור החיים</span><h2>מה קורה אחרי ה־Launch?</h2></header>
+      <div class="content">
+        <div class="flow">
+          <div class="step"><b>01 • פריסה</b><p>המודל עולה לייצור ומתחיל לקבל שימוש אמיתי.</p></div>
+          <div class="step"><b>02 • ניטור</b><p>עוקבים אחרי נתונים, ביצועים ותוצאות.</p></div>
+          <div class="step"><b>03 • זיהוי</b><p>מזהים Drift, חריגות או ירידה עסקית.</p></div>
+          <div class="step"><b>04 • עדכון</b><p>בודקים ומפרסמים מודל חדש בהדרגה.</p></div>
+          <div class="step"><b>05 • למידה</b><p>מתעדים, מפיקים לקחים ומשפרים את התהליך.</p></div>
+        </div>
+      </div>
+      <footer class="footer"><span>זהו מעגל שחוזר שוב ושוב</span><span>05</span></footer>
+    </section>
+
+    <section class="slide">
+      <header><span class="eyebrow">ניטור</span><h2>לא מספיק לבדוק שהשרת עובד</h2></header>
+      <div class="content">
+        <div class="grid four">
+          <div class="card navy"><div class="icon">🏗️</div><h3>תשתית</h3><p>זמינות, מהירות, CPU וזיכרון.</p><div class="meter"><span style="width:90%"></span></div></div>
+          <div class="card gold"><div class="icon">📊</div><h3>נתונים</h3><p>איכות, נפח, ערכים חסרים ושינוי בהתפלגות.</p><div class="meter"><span style="width:76%"></span></div></div>
+          <div class="card good"><div class="icon">🤖</div><h3>מודל</h3><p>דיוק, איכות התחזיות ו־Bias.</p><div class="meter"><span style="width:68%"></span></div></div>
+          <div class="card bad"><div class="icon">💼</div><h3>עסק</h3><p>המרות, חיסכון, שגיאות והשפעה אמיתית.</p><div class="meter"><span style="width:82%"></span></div></div>
+        </div>
+      </div>
+      <footer class="footer"><span>כל שכבה יכולה להיכשל בנפרד</span><span>06</span></footer>
+    </section>
+
+    <section class="slide">
+      <header><span class="eyebrow">Drift</span><h2>כשהעולם משתנה, המודל נשאר מאחור</h2></header>
+      <div class="content">
+        <p class="big-line">Drift = המודל עדיין רץ, אבל המציאות כבר <span class="coral">לא דומה</span> למה שעליו הוא למד.</p>
+        <div class="grid three" style="margin-top:24px">
+          <div class="card good"><h3>Data Drift</h3><p>הנתונים שנכנסים השתנו. למשל: סוג לקוחות חדש.</p></div>
+          <div class="card gold"><h3>Concept Drift</h3><p>הקשר בין הנתונים לתוצאה השתנה. למשל: דפוסי הונאה חדשים.</p></div>
+          <div class="card navy"><h3>Prediction Drift</h3><p>התפלגות התחזיות של המודל השתנתה באופן חריג.</p></div>
+        </div>
+      </div>
+      <footer class="footer"><span>Drift יקרה. השאלה היא מתי נזהה ואיך נגיב.</span><span>07</span></footer>
+    </section>
+
+    <section class="slide">
+      <header><span class="eyebrow">תגובה לתקלה</span><h2>זיהינו בעיה. מה עושים עכשיו?</h2></header>
+      <div class="content">
+        <div class="flow">
+          <div class="step"><b>1 • מסווגים</b><p>קריטי, בינוני או נמוך?</p></div>
+          <div class="step"><b>2 • עוצרים נזק</b><p>Fallback ידני או בלימת המודל.</p></div>
+          <div class="step"><b>3 • חוקרים</b><p>נתונים, מודל, תשתית או סביבה?</p></div>
+          <div class="step"><b>4 • מתקנים</b><p>בדיקות, אישור והחזרה מבוקרת.</p></div>
+          <div class="step"><b>5 • לומדים</b><p>Post-Mortem בלי לחפש אשמים.</p></div>
+        </div>
+      </div>
+      <footer class="footer"><span>מטרה: תגובה מתוכננת, לא פאניקה</span><span>08</span></footer>
+    </section>
+
+    <section class="slide">
+      <header><span class="eyebrow">עדכון בטוח</span><h2>איך מעדכנים מודל בלי לשבור הכול?</h2></header>
+      <div class="content">
+        <div class="timeline">
+          <div class="step"><b>פיתוח</b><p>מאמנים מודל חדש בסביבה נפרדת.</p></div>
+          <div class="step"><b>A/B Test</b><p>משווים חדש מול ישן.</p></div>
+          <div class="step"><b>Shadow</b><p>החדש רץ בלי להשפיע.</p></div>
+          <div class="step"><b>Canary</b><p>רק 5% מהתנועה עוברת אליו.</p></div>
+          <div class="step"><b>Gradual</b><p>מגדילים בהדרגה עד 100%.</p></div>
+          <div class="step"><b>Rollback</b><p>תמיד מוכנים לחזור לגרסה קודמת.</p></div>
+        </div>
+      </div>
+      <footer class="footer"><span>מודל חדש יכול להיות טוב בממוצע ורע לקבוצה מסוימת</span><span>09</span></footer>
+    </section>
+
+    <section class="slide">
+      <header><span class="eyebrow">כלים</span><h2>מפת הכלים, בלי להסתבך</h2></header>
+      <div class="content">
+        <div class="grid three">
+          <div class="card good"><h3>ניהול גרסאות</h3><p>MLflow, Weights & Biases<br>שומרים מודלים ומאפשרים לחזור אחורה.</p></div>
+          <div class="card gold"><h3>ניטור ביצועים</h3><p>Evidently, Arize, Fiddler<br>מזהים Drift וירידה באיכות.</p></div>
+          <div class="card navy"><h3>פריסה אוטומטית</h3><p>Kubeflow, SageMaker, Vertex AI<br>מעדכנים מודלים באופן מבוקר.</p></div>
+          <div class="card bad"><h3>תיעוד ומעקב</h3><p>DVC, Neptune<br>מתעדים כל ניסוי, נתון ושינוי.</p></div>
+          <div class="card good"><h3>לוחות בקרה</h3><p>Grafana<br>מציג מצב ברור לצוות ולמנהלים.</p></div>
+          <div class="card gold"><h3>התראות</h3><p>PagerDuty<br>מגיעות לאדם הנכון בזמן הנכון.</p></div>
+        </div>
+      </div>
+      <footer class="footer"><span>הכלים הם האמצעי. התהליך הוא העיקר.</span><span>10</span></footer>
+    </section>
+
+    <section class="slide">
+      <header><span class="eyebrow">ממשל ורגולציה</span><h2>AI טוב חייב להיות גם בטוח והוגן</h2></header>
+      <div class="content">
+        <div class="grid four">
+          <div class="card bad"><h3>פרטיות</h3><p>אילו נתונים נאספים, מי ניגש אליהם וכמה זמן שומרים?</p></div>
+          <div class="card gold"><h3>Bias</h3><p>האם קבוצות מסוימות מקבלות תוצאות פחות טובות?</p></div>
+          <div class="card good"><h3>Explainability</h3><p>האם אפשר להסביר למה המודל החליט כך?</p></div>
+          <div class="card navy"><h3>Audit Trail</h3><p>האם מתועד מי שינה מה, מתי ולמה?</p></div>
+        </div>
+        <p class="lead" style="margin-top:25px"><strong>EU AI Act:</strong> ככל שהמערכת משפיעה יותר על חיי אדם, כך נדרשים יותר תיעוד, בדיקות ופיקוח אנושי.</p>
+      </div>
+      <footer class="footer"><span>רגולציה היא שכבת הגנה, לא רק בירוקרטיה</span><span>11</span></footer>
+    </section>
+
+    <section class="slide">
+      <header><span class="eyebrow">אנשים</span><h2>AIOps הוא ספורט קבוצתי</h2></header>
+      <div class="content">
+        <div class="grid three">
+          <div class="card good"><h3>ML Engineer</h3><p>בונה ומתחזק את המודל הטכני.</p></div>
+          <div class="card gold"><h3>Data Engineer</h3><p>דואג שהנתונים זורמים נכון ובאיכות.</p></div>
+          <div class="card navy"><h3>MLOps Engineer</h3><p>מנהל פריסה, כלים וניטור.</p></div>
+          <div class="card bad"><h3>AI Product Manager</h3><p>מחבר בין ערך עסקי לצוות הטכני.</p></div>
+          <div class="card good"><h3>Governance Lead</h3><p>אחראי לממשל, אתיקה ורגולציה.</p></div>
+          <div class="card gold"><h3>בעלים עסקי</h3><p>מגדיר הצלחה, סיכון והחלטות.</p></div>
+        </div>
+      </div>
+      <footer class="footer"><span>מי שבנה את המודל לא אמור להחזיק הכול לבד</span><span>12</span></footer>
+    </section>
+
+    <section class="slide">
+      <header><span class="eyebrow">מקרה אמיתי</span><h2>כשה־AI של אמזון הפלה נשים</h2></header>
+      <div class="content compare">
+        <div class="card bad">
+          <h3>מה קרה?</h3>
+          <p>מודל סינון קורות חיים למד מנתוני גיוס היסטוריים שבהם גברים היו דומיננטיים, ולכן העניש סימנים שקשורים לנשים.</p>
+        </div>
+        <div class="vs">←</div>
+        <div class="card good">
+          <h3>מה לומדים?</h3>
+          <ul class="clean">
+            <li>לנטר Bias באופן שוטף</li>
+            <li>לבדוק תתי־קבוצות, לא רק ממוצע</li>
+            <li>לערב מנהל עסקי בהגדרת הצלחה</li>
+            <li>לבצע Audit תקופתי</li>
+          </ul>
+        </div>
+      </div>
+      <footer class="footer"><span>נתונים היסטוריים יכולים לשכפל הטיות היסטוריות</span><span>13</span></footer>
+    </section>
+
+    <section class="slide">
+      <header><span class="eyebrow">מקרה אמיתי</span><h2>מודל הונאות שעבד, אבל הפסיק לזהות</h2></header>
+      <div class="content">
+        <p class="lead">בנק ניטר רק זמינות. הרמאים שינו התנהגות, המודל נשאר באוויר, אך יכולת הזיהוי הידרדרה.</p>
+        <div class="grid three">
+          <div class="card bad"><h3>הבעיה</h3><p>Concept Drift ללא ניטור של דיוק המודל.</p></div>
+          <div class="card gold"><h3>הפעולה</h3><p>התראה אוטומטית בירידה של 5% ואימון חודשי.</p></div>
+          <div class="card good"><h3>התוצאה</h3><p>שיפור משמעותי בזיהוי הונאות בתוך שלושה חודשים.</p></div>
+        </div>
+      </div>
+      <footer class="footer"><span>Uptime לא אומר שהמודל עושה עבודה טובה</span><span>14</span></footer>
+    </section>
+
+    <section class="slide">
+      <header><span class="eyebrow">מדדי הצלחה</span><h2>איך יודעים שתוכנית AIOps עובדת?</h2></header>
+      <div class="content">
+        <div class="grid three">
+          <div class="card good"><h3>MTTD</h3><p>כמה זמן לוקח לזהות בעיה?<br><strong>יעד לדוגמה: פחות משעה</strong></p></div>
+          <div class="card gold"><h3>MTTR</h3><p>כמה זמן לוקח לתקן?<br><strong>יעד לדוגמה: פחות מ־4 שעות</strong></p></div>
+          <div class="card navy"><h3>Model Uptime</h3><p>כמה זמן המודל זמין וגם מדויק?<br><strong>יעד: מעל 99.5%</strong></p></div>
+          <div class="card bad"><h3>Drift Rate</h3><p>כמה פעמים זוהה Drift משמעותי?</p></div>
+          <div class="card good"><h3>Deployment Frequency</h3><p>כמה פעמים מעדכנים בהצלחה?</p></div>
+          <div class="card gold"><h3>Rollback Rate</h3><p>איזה אחוז מהעדכונים דרש חזרה אחורה?</p></div>
+        </div>
+      </div>
+      <footer class="footer"><span>גם את תהליך התפעול עצמו צריך למדוד</span><span>15</span></footer>
+    </section>
+
+    <section class="slide">
+      <header><span class="eyebrow">AIOps Canvas</span><h2>8 שאלות לפני שמעלים AI לייצור</h2></header>
+      <div class="content">
+        <div class="grid four">
+          <div class="card good"><h3>1. מה המערכת עושה?</h3><p>תיאור עסקי פשוט.</p></div>
+          <div class="card gold"><h3>2. מה מודדים?</h3><p>3–5 מדדי הצלחה.</p></div>
+          <div class="card bad"><h3>3. מה נחשב כשל?</h3><p>סף ברור לכל מדד.</p></div>
+          <div class="card navy"><h3>4. מי אחראי?</h3><p>שם ותפקיד שמקבלים התראה.</p></div>
+          <div class="card good"><h3>5. מתי מעדכנים?</h3><p>טריגר ותדירות.</p></div>
+          <div class="card gold"><h3>6. מהם הסיכונים?</h3><p>פרטיות, Bias ו־Fallback.</p></div>
+          <div class="card bad"><h3>7. מי מאשר שינוי?</h3><p>תהליך אישור לפני ייצור.</p></div>
+          <div class="card navy"><h3>8. מה התקציב?</h3><p>עלות חודשית לתפעול.</p></div>
+        </div>
+      </div>
+      <footer class="footer"><span>שעה של תכנון יכולה לחסוך חודשים של כאב</span><span>16</span></footer>
+    </section>
+
+    <section class="slide">
+      <header><span class="eyebrow">טעויות נפוצות</span><h2>7 דרכים להסתבך עם AI בייצור</h2></header>
+      <div class="content">
+        <div class="grid four">
+          <div class="card bad"><h3>מפרסמים ושוכחים</h3><p>אין ניטור שוטף ומגלים בעיות מהלקוחות.</p></div>
+          <div class="card bad"><h3>בודקים רק שרת</h3><p>המערכת זמינה, אך המודל כבר לא מדויק.</p></div>
+          <div class="card bad"><h3>אין Rollback</h3><p>כשעדכון נכשל אין דרך מהירה לחזור.</p></div>
+          <div class="card bad"><h3>אדם אחד אחראי להכול</h3><p>מצפים ממי שבנה את המודל גם לתפעל אותו.</p></div>
+          <div class="card bad"><h3>עדכון ישר ל־100%</h3><p>אין Shadow, Canary או בדיקות הדרגתיות.</p></div>
+          <div class="card bad"><h3>אין SLA</h3><p>לא הוגדר מה נחשב תקין ומה נחשב כשל.</p></div>
+          <div class="card bad"><h3>ממשל בסוף הדרך</h3><p>מתייחסים לאבטחה ולרגולציה כמכשול.</p></div>
+          <div class="card good"><h3>הפתרון</h3><p>בעלות ברורה, מדדים, תרגול ותהליך עדכון בטוח.</p></div>
+        </div>
+      </div>
+      <footer class="footer"><span>הכרת הטעויות מראש חוסכת חודשים של עבודה</span><span>17</span></footer>
+    </section>
+
+    <section class="slide">
+      <header><span class="eyebrow">רמת בשלות</span><h2>איפה הארגון שלכם נמצא היום?</h2></header>
+      <div class="content">
+        <div class="flow">
+          <div class="step"><b>1 • Ad Hoc</b><p>אין תהליכים. תקלות מטופלות ידנית.</p></div>
+          <div class="step"><b>2 • Repeatable</b><p>יש ניטור בסיסי ותגובה מוגדרת.</p></div>
+          <div class="step"><b>3 • Defined</b><p>תהליכים מתועדים ו־CI/CD בסיסי.</p></div>
+          <div class="step"><b>4 • Managed</b><p>מדדים, Drift Detection ודשבורדים.</p></div>
+          <div class="step"><b>5 • Optimizing</b><p>שיפור אוטומטי ומערכות שמתקנות את עצמן.</p></div>
+        </div>
+        <p class="lead" style="margin-top:25px">לא חייבים לקפוץ לרמה 5. המטרה היא להתקדם רמה אחת באופן אמין.</p>
+      </div>
+      <footer class="footer"><span>בשלות היא מסע, לא רכישת כלי</span><span>18</span></footer>
+    </section>
+
+    <section class="slide">
+      <header><span class="eyebrow">תמיכה ארגונית</span><h2>איך משכנעים הנהלה להשקיע?</h2></header>
+      <div class="content compare">
+        <div class="card navy">
+          <h3>מה כל בעל עניין רוצה לדעת?</h3>
+          <ul class="clean">
+            <li>CTO: האם זה מוריד סיכון טכני?</li>
+            <li>CFO: מה ה־ROI ומה עלות אי־הפעולה?</li>
+            <li>מוצר: האם זה יאט פיתוח?</li>
+            <li>הנהלה: מה הסיכון העסקי והרגולטורי?</li>
+          </ul>
+        </div>
+        <div class="vs">→</div>
+        <div class="card good">
+          <h3>איך מקבלים אישור?</h3>
+          <ul class="clean">
+            <li>מדברים בשפה עסקית ובכסף</li>
+            <li>מתחילים ב־Pilot קטן</li>
+            <li>מציגים גם את סיכון אי־הפעולה</li>
+            <li>מוצאים מנהל שייקח בעלות</li>
+          </ul>
+        </div>
+      </div>
+      <footer class="footer"><span>הטכנולוגיה היא רק חלק מהאתגר</span><span>19</span></footer>
+    </section>
+
+    <section class="slide">
+      <header><span class="eyebrow">המשך למידה</span><h2>מאיפה מתחילים ללמוד ולבנות?</h2></header>
+      <div class="content">
+        <div class="grid two">
+          <div class="card good">
+            <h3>כלים להתנסות</h3>
+            <p><strong>MLflow</strong> לניהול מודלים וניסויים<br><strong>Evidently AI</strong> לניטור Drift ואיכות נתונים<br><strong>Grafana</strong> ללוחות בקרה<br><strong>Arize AI</strong> לניטור מודלים בייצור</p>
+          </div>
+          <div class="card gold">
+            <h3>קריאה מומלצת</h3>
+            <p><strong>Designing Machine Learning Systems</strong> מאת Chip Huyen<br><strong>Machine Learning Engineering</strong> מאת Andriy Burkov<br><strong>Google MLOps Whitepaper</strong><br><strong>MLOps Community</strong></p>
+          </div>
+        </div>
+        <p class="lead" style="margin-top:25px">בחרו כלי אחד לניטור ומערכת אחת לפיילוט. אין צורך לבנות ערימת כלים שלמה ביום הראשון.</p>
+      </div>
+      <footer class="footer"><span>ללמוד תוך כדי Pilot אמיתי</span><span>20</span></footer>
+    </section>
+
+    <section class="slide">
+      <header><span class="eyebrow">30 הימים הראשונים</span><h2>מה עושים מחר בבוקר?</h2></header>
+      <div class="content">
+        <div class="flow">
+          <div class="step"><b>שבוע 1</b><p>בחרו מערכת AI אחת בייצור.</p></div>
+          <div class="step"><b>שבוע 1</b><p>הגדירו 3 מדדי הצלחה וכשל.</p></div>
+          <div class="step"><b>שבוע 2</b><p>מנו אחראי והתראה ברורה.</p></div>
+          <div class="step"><b>שבוע 3</b><p>הגדירו Fallback ו־Rollback.</p></div>
+          <div class="step"><b>שבוע 4</b><p>תרגלו תקלה והפיקו לקחים.</p></div>
+        </div>
+        <p class="lead" style="margin-top:25px">מתחילים קטן, מוכיחים ערך, ורק אז מרחיבים לשאר המערכות.</p>
+      </div>
+      <footer class="footer"><span>Pilot אחד טוב עדיף מתוכנית ענק שלא מתחילה</span><span>21</span></footer>
+    </section>
+
+    <section class="slide cover">
+      <div class="orb"></div>
+      <header><span class="eyebrow">סיכום</span></header>
+      <div class="content">
+        <h2 style="color:#f8f3e8">המשפט שכדאי לזכור</h2>
+        <p class="big-line">AI מוצלח הוא לא רק מודל חכם.<br>הוא מודל ש<span class="coral">ממשיכים למדוד, לתחזק ולשפר</span>.</p>
+        <div style="margin-top:25px">
+          <span class="tag">ניטור</span><span class="tag">Drift</span><span class="tag">Rollback</span><span class="tag">אחריות</span><span class="tag">רגולציה</span>
+        </div>
+      </div>
+      <footer class="footer"><span>מבוסס על AIOPS.pdf</span><span>22</span></footer>
+    </section>
+  </main>
+
+  <div class="controls" aria-label="ניווט במצגת">
+    <button id="prev" title="הקודם">←</button>
+    <button id="next" title="הבא">→</button>
+    <button id="full" title="מסך מלא">⛶</button>
+  </div>
+  <div class="counter" id="counter">1 / 22</div>
+  <div class="copyright">כל הזכויות שמורות לעופר שחר • מותר שימוש חופשי לתלמידי הכיתה</div>
+
+  <script>
+    const slides = [...document.querySelectorAll('.slide')];
+    let current = 0;
+
+    function show(index) {
+      current = Math.max(0, Math.min(index, slides.length - 1));
+      slides.forEach((slide, i) => slide.classList.toggle('active', i === current));
+      document.getElementById('counter').textContent = `${current + 1} / ${slides.length}`;
+      document.getElementById('progress').style.width = `${((current + 1) / slides.length) * 100}%`;
+      history.replaceState(null, '', `#${current + 1}`);
+    }
+
+    document.getElementById('prev').addEventListener('click', () => show(current - 1));
+    document.getElementById('next').addEventListener('click', () => show(current + 1));
+    document.getElementById('full').addEventListener('click', () => {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+      else document.exitFullscreen?.();
+    });
+    document.addEventListener('keydown', (event) => {
+      if (['ArrowRight', 'PageDown', ' '].includes(event.key)) show(current + 1);
+      if (['ArrowLeft', 'PageUp'].includes(event.key)) show(current - 1);
+      if (event.key === 'Home') show(0);
+      if (event.key === 'End') show(slides.length - 1);
+    });
+    let touchX = 0;
+    document.addEventListener('touchstart', e => touchX = e.changedTouches[0].screenX, {passive:true});
+    document.addEventListener('touchend', e => {
+      const delta = e.changedTouches[0].screenX - touchX;
+      if (Math.abs(delta) > 50) show(current + (delta < 0 ? 1 : -1));
+    }, {passive:true});
+    const requested = Number(location.hash.slice(1));
+    show(Number.isFinite(requested) && requested > 0 ? requested - 1 : 0);
+  </script>
+</body>
+</html>

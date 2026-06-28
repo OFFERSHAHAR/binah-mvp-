@@ -1,0 +1,138 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { hashPassword } from '@/lib/password'
+import { generateAccessToken, generateRefreshToken } from '@/lib/jwt'
+import { validateEmail, validatePassword } from '@/lib/auth-utils'
+import { createUser, getUserPublicData } from '@/lib/db'
+import { checkRateLimit, incrementRateLimit, DEFAULT_AUTH_RATE_LIMIT } from '@/lib/rate-limit'
+
+interface RegisterRequest {
+  email: string
+  password: string
+  confirmPassword: string
+  name: string
+}
+
+export async function POST(request: NextRequest): Promise<NextResponse> {
+  try {
+    const clientIp = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
+    const rateLimitKey = `register:${clientIp}`
+
+    // Check rate limit
+    const rateLimit = checkRateLimit(rateLimitKey, DEFAULT_AUTH_RATE_LIMIT)
+    if (!rateLimit.allowed) {
+      incrementRateLimit(rateLimitKey)
+      return NextResponse.json(
+        {
+          error: 'בקשות רבות מדי. אנא נסה שוב מאוחר יותר.',
+          retryAfter: rateLimit.resetIn,
+        },
+        { status: 429 }
+      )
+    }
+
+    const body: RegisterRequest = await request.json()
+    const { email, password, confirmPassword, name } = body
+
+    // Validation
+    if (!email || !password || !confirmPassword || !name) {
+      incrementRateLimit(rateLimitKey)
+      return NextResponse.json(
+        { error: 'כל השדות הם חובה' },
+        { status: 400 }
+      )
+    }
+
+    if (!validateEmail(email)) {
+      incrementRateLimit(rateLimitKey)
+      return NextResponse.json(
+        { error: 'כתובת דוא"ל לא תקינה' },
+        { status: 400 }
+      )
+    }
+
+    const passwordValidation = validatePassword(password)
+    if (!passwordValidation.isValid) {
+      incrementRateLimit(rateLimitKey)
+      return NextResponse.json(
+        { error: passwordValidation.errors[0] },
+        { status: 400 }
+      )
+    }
+
+    if (password !== confirmPassword) {
+      incrementRateLimit(rateLimitKey)
+      return NextResponse.json(
+        { error: 'הסיסמאות לא תואמות' },
+        { status: 400 }
+      )
+    }
+
+    if (name.trim().length < 2 || name.trim().length > 100) {
+      incrementRateLimit(rateLimitKey)
+      return NextResponse.json(
+        { error: 'השם חייב להיות בין 2 ל-100 תווים' },
+        { status: 400 }
+      )
+    }
+
+    // Hash password
+    const passwordHash = await hashPassword(password)
+
+    // Create user
+    const user = await createUser({
+      email: email.toLowerCase(),
+      passwordHash,
+      name: name.trim(),
+      role: 'student',
+    })
+
+    // Generate tokens
+    const accessToken = generateAccessToken(user.id, user.email)
+    const refreshToken = generateRefreshToken(user.id, user.email)
+
+    // Reset rate limit on success
+    incrementRateLimit(rateLimitKey)
+
+    const response = NextResponse.json(
+      {
+        success: true,
+        user: getUserPublicData(user),
+        tokens: {
+          accessToken,
+          refreshToken,
+        },
+      },
+      { status: 201 }
+    )
+
+    // Set refresh token in HTTP-only cookie
+    response.cookies.set('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60, // 7 days
+      path: '/api/auth',
+    })
+
+    return response
+  } catch (error) {
+    const clientIp = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
+    const rateLimitKey = `register:${clientIp}`
+    incrementRateLimit(rateLimitKey)
+
+    if (error instanceof Error) {
+      if (error.message === 'User already exists') {
+        return NextResponse.json(
+          { error: 'כתובת דוא"ל זו כבר רשומה' },
+          { status: 409 }
+        )
+      }
+    }
+
+    console.error('Registration error:', error)
+    return NextResponse.json(
+      { error: 'שגיאה בהרשמה. אנא נסה שוב מאוחר יותר.' },
+      { status: 500 }
+    )
+  }
+}

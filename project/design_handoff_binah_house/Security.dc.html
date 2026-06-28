@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Heebo', -apple-system, system-ui, sans-serif; -webkit-font-smoothing: antialiased; color: #2E2E48; }
+  @keyframes floatA { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(26px,-30px) scale(1.06); } }
+  @keyframes floatB { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-28px,22px) scale(1.05); } }
+  @keyframes pulseDot { 0%,100% { transform:scale(1); opacity:1; } 50% { transform:scale(1.4); opacity:.5; } }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: rgba(130,135,170,0.24); border-radius: 99px; border: 3px solid transparent; background-clip: padding-box; }
+</style>
+</helmet>
+
+<div dir="rtl" style="position:relative; min-height:100vh; display:flex; background:linear-gradient(170deg,#F8F7FD 0%,#F2F1FA 50%,#F2F9F6 100%); overflow:hidden;">
+
+  <div style="position:absolute; width:560px; height:560px; right:-160px; top:-180px; border-radius:50%; background:radial-gradient(circle at 40% 40%,rgba(214,199,255,0.5),rgba(214,199,255,0) 70%); filter:blur(40px); animation:floatA 22s ease-in-out infinite; pointer-events:none;"></div>
+  <div style="position:absolute; width:500px; height:500px; left:-150px; bottom:-160px; border-radius:50%; background:radial-gradient(circle at 50% 50%,rgba(182,239,212,0.45),rgba(182,239,212,0) 70%); filter:blur(44px); animation:floatB 26s ease-in-out infinite; pointer-events:none;"></div>
+
+  <aside style="position:sticky; top:0; width:248px; flex-shrink:0; height:100vh; padding:26px 18px; display:flex; flex-direction:column; gap:7px; background:rgba(255,255,255,0.58); border-left:1px solid rgba(255,255,255,0.75); backdrop-filter:blur(30px) saturate(160%); z-index:2;">
+    <div style="display:flex; align-items:center; gap:11px; padding:6px 8px 20px;">
+      <div style="width:40px; height:40px; border-radius:13px; background:linear-gradient(135deg,#9FB4F5,#C3A8EE); display:flex; align-items:center; justify-content:center; box-shadow:0 8px 20px rgba(159,180,245,0.5);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v18M3 12h18"/></svg></div>
+      <div>
+        <div style="font-size:18px; font-weight:800; color:#2E2E48; line-height:1;">בִּינָה</div>
+        <div style="font-size:10.5px; font-weight:600; color:#A6AABE; letter-spacing:.14em; margin-top:3px;">אבטחה · ADMIN</div>
+      </div>
+    </div>
+
+    <a href="Instructor.dc.html" style="text-decoration:none; display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:14px; color:#7A7A92; font-size:14.5px; font-weight:600; transition:background .22s ease, color .22s ease, transform .22s cubic-bezier(.34,1.3,.5,1);" style-hover="background:rgba(159,180,245,0.14); color:#5E5AA8; transform:translateX(-4px);">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM2 20a7 7 0 0 1 14 0M17 11a3 3 0 0 0 0-6M22 20a7 7 0 0 0-5-6.7"/></svg> תלמידים
+    </a>
+    <a href="Studio.dc.html" style="text-decoration:none; display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:14px; color:#7A7A92; font-size:14.5px; font-weight:600; transition:background .22s ease, color .22s ease, transform .22s cubic-bezier(.34,1.3,.5,1);" style-hover="background:rgba(159,180,245,0.14); color:#5E5AA8; transform:translateX(-4px);">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.5-4.8 2.5.9-5.4L3.2 7.7l5.4-.8z"/></svg> סטודיו AI
+    </a>
+    <div style="display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:14px; background:linear-gradient(135deg,rgba(159,180,245,0.22),rgba(195,168,238,0.16)); border:1px solid rgba(255,255,255,0.8); color:#5E5AA8; font-size:14.5px; font-weight:700;">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 4 5v6c0 5 3.5 8 8 11 4.5-3 8-6 8-11V5l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg> אבטחה והרשאות
+    </div>
+
+    <div style="margin-top:auto; padding:16px; border-radius:18px; background:linear-gradient(140deg,#D7F5E6,#CDEBF5); border:1px solid rgba(255,255,255,0.8); box-shadow:0 8px 22px rgba(80,160,140,0.12);">
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;"><span style="width:9px; height:9px; border-radius:50%; background:#2E9E72; animation:pulseDot 2s infinite;"></span><span style="font-size:12.5px; font-weight:700; color:#2E7E5E;">כל המערכות תקינות</span></div>
+      <div style="font-size:11px; color:#4E7E6E; line-height:1.5;">הצפנה מקצה לקצה · גיבוי אחרון לפני 14 דק׳</div>
+    </div>
+  </aside>
+
+  <main style="position:relative; flex:1; height:100vh; overflow-y:auto; padding:30px 36px 60px; z-index:1;">
+
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;">
+      <div>
+        <div style="font-size:26px; font-weight:800; color:#2E2E48; letter-spacing:-.01em;">אבטחה ובקרת גישה</div>
+        <div style="font-size:14.5px; color:#7A7A92; margin-top:4px;">כל ההרשאות, האותנטיקציה והתשתית — בשליטה מלאה של המרצה.</div>
+      </div>
+      <div style="display:inline-flex; align-items:center; gap:9px; height:46px; padding:0 18px; border-radius:15px; background:rgba(111,214,168,0.16); border:1px solid rgba(111,214,168,0.3);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2E9E72" stroke-width="2.2"><path d="M12 2 4 5v6c0 5 3.5 8 8 11 4.5-3 8-6 8-11V5l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg>
+        <span style="font-size:14px; font-weight:700; color:#2E7E5E;">רמת אבטחה: גבוהה</span>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:26px;">
+      <sc-for list="{{ infra }}" as="i" hint-placeholder-count="4">
+        <div style="padding:18px 20px; border-radius:22px; background:rgba(255,255,255,0.66); border:1px solid rgba(255,255,255,0.85); backdrop-filter:blur(30px); box-shadow:0 10px 26px rgba(80,70,140,0.06); transition:transform .3s cubic-bezier(.34,1.35,.5,1), box-shadow .3s ease;" style-hover="transform:translateY(-5px); box-shadow:0 20px 40px rgba(80,70,140,0.14);">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+            <div style="width:38px; height:38px; border-radius:12px; background:{{ i.iconBg }}; display:flex; align-items:center; justify-content:center;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="{{ i.iconColor }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ i.icon }}"/></svg></div>
+            <span style="display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700; color:#2E9E72;"><span style="width:6px; height:6px; border-radius:50%; background:#2E9E72; animation:pulseDot 2s infinite;"></span>{{ i.status }}</span>
+          </div>
+          <div style="font-size:14px; font-weight:700; color:#2E2E48;">{{ i.label }}</div>
+          <div style="font-size:12px; color:#A6AABE; margin-top:3px;">{{ i.meta }}</div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px; align-items:start; margin-bottom:18px;">
+
+      <div style="border-radius:24px; background:rgba(255,255,255,0.7); border:1px solid rgba(255,255,255,0.85); backdrop-filter:blur(30px); box-shadow:0 12px 30px rgba(80,70,140,0.06); padding:22px;">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:18px;">
+          <div style="width:36px; height:36px; border-radius:11px; background:rgba(159,180,245,0.18); display:flex; align-items:center; justify-content:center;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#5E5AA8" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>
+          <div style="font-size:16.5px; font-weight:800; color:#2E2E48;">אותנטיקציה (כניסה)</div>
+        </div>
+        <sc-for list="{{ auth }}" as="a" hint-placeholder-count="5">
+          <div style="display:flex; align-items:center; gap:13px; padding:13px 0; border-bottom:1px solid rgba(130,135,170,0.1);">
+            <div style="width:36px; height:36px; border-radius:11px; background:{{ a.iconBg }}; display:flex; align-items:center; justify-content:center; flex-shrink:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{ a.iconColor }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ a.icon }}"/></svg></div>
+            <div style="flex:1;"><div style="font-size:14px; font-weight:700; color:#2E2E48;">{{ a.label }}</div><div style="font-size:11.5px; color:#A6AABE;">{{ a.sub }}</div></div>
+            <div onClick="{{ a.toggle }}" style="width:46px; height:27px; border-radius:14px; background:{{ a.bg }}; position:relative; cursor:pointer; transition:background .25s ease;"><div style="position:absolute; width:21px; height:21px; border-radius:50%; background:#fff; top:3px; {{ a.knob }}:3px; box-shadow:0 1px 4px rgba(0,0,0,0.2); transition:all .25s cubic-bezier(.34,1.4,.5,1);"></div></div>
+          </div>
+        </sc-for>
+        <div style="margin-top:16px; padding:13px 15px; border-radius:14px; background:rgba(159,180,245,0.1);">
+          <div style="font-size:12.5px; font-weight:700; color:#6C6C88; margin-bottom:9px;">מדיניות סיסמאות</div>
+          <div style="display:flex; flex-wrap:wrap; gap:7px;">
+            <span style="font-size:11.5px; font-weight:700; color:#5E5AA8; background:rgba(159,180,245,0.18); padding:5px 11px; border-radius:99px;">מינ׳ 10 תווים</span>
+            <span style="font-size:11.5px; font-weight:700; color:#5E5AA8; background:rgba(159,180,245,0.18); padding:5px 11px; border-radius:99px;">אות גדולה + מספר</span>
+            <span style="font-size:11.5px; font-weight:700; color:#5E5AA8; background:rgba(159,180,245,0.18); padding:5px 11px; border-radius:99px;">החלפה כל 90 יום</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="border-radius:24px; background:rgba(255,255,255,0.7); border:1px solid rgba(255,255,255,0.85); backdrop-filter:blur(30px); box-shadow:0 12px 30px rgba(80,70,140,0.06); padding:22px;">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:18px;">
+          <div style="width:36px; height:36px; border-radius:11px; background:rgba(195,168,238,0.2); display:flex; align-items:center; justify-content:center;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#A88AE0" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 11h-6M19 8v6"/></svg></div>
+          <div style="font-size:16.5px; font-weight:800; color:#2E2E48;">הרשאות ותפקידים</div>
+        </div>
+        <sc-for list="{{ roles }}" as="r" hint-placeholder-count="3">
+          <div style="padding:14px; border-radius:16px; background:{{ r.cardBg }}; border:1px solid {{ r.cardBorder }}; margin-bottom:11px;">
+            <div style="display:flex; align-items:center; gap:11px; margin-bottom:10px;">
+              <div style="width:38px; height:38px; border-radius:11px; background:{{ r.grad }}; display:flex; align-items:center; justify-content:center; color:#fff; flex-shrink:0;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ r.icon }}"/></svg></div>
+              <div style="flex:1;"><div style="font-size:14.5px; font-weight:800; color:#2E2E48;">{{ r.name }}</div><div style="font-size:11.5px; color:#A6AABE;">{{ r.count }}</div></div>
+              <span style="font-size:11px; font-weight:700; color:{{ r.badgeColor }}; background:{{ r.badgeBg }}; padding:4px 11px; border-radius:99px;">{{ r.scope }}</span>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:6px;">
+              <sc-for list="{{ r.perms }}" as="p" hint-placeholder-count="3">
+                <span style="display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:600; color:{{ p.color }}; background:{{ p.bg }}; padding:5px 10px; border-radius:8px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="{{ p.color }}" stroke-width="2.6"><path d="{{ p.mark }}"/></svg>{{ p.label }}</span>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px; align-items:start;">
+      <div style="border-radius:24px; background:rgba(255,255,255,0.7); border:1px solid rgba(255,255,255,0.85); backdrop-filter:blur(30px); box-shadow:0 12px 30px rgba(80,70,140,0.06); padding:22px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+          <div style="display:flex; align-items:center; gap:10px;"><div style="width:36px; height:36px; border-radius:11px; background:rgba(127,211,192,0.2); display:flex; align-items:center; justify-content:center;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#2E9E72" stroke-width="2"><path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0zM12 7v5l3 2"/></svg></div><div style="font-size:16.5px; font-weight:800; color:#2E2E48;">יומן פעילות (Audit)</div></div>
+          <span style="font-size:12px; font-weight:600; color:#8A7FD8; cursor:pointer;">ייצוא יומן</span>
+        </div>
+        <sc-for list="{{ audit }}" as="ev" hint-placeholder-count="5">
+          <div style="display:flex; align-items:center; gap:12px; padding:11px 0; border-bottom:1px solid rgba(130,135,170,0.1);">
+            <div style="width:9px; height:9px; border-radius:50%; background:{{ ev.dot }}; flex-shrink:0;"></div>
+            <div style="flex:1;"><div style="font-size:13px; font-weight:600; color:#2E2E48;">{{ ev.text }}</div></div>
+            <span style="font-size:11.5px; color:#A6AABE; flex-shrink:0;">{{ ev.time }}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:18px;">
+        <div style="border-radius:24px; background:rgba(255,255,255,0.7); border:1px solid rgba(255,255,255,0.85); backdrop-filter:blur(30px); box-shadow:0 12px 30px rgba(80,70,140,0.06); padding:22px;">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;"><div style="width:36px; height:36px; border-radius:11px; background:rgba(255,191,140,0.22); display:flex; align-items:center; justify-content:center;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#E5821A" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div><div style="font-size:16.5px; font-weight:800; color:#2E2E48;">מושבים פעילים</div></div>
+          <sc-for list="{{ sessions }}" as="se" hint-placeholder-count="3">
+            <div style="display:flex; align-items:center; gap:12px; padding:11px 0; border-bottom:1px solid rgba(130,135,170,0.1);">
+              <div style="width:36px; height:36px; border-radius:11px; background:rgba(130,135,170,0.1); display:flex; align-items:center; justify-content:center; flex-shrink:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A7A92" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ se.icon }}"/></svg></div>
+              <div style="flex:1;"><div style="font-size:13.5px; font-weight:700; color:#2E2E48;">{{ se.device }}</div><div style="font-size:11.5px; color:#A6AABE;">{{ se.meta }}</div></div>
+              <div onClick="{{ se.kick }}" style="font-size:11.5px; font-weight:700; color:{{ se.actionColor }}; background:{{ se.actionBg }}; padding:6px 12px; border-radius:99px; cursor:pointer;">{{ se.action }}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="border-radius:24px; background:linear-gradient(140deg,#DDE6FF,#EBDFFB); border:1px solid rgba(255,255,255,0.8); box-shadow:0 12px 30px rgba(120,110,190,0.14); padding:22px; display:flex; align-items:center; gap:16px;">
+          <div style="width:52px; height:52px; border-radius:15px; background:linear-gradient(135deg,#9FB4F5,#C3A8EE); display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 8px 18px rgba(150,140,220,0.35);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.2 5.6L20 9l-5.8 1.4L12 16l-2.2-5.6L4 9l5.8-1.4z"/></svg></div>
+          <div style="flex:1;"><div style="font-size:15px; font-weight:800; color:#2E2E48;">שבי מנטר את האבטחה</div><div style="font-size:12px; color:#6C6C88; line-height:1.5; margin-top:3px;">"זוהו 0 ניסיונות גישה חריגים ב-24 השעות האחרונות. הכל תקין."</div></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+class Component extends DCLogic {
+  state = { auth: { '2fa': true, sso: true, email: true, biometric: false, ip: false } };
+
+  renderVals() {
+    const infra = [
+      { label: 'מאגר נתונים', meta: 'PostgreSQL · 99.98% זמינות', status: 'תקין', icon: 'M12 3c4.4 0 8 1.3 8 3s-3.6 3-8 3-8-1.3-8-3 3.6-3 8-3zM4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6', iconBg: 'rgba(159,180,245,0.18)', iconColor: '#5E5AA8' },
+      { label: 'אחסון קבצים', meta: 'מוצפן AES-256 · 64GB', status: 'תקין', icon: 'M3 7l9-4 9 4-9 4-9-4zM3 7v10l9 4 9-4V7', iconBg: 'rgba(127,211,192,0.2)', iconColor: '#2E9E72' },
+      { label: 'שרת API', meta: 'זמן תגובה 42ms', status: 'תקין', icon: 'M5 12h14M5 12a7 7 0 0 1 14 0M5 12a7 7 0 0 0 14 0M12 5v14', iconBg: 'rgba(195,168,238,0.2)', iconColor: '#A88AE0' },
+      { label: 'גיבוי אוטומטי', meta: 'אחרון: לפני 14 דקות', status: 'פעיל', icon: 'M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5', iconBg: 'rgba(255,191,140,0.22)', iconColor: '#E5821A' },
+    ];
+
+    const a = this.state.auth;
+    const onG = 'linear-gradient(135deg,#9FB4F5,#C3A8EE)';
+    const row = (key, label, sub, icon, iconBg, iconColor) => ({
+      label, sub, icon, iconBg, iconColor,
+      bg: a[key] ? onG : 'rgba(130,135,170,0.22)', knob: a[key] ? 'left' : 'right',
+      toggle: () => this.setState(s => ({ auth: { ...s.auth, [key]: !s.auth[key] } })),
+    });
+    const auth = [
+      row('2fa', 'אימות דו-שלבי (2FA)', 'חובה לכל המשתמשים', 'M12 2 4 5v6c0 5 3.5 8 8 11 4.5-3 8-6 8-11V5l-8-3ZM9 12l2 2 4-4', 'rgba(111,214,168,0.18)', '#2E9E72'),
+      row('email', 'אימייל + סיסמה', 'התחברות סטנדרטית', 'M3 5h18v14H3zM3 7l9 6 9-6', 'rgba(159,180,245,0.18)', '#5E5AA8'),
+      row('sso', 'כניסה עם Google / Apple', 'SSO מאובטח', 'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM2 12h20M12 2c3 3 3 17 0 20M12 2c-3 3-3 17 0 20', 'rgba(195,168,238,0.2)', '#A88AE0'),
+      row('biometric', 'כניסה ביומטרית', 'Face ID / טביעת אצבע', 'M12 11a3 3 0 0 0-3 3v3M12 7a7 7 0 0 0-7 7v2M12 7a7 7 0 0 1 7 7M15 14v3M9 21h.01', 'rgba(255,191,140,0.22)', '#E5821A'),
+      row('ip', 'הגבלת כתובות IP', 'גישה רק מרשתות מאושרות', 'M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20', 'rgba(127,211,192,0.2)', '#2E9E72'),
+    ];
+
+    const yes = (l) => ({ label: l, color: '#2E7E5E', bg: 'rgba(111,214,168,0.16)', mark: 'M20 6 9 17l-5-5' });
+    const no = (l) => ({ label: l, color: '#A6AABE', bg: 'rgba(130,135,170,0.1)', mark: 'M18 6 6 18M6 6l12 12' });
+    const roles = [
+      { name: 'מרצה (שבי)', count: 'משתמש 1 · בעל שליטה מלאה', scope: 'גישה מלאה', badgeColor: '#2E7E5E', badgeBg: 'rgba(111,214,168,0.18)',
+        grad: 'linear-gradient(135deg,#9FB4F5,#C3A8EE)', cardBg: 'rgba(159,180,245,0.08)', cardBorder: 'rgba(159,180,245,0.3)',
+        icon: 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM2 20a7 7 0 0 1 14 0M17 11a3 3 0 0 0 0-6M22 20a7 7 0 0 0-5-6.7',
+        perms: [yes('ניהול תלמידים'), yes('בניית קורסים'), yes('שחרור מבחנים'), yes('הפעלת תרגום'), yes('אבטחה והרשאות')] },
+      { name: 'תלמיד', count: '6 משתמשים', scope: 'גישה מוגבלת', badgeColor: '#5E5AA8', badgeBg: 'rgba(159,180,245,0.16)',
+        grad: 'linear-gradient(135deg,#FFC8A8,#FFAFC8)', cardBg: 'rgba(255,255,255,0.5)', cardBorder: 'rgba(130,135,170,0.14)',
+        icon: 'M12 2 2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5',
+        perms: [yes('צפייה בקורס שלו'), yes('הגשת מבחנים'), yes('צ׳אט עם מרצה'), no('עריכת תכנים'), no('גישה לתלמידים אחרים')] },
+      { name: 'אורח / נרשם', count: 'ממתין לאישור מרצה', scope: 'לפני תשלום', badgeColor: '#E5821A', badgeBg: 'rgba(255,191,140,0.2)',
+        grad: 'linear-gradient(135deg,#FFD08A,#FFB0A0)', cardBg: 'rgba(255,255,255,0.5)', cardBorder: 'rgba(130,135,170,0.14)',
+        icon: 'M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM3 21a9 9 0 0 1 18 0',
+        perms: [yes('צפייה בתצוגה מקדימה'), no('גישה לקורס'), no('מבחנים')] },
+    ];
+
+    const audit = [
+      { text: 'שבי (מרצה) עדכן הרשאת תרגום עבור דנה לוי', time: 'לפני 8 דק׳', dot: '#5E5AA8' },
+      { text: 'התחברות מוצלחת · אורי בר · 2FA אומת', time: 'לפני 22 דק׳', dot: '#2E9E72' },
+      { text: 'ניסיון התחברות נכשל · נחסם אוטומטית', time: 'לפני שעה', dot: '#E5821A' },
+      { text: 'גיבוי מסד נתונים הושלם בהצלחה', time: 'לפני שעה', dot: '#2E9E72' },
+      { text: 'שבי שחרר מבחן מתוזמן למאיה רון', time: 'אתמול 19:40', dot: '#5E5AA8' },
+    ];
+
+    const sessions = [
+      { device: 'MacBook · שבי (מרצה)', meta: 'תל אביב · המכשיר הנוכחי', icon: 'M3 5h18v11H3zM2 20h20M9 16v4', action: 'פעיל', actionColor: '#2E7E5E', actionBg: 'rgba(111,214,168,0.16)', kick: () => {} },
+      { device: 'iPhone · דנה לוי', meta: 'חיפה · פעיל לפני 5 דק׳', icon: 'M7 2h10v20H7zM11 18h2', action: 'נתק', actionColor: '#E5483C', actionBg: 'rgba(255,107,107,0.14)', kick: () => {} },
+      { device: 'Chrome · אורי בר', meta: 'ירושלים · פעיל לפני שעה', icon: 'M3 3h18v18H3zM3 9h18', action: 'נתק', actionColor: '#E5483C', actionBg: 'rgba(255,107,107,0.14)', kick: () => {} },
+    ];
+
+    return { infra, auth, roles, audit, sessions };
+  }
+}
+</script>
+</body>
+</html>

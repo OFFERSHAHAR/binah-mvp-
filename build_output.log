@@ -1,0 +1,27 @@
+
+> ai-school-parallax@1.0.0 build
+> next build
+
+ ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of C:\Users\GamingPC\package-lock.json as the root directory.
+ To silence this warning, set `outputFileTracingRoot` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/output#caveats for more information.
+ Detected additional lockfiles: 
+   * C:\Users\GamingPC\Downloads\בית ספר AI עם עיצוב iOS-handoff\ai-ios\package-lock.json
+
+   ▲ Next.js 15.5.19
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 1292ms
+   Linting and checking validity of types ...
+Failed to compile.
+
+./lib/supabase.ts:1:30
+Type error: Cannot find module '@supabase/supabase-js' or its corresponding type declarations.
+
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m { createClient } [36mfrom[39m [32m'@supabase/supabase-js'[39m
+ [90m   |[39m                              [31m[1m^[22m[39m
+ [90m 2 |[39m
+ [90m 3 |[39m [90m// Get from your Supabase project settings[39m
+ [90m 4 |[39m [36mconst[39m supabaseUrl [33m=[39m process[33m.[39menv[33m.[39m[33mNEXT_PUBLIC_SUPABASE_URL[39m [33m||[39m [32m''[39m[0m
+Next.js build worker exited with code: 1 and signal: null

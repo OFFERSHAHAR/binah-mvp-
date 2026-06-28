@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Heebo', -apple-system, system-ui, sans-serif; -webkit-font-smoothing: antialiased; color: #2E2E48; }
+  @keyframes floatA { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(26px,-30px) scale(1.06); } }
+  @keyframes floatB { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-28px,22px) scale(1.05); } }
+  @keyframes pulseDot { 0%,100% { transform:scale(1); opacity:1; } 50% { transform:scale(1.4); opacity:.5; } }
+  ::-webkit-scrollbar { width: 9px; height: 9px; }
+  ::-webkit-scrollbar-thumb { background: rgba(130,135,170,0.24); border-radius: 99px; border: 2px solid transparent; background-clip: padding-box; }
+  input::placeholder { color: #A6AABE; }
+</style>
+</helmet>
+
+<div dir="rtl" style="position:relative; min-height:100vh; display:flex; background:linear-gradient(170deg,#F8F7FD 0%,#F2F1FA 50%,#F2F9F6 100%); overflow:hidden;">
+
+  <div style="position:absolute; width:560px; height:560px; right:-160px; top:-180px; border-radius:50%; background:radial-gradient(circle at 40% 40%,rgba(214,199,255,0.5),rgba(214,199,255,0) 70%); filter:blur(40px); animation:floatA 22s ease-in-out infinite; pointer-events:none;"></div>
+  <div style="position:absolute; width:500px; height:500px; left:-150px; bottom:-160px; border-radius:50%; background:radial-gradient(circle at 50% 50%,rgba(182,239,212,0.45),rgba(182,239,212,0) 70%); filter:blur(44px); animation:floatB 26s ease-in-out infinite; pointer-events:none;"></div>
+
+  <aside style="position:sticky; top:0; width:240px; flex-shrink:0; height:100vh; padding:26px 18px; display:flex; flex-direction:column; gap:7px; background:rgba(255,255,255,0.58); border-left:1px solid rgba(255,255,255,0.75); backdrop-filter:blur(30px) saturate(160%); z-index:2;">
+    <div style="display:flex; align-items:center; gap:11px; padding:6px 8px 20px;">
+      <div style="width:40px; height:40px; border-radius:13px; background:linear-gradient(135deg,#9FB4F5,#C3A8EE); display:flex; align-items:center; justify-content:center; box-shadow:0 8px 20px rgba(159,180,245,0.5);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v18M3 12h18"/></svg></div>
+      <div>
+        <div style="font-size:18px; font-weight:800; color:#2E2E48; line-height:1;">בִּינָה</div>
+        <div style="font-size:10.5px; font-weight:600; color:#A6AABE; letter-spacing:.14em; margin-top:3px;">בונה שיעורים</div>
+      </div>
+    </div>
+
+    <a href="Instructor.dc.html" style="text-decoration:none; display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:14px; color:#7A7A92; font-size:14.5px; font-weight:600; transition:background .22s ease, color .22s ease, transform .22s cubic-bezier(.34,1.3,.5,1);" style-hover="background:rgba(159,180,245,0.14); color:#5E5AA8; transform:translateX(-4px);">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM2 20a7 7 0 0 1 14 0M17 11a3 3 0 0 0 0-6M22 20a7 7 0 0 0-5-6.7"/></svg> תלמידים
+    </a>
+    <div style="display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:14px; background:linear-gradient(135deg,rgba(159,180,245,0.22),rgba(195,168,238,0.16)); border:1px solid rgba(255,255,255,0.8); color:#5E5AA8; font-size:14.5px; font-weight:700;">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4zM8 9h8M8 13h5"/></svg> בניית שיעור
+    </div>
+    <a href="Studio.dc.html" style="text-decoration:none; display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:14px; color:#7A7A92; font-size:14.5px; font-weight:600; transition:background .22s ease, color .22s ease, transform .22s cubic-bezier(.34,1.3,.5,1);" style-hover="background:rgba(159,180,245,0.14); color:#5E5AA8; transform:translateX(-4px);">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.5-4.8 2.5.9-5.4L3.2 7.7l5.4-.8z"/></svg> סטודיו AI
+    </a>
+    <a href="Teams.dc.html" style="text-decoration:none; display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:14px; color:#7A7A92; font-size:14.5px; font-weight:600; transition:background .22s ease, color .22s ease, transform .22s cubic-bezier(.34,1.3,.5,1);" style-hover="background:rgba(159,180,245,0.14); color:#5E5AA8; transform:translateX(-4px);">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/></svg> צוותים
+    </a>
+
+    <div style="margin-top:auto;">
+      <div style="font-size:11px; font-weight:700; color:#A6AABE; letter-spacing:.04em; padding:0 6px 6px;">שיעורים במאגר</div>
+      <div style="display:flex; align-items:center; gap:9px; padding:9px 10px; border-radius:12px; background:rgba(255,255,255,0.5);"><span style="width:7px; height:7px; border-radius:50%; background:#2E9E72;"></span><span style="font-size:12px; color:#4A4A66;">AIOps · תקלה שקטה</span></div>
+      <div style="display:flex; align-items:center; gap:9px; padding:9px 10px; border-radius:12px;"><span style="width:7px; height:7px; border-radius:50%; background:#2E9E72;"></span><span style="font-size:12px; color:#4A4A66;">Drift · זיהוי סטייה</span></div>
+      <div style="display:flex; align-items:center; gap:9px; padding:9px 10px; border-radius:12px;"><span style="width:7px; height:7px; border-radius:50%; background:#E5821A;"></span><span style="font-size:12px; color:#4A4A66;">ממשל ואחריות · טיוטה</span></div>
+    </div>
+  </aside>
+
+  <main style="position:relative; flex:1; height:100vh; overflow-y:auto; padding:26px 28px 50px; z-index:1;">
+
+    <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:20px;">
+      <div>
+        <input style="border:none; background:transparent; outline:none; font-size:23px; font-weight:800; font-family:inherit; color:#2E2E48; text-align:right; width:440px;" value="שיעור חדש: שרשרת סוכנים + MCP"/>
+        <div style="font-size:13px; color:#A6AABE; margin-top:2px;">{{ blockCount }} בלוקים · משך משוער {{ totalTime }} · קורס «סוכני AI בארגון»</div>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <a href="Studio.dc.html" style="text-decoration:none; display:inline-flex; align-items:center; gap:8px; height:44px; padding:0 16px; border-radius:14px; background:rgba(195,168,238,0.16); border:1px solid rgba(195,168,238,0.3); font-size:13.5px; font-weight:700; color:#A06FD0; cursor:pointer; transition:transform .2s;" style-hover="transform:translateY(-2px);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A06FD0" stroke-width="2"><path d="M2 4h20v16H2zM8 4v5M11 13l4 2.5-4 2.5z"/></svg> צור סרטון שיעור</a>
+        <div onClick="{{ saveLesson }}" style="display:inline-flex; align-items:center; gap:8px; height:44px; padding:0 20px; border-radius:14px; background:linear-gradient(135deg,#9FB4F5,#C3A8EE); color:#fff; font-size:14px; font-weight:700; cursor:pointer; box-shadow:0 8px 20px rgba(150,140,220,0.34); transition:transform .24s cubic-bezier(.34,1.4,.5,1), box-shadow .24s ease;" style-hover="transform:translateY(-3px) scale(1.03); box-shadow:0 16px 32px rgba(150,140,220,0.46);">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2zM17 21v-8H7v8M7 3v5h8"/></svg>
+          {{ saveLabel }}
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:312px 1fr 286px; gap:16px; align-items:start;">
+
+      <div style="border-radius:24px; background:rgba(255,255,255,0.7); border:1px solid rgba(255,255,255,0.85); backdrop-filter:blur(30px); box-shadow:0 12px 30px rgba(80,70,140,0.06); overflow:hidden;">
+        <div style="padding:18px 18px 12px;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:3px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E5AA8" stroke-width="2"><path d="M3 7l9-4 9 4-9 4-9-4zM3 7v10l9 4 9-4V7"/></svg><div style="font-size:15.5px; font-weight:800; color:#2E2E48;">מאגר החומרים</div></div>
+          <div style="font-size:11.5px; color:#A6AABE; margin-bottom:12px;">כל החומר הלימודי במקום אחד · לחץ + להוספה</div>
+          <div style="display:flex; align-items:center; gap:8px; height:40px; padding:0 13px; border-radius:12px; background:rgba(130,135,170,0.08);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#A6AABE" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input style="flex:1; border:none; background:transparent; outline:none; font-size:13px; font-family:inherit; text-align:right; color:#2E2E48;" placeholder="חפש נושא, מצגת, סרטון…"/></div>
+          <div style="display:flex; gap:6px; margin-top:11px; flex-wrap:wrap;">
+            <sc-for list="{{ filters }}" as="f" hint-placeholder-count="4">
+              <div onClick="{{ f.select }}" style="padding:6px 11px; border-radius:99px; background:{{ f.bg }}; color:{{ f.color }}; font-size:11.5px; font-weight:700; cursor:pointer; transition:all .18s ease;">{{ f.label }}</div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="padding:2px 12px 14px; max-height:496px; overflow-y:auto;">
+          <sc-for list="{{ library }}" as="g" hint-placeholder-count="3">
+            <div style="font-size:11px; font-weight:800; color:#A6AABE; letter-spacing:.03em; padding:10px 8px 6px;">{{ g.group }}</div>
+            <sc-for list="{{ g.items }}" as="m" hint-placeholder-count="3">
+              <div onClick="{{ m.add }}" style="display:flex; align-items:center; gap:11px; padding:10px; border-radius:13px; cursor:pointer; transition:background .18s ease;" style-hover="background:rgba(159,180,245,0.1);">
+                <div style="width:36px; height:36px; border-radius:11px; background:{{ m.iconBg }}; display:flex; align-items:center; justify-content:center; flex-shrink:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{ m.iconColor }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ m.icon }}"/></svg></div>
+                <div style="flex:1; min-width:0;"><div style="font-size:13px; font-weight:700; color:#2E2E48; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ m.title }}</div><div style="font-size:10.5px; color:#A6AABE;">{{ m.meta }}</div></div>
+                <div style="width:26px; height:26px; border-radius:8px; background:rgba(159,180,245,0.16); display:flex; align-items:center; justify-content:center; flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#5E5AA8" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></div>
+              </div>
+            </sc-for>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="border-radius:24px; background:rgba(255,255,255,0.6); border:1px solid rgba(255,255,255,0.8); backdrop-filter:blur(30px); box-shadow:0 12px 30px rgba(80,70,140,0.06); padding:20px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+          <div style="font-size:15.5px; font-weight:800; color:#2E2E48;">מבנה השיעור</div>
+          <div style="font-size:12px; color:#A6AABE;">גרור לסידור מחדש</div>
+        </div>
+
+        <sc-for list="{{ blocks }}" as="b" hint-placeholder-count="4">
+          <div style="display:flex; align-items:stretch; gap:11px; margin-bottom:11px;">
+            <div style="display:flex; flex-direction:column; align-items:center; gap:5px; padding-top:6px;">
+              <div style="width:28px; height:28px; border-radius:9px; background:{{ b.numBg }}; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:#fff;">{{ b.num }}</div>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#C3C6DA" stroke-width="2"><circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/></svg>
+            </div>
+            <div style="flex:1; display:flex; align-items:center; gap:13px; padding:14px 16px; border-radius:16px; background:rgba(255,255,255,0.85); border:1px solid rgba(255,255,255,0.9); box-shadow:0 6px 16px rgba(80,70,140,0.05);">
+              <div style="width:42px; height:42px; border-radius:12px; background:{{ b.grad }}; display:flex; align-items:center; justify-content:center; flex-shrink:0;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ b.icon }}"/></svg></div>
+              <div style="flex:1;"><div style="font-size:14.5px; font-weight:700; color:#2E2E48;">{{ b.title }}</div><div style="font-size:11.5px; color:#A6AABE; margin-top:2px;">{{ b.kind }} · {{ b.time }}</div></div>
+              <span style="font-size:10.5px; font-weight:700; color:{{ b.tagColor }}; background:{{ b.tagBg }}; padding:4px 10px; border-radius:99px;">{{ b.tag }}</span>
+              <div onClick="{{ b.remove }}" style="width:30px; height:30px; border-radius:9px; background:rgba(130,135,170,0.08); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .18s;" style-hover="background:rgba(255,107,107,0.14);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9AA0B4" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></div>
+            </div>
+          </div>
+        </sc-for>
+
+        <sc-if value="{{ empty }}" hint-placeholder-val="">
+          <div style="text-align:center; padding:44px 20px; color:#A6AABE; font-size:13.5px;">השיעור ריק — הוסף חומרים מהמאגר או תן לשבי לבנות אוטומטית.</div>
+        </sc-if>
+
+        <div style="display:flex; gap:9px; margin-top:6px;">
+          <sc-for list="{{ quickAdd }}" as="q" hint-placeholder-count="3">
+            <div onClick="{{ q.add }}" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; padding:13px; border-radius:14px; border:1.5px dashed rgba(130,135,170,0.32); cursor:pointer; transition:background .2s, border-color .2s;" style-hover="background:rgba(159,180,245,0.07); border-color:rgba(159,180,245,0.5);">
+              <div style="width:32px; height:32px; border-radius:10px; background:{{ q.grad }}; display:flex; align-items:center; justify-content:center;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ q.icon }}"/></svg></div>
+              <span style="font-size:11.5px; font-weight:700; color:#5E5AA8;">{{ q.label }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div style="border-radius:22px; background:linear-gradient(140deg,#DDE6FF,#EBDFFB); border:1px solid rgba(255,255,255,0.8); box-shadow:0 12px 28px rgba(120,110,190,0.14); padding:20px;">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;"><div style="width:38px; height:38px; border-radius:12px; background:linear-gradient(135deg,#9FB4F5,#C3A8EE); display:flex; align-items:center; justify-content:center; box-shadow:0 6px 14px rgba(150,140,220,0.35);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 2l2.2 5.6L20 9l-5.8 1.4L12 16l-2.2-5.6L4 9z"/></svg></div><div style="font-size:15px; font-weight:800; color:#2E2E48;">שבי בונה לך</div></div>
+          <div style="font-size:12px; color:#6C6C88; line-height:1.5; margin-bottom:13px;">תאר מה תרצה ללמד — ושבי ירכיב טיוטת שיעור ממוקדת מהמאגר.</div>
+          <div onClick="{{ shviBuild }}" style="display:flex; align-items:center; justify-content:center; gap:8px; padding:12px; border-radius:13px; background:linear-gradient(135deg,#9FB4F5,#C3A8EE); color:#fff; font-size:13.5px; font-weight:700; cursor:pointer; box-shadow:0 8px 18px rgba(150,140,220,0.3); transition:transform .22s cubic-bezier(.34,1.4,.5,1);" style-hover="transform:translateY(-2px);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="M5 12h14M12 5l7 7-7 7"/></svg> {{ shviLabel }}</div>
+        </div>
+
+        <div style="border-radius:22px; background:rgba(255,255,255,0.7); border:1px solid rgba(255,255,255,0.85); backdrop-filter:blur(30px); box-shadow:0 12px 28px rgba(80,70,140,0.06); padding:20px;">
+          <div style="font-size:15px; font-weight:800; color:#2E2E48; margin-bottom:14px;">הגדרות שיעור</div>
+          <div style="margin-bottom:13px;"><div style="font-size:12px; font-weight:700; color:#6C6C88; margin-bottom:7px;">קורס משויך</div><div style="display:flex; align-items:center; justify-content:space-between; height:42px; padding:0 13px; border-radius:12px; background:rgba(130,135,170,0.08); cursor:pointer;"><span style="font-size:13px; font-weight:600; color:#2E2E48;">סוכני AI בארגון</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#A6AABE" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div></div>
+          <div style="margin-bottom:13px;"><div style="font-size:12px; font-weight:700; color:#6C6C88; margin-bottom:7px;">רמת קושי</div><div style="display:flex; gap:7px;"><sc-for list="{{ levels }}" as="lv" hint-placeholder-count="3"><div onClick="{{ lv.select }}" style="flex:1; text-align:center; padding:9px 0; border-radius:11px; background:{{ lv.bg }}; color:{{ lv.color }}; font-size:12px; font-weight:700; cursor:pointer; transition:all .18s ease;">{{ lv.label }}</div></sc-for></div></div>
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:11px 13px; border-radius:12px; background:rgba(111,214,168,0.12);"><div style="display:flex; align-items:center; gap:8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2E9E72" stroke-width="2"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h11"/></svg><span style="font-size:12.5px; font-weight:700; color:#2E2E48;">צרף מבחן לשיעור</span></div><div style="width:42px; height:25px; border-radius:13px; background:linear-gradient(135deg,#7FD3C0,#9AD9F0); position:relative;"><div style="position:absolute; width:19px; height:19px; border-radius:50%; background:#fff; top:3px; left:3px; box-shadow:0 1px 3px rgba(0,0,0,0.2);"></div></div></div>
+        </div>
+
+        <div style="border-radius:22px; background:rgba(255,255,255,0.7); border:1px solid rgba(255,255,255,0.85); backdrop-filter:blur(30px); box-shadow:0 12px 28px rgba(80,70,140,0.06); padding:20px;">
+          <div style="font-size:15px; font-weight:800; color:#2E2E48; margin-bottom:6px;">פרסום</div>
+          <div style="font-size:11.5px; color:#A6AABE; margin-bottom:13px;">שמור כטיוטה, או ייבא ישירות למאגר השיעורים</div>
+          <div onClick="{{ saveLesson }}" style="display:flex; align-items:center; justify-content:center; gap:8px; padding:12px; border-radius:13px; background:rgba(159,180,245,0.14); color:#5E5AA8; font-size:13px; font-weight:700; cursor:pointer; margin-bottom:9px; transition:background .2s;" style-hover="background:rgba(159,180,245,0.24);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5E5AA8" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/></svg> שמור טיוטה</div>
+          <div onClick="{{ publish }}" style="display:flex; align-items:center; justify-content:center; gap:8px; padding:12px; border-radius:13px; background:linear-gradient(135deg,#7FD3C0,#9AD9F0); color:#fff; font-size:13px; font-weight:700; cursor:pointer; box-shadow:0 8px 18px rgba(120,200,180,0.35); transition:transform .22s cubic-bezier(.34,1.4,.5,1);" style-hover="transform:translateY(-2px);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="M12 19V5M5 12l7-7 7 7"/></svg> {{ publishLabel }}</div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+class Component extends DCLogic {
+  state = {
+    filter: 0, level: 1, saved: false, published: false, shviBuilt: false,
+    blocks: [
+      { id: 1, type: 'video' }, { id: 2, type: 'slides' }, { id: 3, type: 'practice' }, { id: 4, type: 'quiz' },
+    ],
+    nextId: 5,
+  };
+
+  _blockType(type) {
+    const map = {
+      video:    { title: 'סרטון הסבר: מהי תקלה שקטה', kind: 'סרטון הסבר', time: '3:20 דק׳', grad: 'linear-gradient(135deg,#9FB4F5,#A7BCF5)', icon: 'M2 4h20v16H2zM2 9h20M11 13l4 2.5-4 2.5z', tag: 'מהמאגר', tagColor: '#5E5AA8', tagBg: 'rgba(159,180,245,0.16)' },
+      slides:   { title: 'מצגת ויזואלית: 4 שכבות ניטור', kind: 'מצגת להדגמה', time: '8 שקופיות', grad: 'linear-gradient(135deg,#C3A8EE,#D6B8F0)', icon: 'M4 4h16v12H4zM2 20h20M9 16v4', tag: 'אינטראקטיבי', tagColor: '#A06FD0', tagBg: 'rgba(195,168,238,0.18)' },
+      practice: { title: 'זמן תרגול: זיהוי Drift בנתונים', kind: 'תרגול מודרך', time: '12 דק׳', grad: 'linear-gradient(135deg,#7FD3C0,#9AD9F0)', icon: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM9 13l2 2 4-4', tag: 'מעשי', tagColor: '#2E9E72', tagBg: 'rgba(111,214,168,0.16)' },
+      quiz:     { title: 'מבחן קצר: 4 שאלות', kind: 'הערכה', time: 'ציון מעבר 70%', grad: 'linear-gradient(135deg,#FFD08A,#FFB0A0)', icon: 'M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h11', tag: 'מתוזמן', tagColor: '#E5821A', tagBg: 'rgba(255,191,140,0.2)' },
+      infographic: { title: 'אינפוגרפיקה: זרימת התגובה', kind: 'ויזואל', time: 'תמונה', grad: 'linear-gradient(135deg,#F5B8C8,#E0A8E8)', icon: 'M3 3v18h18M7 14l4-4 3 3 5-6', tag: 'מהמאגר', tagColor: '#C06A9E', tagBg: 'rgba(245,184,200,0.22)' },
+    };
+    return map[type] || map.video;
+  }
+
+  renderVals() {
+    const numGrad = 'linear-gradient(135deg,#9FB4F5,#C3A8EE)';
+    const blocks = this.state.blocks.map((b, i) => {
+      const t = this._blockType(b.type);
+      return { ...t, num: i + 1, numBg: numGrad, remove: () => this.setState(s => ({ blocks: s.blocks.filter(x => x.id !== b.id) })) };
+    });
+
+    const addBlock = (type) => this.setState(s => ({ blocks: [...s.blocks, { id: s.nextId, type }], nextId: s.nextId + 1 }));
+
+    const filterDefs = ['הכל', 'מצגות', 'סרטונים', 'מסמכי מקור', 'תרגילים'];
+    const filters = filterDefs.map((label, i) => ({
+      label, select: () => this.setState({ filter: i }),
+      bg: this.state.filter === i ? numGrad : 'rgba(130,135,170,0.08)',
+      color: this.state.filter === i ? '#fff' : '#7A7A92',
+    }));
+
+    const mk = (title, meta, type, icon, iconBg, iconColor) => ({ title, meta, icon, iconBg, iconColor, add: () => addBlock(type) });
+    const library = [
+      { group: 'מצגות אינטראקטיביות', items: [
+        mk('API MCP Server', 'מצגת מוצר · 14 שקופיות', 'slides', 'M4 4h16v12H4zM2 20h20M9 16v4', 'rgba(195,168,238,0.18)', '#A06FD0'),
+        mk('ARIA Agent', 'מפרט טכני · 9 שקופיות', 'slides', 'M4 4h16v12H4zM2 20h20M9 16v4', 'rgba(195,168,238,0.18)', '#A06FD0'),
+        mk('ענן מול מקומי', 'בניית סוכן Sheets', 'slides', 'M4 4h16v12H4zM2 20h20M9 16v4', 'rgba(195,168,238,0.18)', '#A06FD0'),
+      ]},
+      { group: 'סרטונים ואינפוגרפיקות', items: [
+        mk('סרטון: תקלה שקטה', '3:20 דק׳ · עם קריינות', 'video', 'M2 4h20v16H2zM11 13l4 2.5-4 2.5z', 'rgba(159,180,245,0.18)', '#5E5AA8'),
+        mk('אינפוגרפיקה: זרימת תגובה', 'תמונה · 4 שכבות', 'infographic', 'M3 3v18h18M7 14l4-4 3 3 5-6', 'rgba(245,184,200,0.2)', '#C06A9E'),
+        mk('סרטון: Multi-Agent', '5:10 דק׳', 'video', 'M2 4h20v16H2zM11 13l4 2.5-4 2.5z', 'rgba(159,180,245,0.18)', '#5E5AA8'),
+      ]},
+      { group: 'מסמכי מקור (PDF)', items: [
+        mk('AIOps', 'מקור · 18 עמ׳', 'slides', 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6', 'rgba(255,191,140,0.2)', '#E5821A'),
+        mk('Secure AI Architecture', 'מקור · 22 עמ׳', 'slides', 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6', 'rgba(255,191,140,0.2)', '#E5821A'),
+        mk('Multi-Agent & Prompts', 'מקור · 16 עמ׳', 'slides', 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6', 'rgba(255,191,140,0.2)', '#E5821A'),
+      ]},
+      { group: 'תרגילים', items: [
+        mk('תרגיל כיתה: AIOps', 'מעשי · 12 דק׳', 'practice', 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM9 13l2 2 4-4', 'rgba(111,214,168,0.18)', '#2E9E72'),
+        mk('תרגיל: System Prompt', 'מעשי · 15 דק׳', 'practice', 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM9 13l2 2 4-4', 'rgba(111,214,168,0.18)', '#2E9E72'),
+      ]},
+    ];
+
+    const quickAdd = [
+      { label: 'סרטון הסבר', icon: 'M2 4h20v16H2zM11 13l4 2.5-4 2.5z', grad: 'linear-gradient(135deg,#9FB4F5,#A7BCF5)', add: () => addBlock('video') },
+      { label: 'מצגת ויזואלית', icon: 'M4 4h16v12H4zM2 20h20M9 16v4', grad: 'linear-gradient(135deg,#C3A8EE,#D6B8F0)', add: () => addBlock('slides') },
+      { label: 'זמן תרגול', icon: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM9 13l2 2 4-4', grad: 'linear-gradient(135deg,#7FD3C0,#9AD9F0)', add: () => addBlock('practice') },
+    ];
+
+    const levelDefs = ['בסיסי', 'מתקדם', 'מומחה'];
+    const levels = levelDefs.map((label, i) => ({
+      label, select: () => this.setState({ level: i }),
+      bg: this.state.level === i ? numGrad : 'rgba(130,135,170,0.08)',
+      color: this.state.level === i ? '#fff' : '#7A7A92',
+    }));
+
+    const mins = this.state.blocks.reduce((a, b) => a + ({ video: 3, slides: 4, practice: 12, quiz: 5, infographic: 1 }[b.type] || 3), 0);
+
+    return {
+      blocks, filters, library, quickAdd, levels,
+      blockCount: this.state.blocks.length, totalTime: '~' + mins + ' דק׳',
+      empty: this.state.blocks.length === 0,
+      shviBuild: () => this.setState({ shviBuilt: true, blocks: [
+        { id: 101, type: 'video' }, { id: 102, type: 'infographic' }, { id: 103, type: 'slides' }, { id: 104, type: 'practice' }, { id: 105, type: 'quiz' },
+      ], nextId: 106 }),
+      shviLabel: this.state.shviBuilt ? 'נבנתה טיוטה ✓ · בנה מחדש' : 'בנה שיעור אוטומטית',
+      saveLesson: () => this.setState({ saved: true }),
+      saveLabel: this.state.saved ? 'נשמר ✓' : 'שמור למאגר',
+      publish: () => this.setState({ published: true }),
+      publishLabel: this.state.published ? 'יובא למאגר ✓' : 'ייבא למאגר השיעורים',
+    };
+  }
+}
+</script>
+</body>
+</html>

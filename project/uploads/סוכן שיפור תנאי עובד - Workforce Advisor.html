@@ -1,0 +1,1441 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Workforce Efficiency & Redeployment Advisor</title>
+  <style>
+    :root {
+      --bg: #eef1f4;
+      --panel: #ffffff;
+      --panel-2: #f8fafb;
+      --ink: #151a1f;
+      --muted: #64707d;
+      --line: #d8dee5;
+      --line-strong: #b9c2cc;
+      --nav: #20262d;
+      --nav-2: #2b323a;
+      --blue: #2156d9;
+      --teal: #087c76;
+      --green: #16734f;
+      --amber: #a85f00;
+      --red: #b42330;
+      --soft-blue: #e8eefc;
+      --soft-green: #e7f4ee;
+      --soft-amber: #fff1d6;
+      --soft-red: #ffe7e8;
+      --shadow: 0 1px 2px rgba(16, 24, 40, .08), 0 14px 34px rgba(16, 24, 40, .06);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(180deg, #f7f8fa 0, var(--bg) 280px),
+        var(--bg);
+      color: var(--ink);
+      font-family: Arial, "Noto Sans Hebrew", sans-serif;
+      line-height: 1.45;
+    }
+
+    button, input, select, textarea { font: inherit; }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 248px minmax(0, 1fr);
+    }
+
+    aside {
+      background: linear-gradient(180deg, var(--nav), var(--nav-2));
+      color: #fff;
+      padding: 18px 14px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: auto;
+      border-left: 1px solid rgba(255, 255, 255, .08);
+    }
+
+    .brand {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 11px;
+      align-items: center;
+      padding: 4px 4px 18px;
+      border-bottom: 1px solid rgba(255,255,255,.13);
+      margin-bottom: 14px;
+    }
+
+    .mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      background: #f7fafc;
+      color: var(--teal);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      letter-spacing: 0;
+      box-shadow: inset 0 -3px 0 rgba(8, 124, 118, .16);
+    }
+
+    .brand b { display: block; font-size: 15px; line-height: 1.2; }
+    .brand span { color: #bac5d1; font-size: 12px; }
+
+    .navbtn {
+      width: 100%;
+      border: 1px solid transparent;
+      color: #dce3ea;
+      background: transparent;
+      text-align: right;
+      padding: 11px 12px;
+      border-radius: 7px;
+      cursor: pointer;
+      margin-bottom: 5px;
+    }
+
+    .navbtn.active {
+      background: #f7fafc;
+      color: #101828;
+      border-color: rgba(255,255,255,.18);
+      box-shadow: 0 8px 20px rgba(0,0,0,.18);
+    }
+
+    .navbtn:hover:not(.active) {
+      background: rgba(255,255,255,.08);
+      color: #fff;
+    }
+
+    .side-note {
+      margin-top: 20px;
+      padding: 12px;
+      border-radius: 8px;
+      background: rgba(255,255,255,.08);
+      color: #d7e0ea;
+      font-size: 13px;
+      border: 1px solid rgba(255,255,255,.11);
+    }
+
+    main {
+      min-width: 0;
+      padding: 22px 26px 44px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: start;
+      margin-bottom: 18px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(26px, 3vw, 38px);
+      letter-spacing: 0;
+      line-height: 1.12;
+    }
+
+    .sub {
+      margin: 8px 0 0;
+      color: var(--muted);
+      max-width: 900px;
+      font-size: 15px;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      border: 1px solid var(--line-strong);
+      border-radius: 7px;
+      background: #fff;
+      color: var(--ink);
+      padding: 9px 12px;
+      cursor: pointer;
+      min-height: 38px;
+      box-shadow: 0 1px 0 rgba(16,24,40,.05);
+    }
+
+    .btn:hover { border-color: #8d99a8; background: #fbfcfd; }
+
+    .btn.primary {
+      background: var(--teal);
+      border-color: var(--teal);
+      color: #fff;
+    }
+
+    .btn.primary:hover { background: #066b66; }
+
+    .btn.warn {
+      background: var(--soft-amber);
+      border-color: #e1af56;
+      color: #5f3900;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .card, .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .card {
+      position: relative;
+      padding: 15px 16px;
+      min-height: 98px;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 4px;
+      background: var(--teal);
+    }
+
+    .card:nth-child(2)::before { background: var(--blue); }
+    .card:nth-child(3)::before { background: var(--amber); }
+    .card:nth-child(4)::before { background: var(--red); }
+
+    .card small {
+      display: block;
+      color: var(--muted);
+      margin-bottom: 9px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .card b {
+      font-size: 27px;
+      display: block;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .process-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin: 0 0 14px;
+    }
+
+    .process-step {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px 13px;
+      box-shadow: 0 1px 2px rgba(16,24,40,.04);
+    }
+
+    .process-step b {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .process-step span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) 410px;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .panel {
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(180deg, #fff, #f8fafb);
+    }
+
+    .panel-head h2 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .panel-body { padding: 15px 16px; }
+
+    .filters {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr;
+      gap: 9px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfcfd;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line-strong);
+      border-radius: 7px;
+      padding: 9px 10px;
+      background: #fff;
+      color: var(--ink);
+      outline: none;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(8, 124, 118, .12);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: #fff;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 11px 12px;
+      text-align: right;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    th {
+      color: #475467;
+      background: #f5f7f9;
+      font-size: 12px;
+      cursor: pointer;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    tr { cursor: pointer; }
+    tr:hover td { background: #f7fbfb; }
+    tr.selected td {
+      background: #edf8f7;
+      border-bottom-color: #b9dfdc;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      border: 1px solid transparent;
+    }
+
+    .green { color: var(--green); background: var(--soft-green); border-color: #b7ddcb; }
+    .amber { color: var(--amber); background: var(--soft-amber); border-color: #ebc276; }
+    .red { color: var(--red); background: var(--soft-red); border-color: #f0a5aa; }
+    .blue { color: var(--blue); background: var(--soft-blue); border-color: #b8c9f5; }
+
+    .score {
+      font-weight: 900;
+      font-size: 18px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .bars {
+      display: grid;
+      gap: 10px;
+      margin: 13px 0;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel-2);
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 112px 1fr 38px;
+      gap: 8px;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .bar {
+      height: 9px;
+      background: #e5e9ee;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, var(--teal), var(--amber), var(--red));
+      border-radius: inherit;
+    }
+
+    .actions {
+      display: grid;
+      gap: 9px;
+      margin-top: 12px;
+    }
+
+    .action {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 11px 12px;
+      background: #fff;
+      box-shadow: 0 1px 0 rgba(16,24,40,.04);
+    }
+
+    .action b {
+      display: block;
+      margin-bottom: 4px;
+      color: #24313d;
+    }
+
+    .action p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .muted { color: var(--muted); }
+    .ltr { direction: ltr; text-align: left; }
+    .view { display: none; }
+    .view.active { display: block; }
+
+    pre {
+      direction: ltr;
+      text-align: left;
+      overflow: auto;
+      background: #17202a;
+      color: #e8edf7;
+      padding: 14px;
+      border-radius: 8px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      border: 1px solid #2e3a47;
+    }
+
+    .notice {
+      border-right: 4px solid var(--teal);
+      background: #eef8f7;
+      border-radius: 8px;
+      padding: 11px 12px;
+      margin-bottom: 12px;
+    }
+
+    .notice.redline {
+      border-right-color: var(--red);
+      background: var(--soft-red);
+    }
+
+    .agent-workspace {
+      display: grid;
+      grid-template-columns: 360px minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .employee-brief {
+      display: grid;
+      gap: 10px;
+    }
+
+    .brief-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 13px;
+    }
+
+    .brief-line b {
+      font-variant-numeric: tabular-nums;
+    }
+
+    .prompt-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .prompt-chip {
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      padding: 10px;
+      cursor: pointer;
+      text-align: right;
+      min-height: 54px;
+    }
+
+    .prompt-chip:hover {
+      border-color: var(--teal);
+      background: #f5fbfa;
+    }
+
+    .chat-box {
+      display: grid;
+      gap: 10px;
+    }
+
+    .chat-log {
+      min-height: 280px;
+      max-height: 430px;
+      overflow: auto;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafb;
+    }
+
+    .msg {
+      max-width: 92%;
+      margin-bottom: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      white-space: pre-wrap;
+    }
+
+    .msg.user {
+      margin-right: auto;
+      background: #e8eefc;
+      border: 1px solid #bfd0f7;
+    }
+
+    .msg.agent {
+      margin-left: auto;
+      background: #fff;
+      border: 1px solid var(--line);
+    }
+
+    .chat-compose {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+    }
+
+    .chat-compose textarea {
+      min-height: 82px;
+      resize: vertical;
+    }
+
+    .empty {
+      padding: 28px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    @media (max-width: 1120px) {
+      .app { grid-template-columns: 1fr; }
+      aside {
+        position: static;
+        height: auto;
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+      .layout { grid-template-columns: 1fr; }
+      .agent-workspace { grid-template-columns: 1fr; }
+      .grid, .process-strip { grid-template-columns: 1fr 1fr; }
+      header { grid-template-columns: 1fr; }
+      .toolbar { justify-content: flex-start; }
+    }
+
+    @media (max-width: 720px) {
+      main { padding: 14px; }
+      .grid, .filters, .split, .process-strip { grid-template-columns: 1fr; }
+      .prompt-grid, .chat-compose { grid-template-columns: 1fr; }
+      th, td { white-space: normal; }
+      .bar-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside>
+      <div class="brand">
+        <div class="mark">WE</div>
+        <div>
+          <b>Workforce Advisor</b>
+          <span>Efficiency + Redeployment Agent</span>
+        </div>
+      </div>
+      <button class="navbtn active" data-view="dashboard">לוח בקרה</button>
+      <button class="navbtn" data-view="employees">עובדים ומקרים</button>
+      <button class="navbtn" data-view="sheets">Google Sheets</button>
+      <button class="navbtn" data-view="ollama">Ollama מקומי</button>
+      <button class="navbtn" data-view="prd">PRD וארכיטקטורה</button>
+      <div class="side-note">
+        הסוכן מסמן פערי עלות-תפוקה ומציע חלופות. הוא לא מקבל החלטות פיטורים אוטומטיות.
+      </div>
+    </aside>
+
+    <main>
+      <header>
+        <div>
+          <h1>סוכן יעילות והסבה ארגונית</h1>
+          <p class="sub">דמו פעיל: ניתוח עובדים, סימון מקרים לבחינה, המלצות לשיפור/הסבה, ויצירת כרטיס החלטה בעזרת Ollama מקומי.</p>
+        </div>
+        <div class="toolbar">
+          <button class="btn" id="demoBtn">טען נתוני דמו</button>
+          <button class="btn" id="printBtn">ייצוא/הדפסה</button>
+          <button class="btn primary" id="aiBtn">נתח עם Ollama</button>
+        </div>
+      </header>
+
+      <section class="view active" id="dashboard">
+        <div class="grid">
+          <div class="card"><small>עלות חודשית</small><b id="totalCost">₪0</b></div>
+          <div class="card"><small>שעות ידניות</small><b id="manualHours">0</b></div>
+          <div class="card"><small>פוטנציאל אוטומציה</small><b id="autoPotential">0%</b></div>
+          <div class="card"><small>מקרים לבחינה</small><b id="reviewCases">0</b></div>
+        </div>
+
+        <div class="process-strip" aria-label="תהליך החלטה">
+          <div class="process-step"><b>1. איסוף נתונים</b><span>Sheets, דמו, HR ומערכות תפעול</span></div>
+          <div class="process-step"><b>2. ניקוד שקוף</b><span>עלות, תפוקה, איכות, אוטומציה והסבה</span></div>
+          <div class="process-step"><b>3. חלופות פעולה</b><span>שיפור, הכשרה, שדרוג או בחינה</span></div>
+          <div class="process-step"><b>4. בקרת HR</b><span>אין החלטה אוטומטית ללא תהליך</span></div>
+        </div>
+
+        <div class="layout">
+          <div class="panel">
+            <div class="panel-head">
+              <h2>עובדים לפי סיכון והזדמנות</h2>
+              <span class="tag blue" id="rowCount">0 רשומות</span>
+            </div>
+            <div class="filters">
+              <input id="searchInput" placeholder="חיפוש עובד, תפקיד או מחלקה">
+              <select id="deptFilter"><option value="">כל המחלקות</option></select>
+              <select id="riskFilter">
+                <option value="">כל הסיווגים</option>
+                <option value="review">בחינה ניהולית</option>
+                <option value="improve">תוכנית שיפור</option>
+                <option value="upgrade">שדרוג תפקיד</option>
+                <option value="missing">חסר מידע</option>
+              </select>
+              <select id="sortSelect">
+                <option value="risk">מיון לפי סיכון</option>
+                <option value="cost">מיון לפי עלות</option>
+                <option value="redeploy">מיון לפי הסבה</option>
+                <option value="quality">מיון לפי איכות</option>
+              </select>
+            </div>
+            <div style="overflow:auto">
+              <table>
+                <thead>
+                  <tr>
+                    <th>עובד</th>
+                    <th>מחלקה</th>
+                    <th>תפקיד</th>
+                    <th>עלות</th>
+                    <th>איכות</th>
+                    <th>אוטומציה</th>
+                    <th>סיכון</th>
+                    <th>סיווג</th>
+                  </tr>
+                </thead>
+                <tbody id="employeeRows"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h2>כרטיס החלטה</h2>
+              <span class="tag amber" id="selectedBadge">לא נבחר</span>
+            </div>
+            <div class="panel-body" id="decisionCard">
+              <div class="empty">בחר עובד מהרשימה כדי לראות ניתוח, ראיות וחלופות.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="employees">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>עורך נתוני דמו</h2>
+            <button class="btn" id="addEmployeeBtn">הוסף עובד דמו</button>
+          </div>
+          <div class="panel-body">
+            <div class="notice">כאן אפשר לערוך נתון ולראות איך הסוכן משנה ניקוד והמלצה בזמן אמת. בדמו הנתונים נשמרים ב-localStorage בלבד.</div>
+            <div id="editor"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="sheets">
+        <div class="panel">
+          <div class="panel-head"><h2>טעינה מ-Google Sheets</h2></div>
+          <div class="panel-body">
+            <div class="notice redline">
+              לדמו בטוח: השתמש בגיליון עם שמות פיקטיביים בלבד. לא להעלות מידע אישי אמיתי לגיליון פומבי.
+            </div>
+            <label>קישור Google Sheet או CSV published URL</label>
+            <input id="sheetUrl" class="ltr" value="https://docs.google.com/spreadsheets/d/1KEt4j0ewXqAJbW3MWHOMMHVZg16RCsPSziKLq17k3Oc/edit?gid=0#gid=0">
+            <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap">
+              <button class="btn primary" id="loadSheetBtn">טען מהגיליון</button>
+              <button class="btn" id="copySchemaBtn">הצג סכימת עמודות</button>
+            </div>
+            <pre id="sheetOutput">ממתין לטעינת נתונים...</pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="ollama">
+        <div class="panel">
+          <div class="panel-head"><h2>Ollama מקומי</h2></div>
+          <div class="panel-body">
+            <div class="split">
+              <div>
+                <label>Ollama endpoint</label>
+                <input id="ollamaUrl" class="ltr" value="http://127.0.0.1:11434/api/generate">
+              </div>
+              <div>
+                <label>Model</label>
+                <input id="ollamaModel" class="ltr" value="qwen2.5:7b">
+              </div>
+            </div>
+            <p class="muted">הניקוד מחושב בקוד בצורה שקופה. Ollama מוסיף הסבר מילולי, שאלות למנהל ותוכנית פעולה.</p>
+            <button class="btn primary" id="testOllamaBtn">בדוק חיבור Ollama</button>
+            <pre id="ollamaOutput">בחר עובד ולחץ "נתח עם Ollama".</pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="prd">
+        <div class="panel">
+          <div class="panel-head"><h2>PRD מקוצר וארכיטקטורה</h2></div>
+          <div class="panel-body">
+            <h3>מטרת המוצר</h3>
+            <p>לספק למנהל כלי תומך החלטה שמזהה פערים כלכליים ותפעוליים, ומציע לפני פיטורים חלופות של שיפור ביצועים, הסבה, שדרוג תפקיד או בחינת המשך העסקה.</p>
+            <h3>מודולים</h3>
+            <ul>
+              <li>Data Ingestion: Demo JSON, CSV, Google Sheets.</li>
+              <li>Scoring Engine: חישוב סיכון שקוף לפי עלות, תפוקה, איכות, אוטומציה והסבה.</li>
+              <li>Redeployment Planner: הצעת מסלולי תפקידים חדשים.</li>
+              <li>Ollama Advisor: יצירת הסבר וטקסט למנהל/HR.</li>
+              <li>Guardrails: חסימת שדות מוגנים, חובת Human Review, Audit log.</li>
+            </ul>
+            <h3>ארכיטקטורה</h3>
+            <pre>HTML/CSS/JS Demo
+  -> Google Sheets published CSV / Demo JSON
+  -> Scoring Engine in browser
+  -> Optional Ollama localhost:11434
+  -> Decision Card + HR Review
+
+Production:
+  Frontend
+  -> Node/Express API
+  -> DB + Audit Log
+  -> Ollama / local LLM server
+  -> RBAC + HR approval workflow</pre>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const defaultEmployees = [
+      { id: "E-1001", name: "עובד דמו א", department: "תפעול", role: "פקיד תפעול", monthly_cost: 28500, tasks_per_month: 260, quality_score: 62, error_rate: 0.12, manual_hours: 126, automation_potential: 0.82, knowledge_value: 34, redeployment_fit: 28 },
+      { id: "E-1002", name: "עובדת דמו ב", department: "תפעול", role: "רכזת תהליכים", monthly_cost: 23500, tasks_per_month: 510, quality_score: 88, error_rate: 0.03, manual_hours: 112, automation_potential: 0.74, knowledge_value: 82, redeployment_fit: 86 },
+      { id: "E-1003", name: "עובד דמו ג", department: "כספים", role: "בק אופיס", monthly_cost: 31000, tasks_per_month: 300, quality_score: 68, error_rate: 0.09, manual_hours: 144, automation_potential: 0.79, knowledge_value: 46, redeployment_fit: 41 },
+      { id: "E-1004", name: "עובדת דמו ד", department: "שירות", role: "נציגת שירות מורכב", monthly_cost: 19000, tasks_per_month: 620, quality_score: 91, error_rate: 0.02, manual_hours: 54, automation_potential: 0.36, knowledge_value: 77, redeployment_fit: 74 },
+      { id: "E-1005", name: "עובד דמו ה", department: "לוגיסטיקה", role: "מתאם הזמנות", monthly_cost: 26000, tasks_per_month: 340, quality_score: 74, error_rate: 0.07, manual_hours: 118, automation_potential: 0.68, knowledge_value: 58, redeployment_fit: 64 },
+      { id: "E-1006", name: "עובדת דמו ו", department: "כספים", role: "מנהלת חשבונות", monthly_cost: 33500, tasks_per_month: 470, quality_score: 86, error_rate: 0.04, manual_hours: 92, automation_potential: 0.61, knowledge_value: 88, redeployment_fit: 78 },
+      { id: "E-1007", name: "עובד דמו ז", department: "שירות", role: "נציג שירות", monthly_cost: 17000, tasks_per_month: 310, quality_score: 57, error_rate: 0.14, manual_hours: 72, automation_potential: 0.52, knowledge_value: 25, redeployment_fit: 39 }
+    ];
+
+    let employees = loadEmployees();
+    let selectedId = employees[0]?.id || null;
+
+    const els = {
+      totalCost: document.getElementById("totalCost"),
+      manualHours: document.getElementById("manualHours"),
+      autoPotential: document.getElementById("autoPotential"),
+      reviewCases: document.getElementById("reviewCases"),
+      rowCount: document.getElementById("rowCount"),
+      employeeRows: document.getElementById("employeeRows"),
+      decisionCard: document.getElementById("decisionCard"),
+      selectedBadge: document.getElementById("selectedBadge"),
+      searchInput: document.getElementById("searchInput"),
+      deptFilter: document.getElementById("deptFilter"),
+      riskFilter: document.getElementById("riskFilter"),
+      sortSelect: document.getElementById("sortSelect"),
+      editor: document.getElementById("editor"),
+      sheetOutput: document.getElementById("sheetOutput"),
+      ollamaOutput: document.getElementById("ollamaOutput")
+    };
+
+    function loadEmployees() {
+      try {
+        return JSON.parse(localStorage.getItem("we-demo-employees")) || defaultEmployees;
+      } catch {
+        return defaultEmployees;
+      }
+    }
+
+    function saveEmployees() {
+      localStorage.setItem("we-demo-employees", JSON.stringify(employees));
+    }
+
+    function money(value) {
+      return new Intl.NumberFormat("he-IL", { style: "currency", currency: "ILS", maximumFractionDigits: 0 }).format(Number(value || 0));
+    }
+
+    function pct(value) {
+      return `${Math.round(Number(value || 0) * 100)}%`;
+    }
+
+    function clamp(n, min, max) {
+      return Math.max(min, Math.min(max, n));
+    }
+
+    function groupStats(employee) {
+      const group = employees.filter(e => e.department === employee.department && e.role === employee.role);
+      const ref = group.length >= 2 ? group : employees.filter(e => e.department === employee.department);
+      const base = ref.length ? ref : employees;
+      const avgCost = base.reduce((s, e) => s + Number(e.monthly_cost || 0), 0) / base.length;
+      const avgTasks = base.reduce((s, e) => s + Number(e.tasks_per_month || 0), 0) / base.length;
+      return { avgCost, avgTasks, groupSize: base.length };
+    }
+
+    function scoreEmployee(e) {
+      const stats = groupStats(e);
+      const costPressure = clamp(((Number(e.monthly_cost) / stats.avgCost) - 0.75) / 0.75, 0, 1) * 100;
+      const productivityGap = clamp((1 - (Number(e.tasks_per_month) / stats.avgTasks)) / 0.55, 0, 1) * 100;
+      const qualityRisk = clamp((100 - Number(e.quality_score || 0)) / 55 + Number(e.error_rate || 0) * 1.8, 0, 1) * 100;
+      const automationExposure = clamp(Number(e.automation_potential || 0), 0, 1) * 100;
+      const redeploymentDifficulty = 100 - clamp(Number(e.redeployment_fit || 0), 0, 100);
+      const knowledgeProtection = clamp(Number(e.knowledge_value || 0), 0, 100);
+      const raw =
+        costPressure * 0.25 +
+        productivityGap * 0.25 +
+        qualityRisk * 0.15 +
+        automationExposure * 0.20 +
+        redeploymentDifficulty * 0.15;
+      const risk = Math.round(clamp(raw - knowledgeProtection * 0.06, 0, 100));
+      let category = "upgrade";
+      if (missingData(e)) category = "missing";
+      else if (risk >= 68 && Number(e.redeployment_fit) < 50) category = "review";
+      else if (risk >= 48) category = "improve";
+      else if (Number(e.automation_potential) >= 0.55 && Number(e.redeployment_fit) >= 60) category = "upgrade";
+      return { risk, category, costPressure, productivityGap, qualityRisk, automationExposure, redeploymentDifficulty, stats };
+    }
+
+    function missingData(e) {
+      return ["monthly_cost", "tasks_per_month", "quality_score", "automation_potential", "redeployment_fit"].some(k => e[k] === "" || e[k] === undefined || e[k] === null);
+    }
+
+    function categoryLabel(category) {
+      return {
+        review: ["בחינה ניהולית", "red"],
+        improve: ["תוכנית שיפור", "amber"],
+        upgrade: ["שדרוג תפקיד", "green"],
+        missing: ["חסר מידע", "blue"]
+      }[category] || ["לא ידוע", "blue"];
+    }
+
+    function filteredEmployees() {
+      const q = els.searchInput.value.trim().toLowerCase();
+      const dept = els.deptFilter.value;
+      const risk = els.riskFilter.value;
+      const sorted = employees.map(e => ({ ...e, _score: scoreEmployee(e) })).filter(e => {
+        const text = `${e.name} ${e.department} ${e.role}`.toLowerCase();
+        return (!q || text.includes(q)) && (!dept || e.department === dept) && (!risk || e._score.category === risk);
+      });
+      const sort = els.sortSelect.value;
+      sorted.sort((a, b) => {
+        if (sort === "cost") return Number(b.monthly_cost) - Number(a.monthly_cost);
+        if (sort === "redeploy") return Number(a.redeployment_fit) - Number(b.redeployment_fit);
+        if (sort === "quality") return Number(a.quality_score) - Number(b.quality_score);
+        return b._score.risk - a._score.risk;
+      });
+      return sorted;
+    }
+
+    function render() {
+      saveEmployees();
+      renderMetrics();
+      renderFilters();
+      renderTable();
+      renderDecision();
+      renderAgentBrief();
+      renderEditor();
+    }
+
+    function renderMetrics() {
+      const scored = employees.map(e => scoreEmployee(e));
+      const totalCost = employees.reduce((s, e) => s + Number(e.monthly_cost || 0), 0);
+      const manual = employees.reduce((s, e) => s + Number(e.manual_hours || 0), 0);
+      const auto = employees.length ? employees.reduce((s, e) => s + Number(e.automation_potential || 0), 0) / employees.length : 0;
+      const reviews = scored.filter(s => s.category === "review").length;
+      els.totalCost.textContent = money(totalCost);
+      els.manualHours.textContent = Math.round(manual).toLocaleString("he-IL");
+      els.autoPotential.textContent = pct(auto);
+      els.reviewCases.textContent = reviews;
+    }
+
+    function renderFilters() {
+      const current = els.deptFilter.value;
+      const depts = [...new Set(employees.map(e => e.department).filter(Boolean))].sort();
+      els.deptFilter.innerHTML = '<option value="">כל המחלקות</option>' + depts.map(d => `<option ${d === current ? "selected" : ""}>${escapeHtml(d)}</option>`).join("");
+    }
+
+    function renderTable() {
+      const rows = filteredEmployees();
+      els.rowCount.textContent = `${rows.length} רשומות`;
+      els.employeeRows.innerHTML = rows.map(e => {
+        const s = e._score;
+        const [label, color] = categoryLabel(s.category);
+        return `<tr class="${e.id === selectedId ? "selected" : ""}" data-id="${escapeHtml(e.id)}">
+          <td><b>${escapeHtml(e.name)}</b><br><span class="muted">${escapeHtml(e.id)}</span></td>
+          <td>${escapeHtml(e.department)}</td>
+          <td>${escapeHtml(e.role)}</td>
+          <td>${money(e.monthly_cost)}</td>
+          <td>${Number(e.quality_score || 0)}</td>
+          <td>${pct(e.automation_potential)}</td>
+          <td class="score">${s.risk}</td>
+          <td><span class="tag ${color}">${label}</span></td>
+        </tr>`;
+      }).join("") || `<tr><td colspan="8"><div class="empty">אין רשומות מתאימות לסינון.</div></td></tr>`;
+      document.querySelectorAll("#employeeRows tr[data-id]").forEach(row => {
+        row.addEventListener("click", () => {
+          selectedId = row.dataset.id;
+          render();
+        });
+      });
+    }
+
+    function renderDecision() {
+      const e = employees.find(x => x.id === selectedId) || employees[0];
+      if (!e) {
+        els.decisionCard.innerHTML = '<div class="empty">אין נתונים.</div>';
+        return;
+      }
+      selectedId = e.id;
+      const s = scoreEmployee(e);
+      const [label, color] = categoryLabel(s.category);
+      els.selectedBadge.className = `tag ${color}`;
+      els.selectedBadge.textContent = label;
+      const action = recommendedAction(e, s);
+      els.decisionCard.innerHTML = `
+        <h2 style="margin:0 0 4px">${escapeHtml(e.name)}</h2>
+        <p class="muted" style="margin-top:0">${escapeHtml(e.department)} / ${escapeHtml(e.role)} / ${escapeHtml(e.id)}</p>
+        <div class="notice ${s.category === "review" ? "redline" : ""}">
+          <b>המלצת הסוכן:</b> ${action.headline}
+          <br>${action.summary}
+        </div>
+        <div class="grid" style="grid-template-columns:1fr 1fr; margin-bottom:10px">
+          <div class="card"><small>ציון סיכון</small><b>${s.risk}/100</b></div>
+          <div class="card"><small>עלות חודשית</small><b>${money(e.monthly_cost)}</b></div>
+        </div>
+        <div class="bars">
+          ${bar("לחץ עלות", s.costPressure)}
+          ${bar("פער תפוקה", s.productivityGap)}
+          ${bar("סיכון איכות", s.qualityRisk)}
+          ${bar("חשיפת אוטומציה", s.automationExposure)}
+          ${bar("קושי הסבה", s.redeploymentDifficulty)}
+        </div>
+        <h3>חלופות לפני פיטורים</h3>
+        <div class="actions">
+          ${action.options.map(o => `<div class="action"><b>${o.title}</b><p>${o.text}</p></div>`).join("")}
+        </div>
+        <h3>חובות בקרה</h3>
+        <ul>
+          <li>שיחה ניהולית ותיעוד לפני החלטה.</li>
+          <li>בדיקת HR שאין שימוש בנתונים מוגנים.</li>
+          <li>זכות להוספת הקשר, נתונים חסרים או תיקון טעויות.</li>
+          <li>איסור החלטת פיטורים אוטומטית.</li>
+        </ul>
+      `;
+    }
+
+    function recommendedAction(e, s) {
+      if (s.category === "review") {
+        return {
+          headline: "נדרש תהליך בחינה ניהולית ו-HR",
+          summary: "המערכת מזהה עלות גבוהה, תפוקה/איכות חלשה יחסית, חשיפה גבוהה לאוטומציה ופוטנציאל הסבה נמוך. אין המלצת פיטורים אוטומטית.",
+          options: [
+            { title: "תוכנית שיפור 45 יום", text: "הגדרת יעדים מדידים לתפוקה, איכות ושגיאות, עם בדיקה שבועית." },
+            { title: "בחינת שינוי תפקיד", text: "בדיקת התאמה לתפקיד בקרת חריגים או תמיכה במערכת לפני החלטה קשה יותר." },
+            { title: "בחינת המשך העסקה", text: "רק אם אין שיפור ואין התאמה להסבה, להעביר ל-HR להליך מסודר." }
+          ]
+        };
+      }
+      if (s.category === "improve") {
+        return {
+          headline: "מומלצת תוכנית שיפור והכשרה",
+          summary: "יש פערים, אבל קיימת אפשרות סבירה לשיפור או התאמה לתפקיד חדש.",
+          options: [
+            { title: "אימון על מערכת AI", text: "העברת משימות חוזרות לאוטומציה והשארת טיפול בחריגים לעובד." },
+            { title: "יעדי איכות ותפוקה", text: "הגדרת מדדי הצלחה לחודש הקרוב עם משוב קצר וקבוע." },
+            { title: "חונכות פנימית", text: "חיבור לעובד חזק בתהליך כדי לצמצם שגיאות וזמני ביצוע." }
+          ]
+        };
+      }
+      if (s.category === "missing") {
+        return {
+          headline: "חסר מידע להחלטה אחראית",
+          summary: "אין מספיק נתונים כדי לסמן עובד. צריך להשלים עלות, תפוקה, איכות או התאמה להסבה.",
+          options: [
+            { title: "השלמת נתונים", text: "לא לקבל החלטה עד השלמת שדות בסיסיים." },
+            { title: "בדיקת מנהל", text: "לקבל הערכת תפקיד עדכנית מהמנהל הישיר." },
+            { title: "מדידה זמנית", text: "לאסוף נתונים במשך 30 יום לפני הסקת מסקנות." }
+          ]
+        };
+      }
+      return {
+        headline: "מועמד לשדרוג תפקיד",
+        summary: "המשימות חשופות לאוטומציה, אבל לעובד יש התאמה טובה להסבה או ידע שמצדיק שימור.",
+        options: [
+          { title: "מפעיל מערכת מחלקתי", text: "העובד יתפעל את האוטומציה, יבדוק חריגים וישפר תהליכים." },
+          { title: "בקר איכות", text: "מעבר מעבודה ידנית לבקרה על תוצרי המערכת." },
+          { title: "מדריך משתמשים", text: "הדרכת עובדים אחרים על שימוש נכון במערכת החדשה." }
+        ]
+      };
+    }
+
+    function bar(label, value) {
+      const v = Math.round(clamp(value, 0, 100));
+      return `<div class="bar-row"><span>${label}</span><div class="bar"><span style="width:${v}%"></span></div><b>${v}</b></div>`;
+    }
+
+    function renderEditor() {
+      els.editor.innerHTML = employees.map((e, idx) => `
+        <div class="action" style="margin-bottom:10px">
+          <div class="split">
+            ${field(idx, "name", "שם", e.name)}
+            ${field(idx, "department", "מחלקה", e.department)}
+            ${field(idx, "role", "תפקיד", e.role)}
+            ${field(idx, "monthly_cost", "עלות חודשית", e.monthly_cost, "number")}
+            ${field(idx, "tasks_per_month", "משימות בחודש", e.tasks_per_month, "number")}
+            ${field(idx, "quality_score", "איכות 0-100", e.quality_score, "number")}
+            ${field(idx, "automation_potential", "אוטומציה 0-1", e.automation_potential, "number", "0.01")}
+            ${field(idx, "redeployment_fit", "התאמה להסבה 0-100", e.redeployment_fit, "number")}
+          </div>
+        </div>
+      `).join("");
+      document.querySelectorAll("[data-edit]").forEach(input => {
+        input.addEventListener("input", () => {
+          const idx = Number(input.dataset.idx);
+          const key = input.dataset.key;
+          employees[idx][key] = input.type === "number" ? Number(input.value) : input.value;
+          saveEmployees();
+          renderMetrics();
+          renderTable();
+          renderDecision();
+        });
+      });
+    }
+
+    function field(idx, key, label, value, type = "text", step = "1") {
+      return `<label>${label}<input data-edit data-idx="${idx}" data-key="${key}" type="${type}" step="${step}" value="${escapeHtml(value)}"></label>`;
+    }
+
+    async function loadSheet() {
+      const raw = document.getElementById("sheetUrl").value.trim();
+      const url = toCsvUrl(raw);
+      els.sheetOutput.textContent = `טוען:\n${url}`;
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const text = await res.text();
+        const rows = parseCsv(text);
+        const mapped = rows.map(normalizeRow).filter(r => r.name || r.id);
+        if (!mapped.length) throw new Error("לא נמצאו שורות תקינות. ודא שיש שורת כותרות.");
+        employees = mapped;
+        selectedId = employees[0].id;
+        saveEmployees();
+        render();
+        els.sheetOutput.textContent = `נטענו ${employees.length} עובדים מהגיליון.\n\nעמודות שזוהו:\n${Object.keys(rows[0] || {}).join(", ")}`;
+      } catch (err) {
+        els.sheetOutput.textContent = `טעינה נכשלה: ${err.message}\n\nטיפ: ב-Google Sheets יש לבצע File > Share > Publish to web, או לוודא שהגיליון ניתן לצפייה.`;
+      }
+    }
+
+    function toCsvUrl(url) {
+      const match = url.match(/\/spreadsheets\/d\/([^/]+)/);
+      if (!match) return url;
+      const gid = (url.match(/[?&#]gid=(\d+)/) || [])[1] || "0";
+      return `https://docs.google.com/spreadsheets/d/${match[1]}/export?format=csv&gid=${gid}`;
+    }
+
+    function parseCsv(text) {
+      const rows = [];
+      let row = [], cell = "", quote = false;
+      for (let i = 0; i < text.length; i++) {
+        const ch = text[i], next = text[i + 1];
+        if (ch === '"' && quote && next === '"') { cell += '"'; i++; }
+        else if (ch === '"') quote = !quote;
+        else if (ch === "," && !quote) { row.push(cell); cell = ""; }
+        else if ((ch === "\n" || ch === "\r") && !quote) {
+          if (ch === "\r" && next === "\n") i++;
+          row.push(cell); rows.push(row); row = []; cell = "";
+        } else cell += ch;
+      }
+      row.push(cell); rows.push(row);
+      const headers = rows.shift().map(h => h.trim());
+      return rows.filter(r => r.some(c => String(c).trim())).map(r => Object.fromEntries(headers.map((h, i) => [h, r[i] || ""])));
+    }
+
+    function normalizeRow(r) {
+      const pick = (...keys) => keys.map(k => r[k]).find(v => v !== undefined && v !== "");
+      const id = pick("employee_id", "id", "מזהה", "מספר עובד") || `E-${Math.random().toString(16).slice(2, 7)}`;
+      return {
+        id,
+        name: pick("name", "שם", "employee_name") || id,
+        department: pick("department", "מחלקה") || "כללי",
+        role: pick("role", "תפקיד") || "לא מוגדר",
+        monthly_cost: Number(pick("monthly_cost", "עלות", "עלות חודשית") || 0),
+        tasks_per_month: Number(pick("tasks_per_month", "משימות", "תפוקה") || 0),
+        quality_score: Number(pick("quality_score", "איכות") || 50),
+        error_rate: Number(pick("error_rate", "שגיאות") || 0),
+        manual_hours: Number(pick("manual_hours", "שעות ידניות") || 0),
+        automation_potential: Number(pick("automation_potential", "אוטומציה") || 0.5),
+        knowledge_value: Number(pick("knowledge_value", "ידע") || 50),
+        redeployment_fit: Number(pick("redeployment_fit", "התאמה להסבה") || 50)
+      };
+    }
+
+    async function analyzeWithOllama() {
+      const e = employees.find(x => x.id === selectedId);
+      if (!e) return;
+      const s = scoreEmployee(e);
+      const prompt = `אתה יועץ HR תומך החלטה. אסור להמליץ על פיטורים אוטומטיים. נתח את העובד הבא בעברית ותן: סיבה עסקית, ראיות, חלופות לפני פיטורים, שאלות למנהל, וחובת HR.\n\nEmployee: ${JSON.stringify({ employee: e, score: s }, null, 2)}`;
+      els.ollamaOutput.textContent = "שולח ל-Ollama...";
+      try {
+        const res = await fetch(document.getElementById("ollamaUrl").value.trim(), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: document.getElementById("ollamaModel").value.trim(),
+            prompt,
+            stream: false,
+            options: { temperature: 0.2 }
+          })
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        els.ollamaOutput.textContent = data.response || JSON.stringify(data, null, 2);
+        document.querySelector('[data-view="ollama"]').click();
+      } catch (err) {
+        els.ollamaOutput.textContent = `Ollama לא זמין מהדפדפן: ${err.message}\n\nודא ש-Ollama רץ:\nollama serve\nollama pull ${document.getElementById("ollamaModel").value.trim()}\n\nבגרסת המשך נוסיף Node proxy כדי לפתור CORS אם צריך.`;
+        document.querySelector('[data-view="ollama"]').click();
+      }
+    }
+
+    function showSchema() {
+      els.sheetOutput.textContent = `עמודות נתמכות:
+employee_id, name, department, role, monthly_cost, tasks_per_month,
+quality_score, error_rate, manual_hours, automation_potential,
+knowledge_value, redeployment_fit
+
+אפשר גם בעברית:
+מזהה, שם, מחלקה, תפקיד, עלות חודשית, משימות, איכות,
+שגיאות, שעות ידניות, אוטומציה, ידע, התאמה להסבה`;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[ch]));
+    }
+
+    function upgradeOllamaPanel() {
+      const body = document.querySelector("#ollama .panel-body");
+      const head = document.querySelector("#ollama .panel-head");
+      if (!body || body.dataset.agentReady === "1") return;
+      if (head) {
+        head.innerHTML = '<h2>שיחת מנהל עם הסוכן</h2><span class="tag blue" id="agentEmployeeBadge">עובד נבחר</span>';
+      }
+      body.dataset.agentReady = "1";
+      body.innerHTML = `
+        <div class="agent-workspace">
+          <div class="panel" style="box-shadow:none">
+            <div class="panel-head"><h2>תיק עובד לשיחה</h2></div>
+            <div class="panel-body">
+              <div id="agentEmployeeBrief" class="employee-brief"></div>
+              <div class="notice" style="margin-top:12px">
+                ה-LLM מנתח רק נתוני תפקיד וביצועים. אין להשתמש בגיל, מגדר, מצב משפחתי, בריאות, דת, מוצא או כל נתון מוגן.
+              </div>
+              <div class="split">
+                <div>
+                  <label>Ollama endpoint</label>
+                  <input id="ollamaUrl" class="ltr" value="http://127.0.0.1:11434/api/generate">
+                </div>
+                <div>
+                  <label>Model</label>
+                  <input id="ollamaModel" class="ltr" value="qwen2.5:7b">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="chat-box">
+            <div>
+              <h3 style="margin:0 0 8px">שאלות מהירות למנהל</h3>
+              <div class="prompt-grid">
+                <button class="prompt-chip" data-agent-question="איפה העובד מתקשה לפי הנתונים, ומה חסר כדי להבין את הקושי בצורה הוגנת?">איפה קשה לו?</button>
+                <button class="prompt-chip" data-agent-question="מה אפשר לשפר עבור העובד ב-30 הימים הקרובים בלי לפגוע בו או לקפוץ לפיטורים?">מה אפשר לשפר?</button>
+                <button class="prompt-chip" data-agent-question="האם העובד מתאים לתפקיד מנהל תהליך AI או מתפעל מערכת אוטומציה? פרט סיכויים, חסמים ותוכנית הכשרה.">התאמה למנהל תהליך AI</button>
+                <button class="prompt-chip" data-agent-question="האם העובד מתאים לתפקיד מנהל בקרה או בקר איכות על תוצרי המערכת? פרט למה כן ומה לבדוק.">התאמה לבקר איכות</button>
+                <button class="prompt-chip" data-agent-question="בנה תוכנית 30/60/90 יום לשיפור או הסבה של העובד, עם מדדים ברורים למנהל.">תוכנית 30/60/90</button>
+                <button class="prompt-chip" data-agent-question="איזה שאלות המנהל צריך לשאול בשיחת עובד כדי להבין אם הבעיה היא יכולת, עומס, הכשרה, מוטיבציה או תהליך לא טוב?">שאלות לשיחת עובד</button>
+              </div>
+            </div>
+
+            <div class="chat-log" id="agentChatLog">
+              <div class="msg agent">בחר עובד בטבלה ושאל אותי עליו. אפשר לשאול על קושי, שיפור, הסבה לתפקיד AI, בקרה, או תוכנית פעולה למנהל.</div>
+            </div>
+
+            <div class="chat-compose">
+              <textarea id="agentQuestion" placeholder="כתוב שאלה על העובד הנבחר... לדוגמה: האם כדאי להפוך אותו למנהל בקרה על המערכת החדשה?"></textarea>
+              <button class="btn primary" id="sendAgentQuestionBtn">שלח לסוכן</button>
+            </div>
+
+            <pre id="ollamaOutput" style="display:none">ממתין לשאלה...</pre>
+          </div>
+        </div>
+      `;
+      els.ollamaOutput = document.getElementById("ollamaOutput");
+      renderAgentBrief();
+    }
+
+    function renderAgentBrief() {
+      const brief = document.getElementById("agentEmployeeBrief");
+      const badge = document.getElementById("agentEmployeeBadge");
+      if (!brief) return;
+      const e = employees.find(x => x.id === selectedId) || employees[0];
+      if (!e) {
+        brief.innerHTML = '<div class="empty">אין עובד נבחר.</div>';
+        if (badge) badge.textContent = "אין עובד";
+        return;
+      }
+      const s = scoreEmployee(e);
+      const [label, color] = categoryLabel(s.category);
+      if (badge) {
+        badge.className = `tag ${color}`;
+        badge.textContent = `${e.name} · ${label}`;
+      }
+      brief.innerHTML = `
+        <div class="brief-line"><span>עובד</span><b>${escapeHtml(e.name)}</b></div>
+        <div class="brief-line"><span>מחלקה / תפקיד</span><b>${escapeHtml(e.department)} / ${escapeHtml(e.role)}</b></div>
+        <div class="brief-line"><span>ציון סיכון</span><b>${s.risk}/100</b></div>
+        <div class="brief-line"><span>עלות חודשית</span><b>${money(e.monthly_cost)}</b></div>
+        <div class="brief-line"><span>איכות</span><b>${Number(e.quality_score || 0)}/100</b></div>
+        <div class="brief-line"><span>שעות ידניות</span><b>${Number(e.manual_hours || 0)}</b></div>
+        <div class="brief-line"><span>חשיפת אוטומציה</span><b>${pct(e.automation_potential)}</b></div>
+        <div class="brief-line"><span>התאמה להסבה</span><b>${Number(e.redeployment_fit || 0)}/100</b></div>
+      `;
+    }
+
+    function appendAgentMessage(role, text) {
+      const log = document.getElementById("agentChatLog");
+      if (!log) return;
+      const div = document.createElement("div");
+      div.className = `msg ${role}`;
+      div.textContent = text;
+      log.appendChild(div);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    function selectedEmployeeContext() {
+      const e = employees.find(x => x.id === selectedId) || employees[0];
+      if (!e) return null;
+      const s = scoreEmployee(e);
+      const action = recommendedAction(e, s);
+      return { employee: e, score: s, currentRecommendation: action };
+    }
+
+    function localAgentAnswer(question, ctx, reason = "Ollama לא החזיר תשובה בזמן") {
+      const e = ctx.employee;
+      const s = ctx.score;
+      const action = ctx.currentRecommendation;
+      const blockers = [];
+      if (s.productivityGap >= 55) blockers.push("פער תפוקה גבוה ביחס לקבוצת ההשוואה");
+      if (s.qualityRisk >= 45) blockers.push("סיכון איכות ושגיאות שמצריך בדיקה");
+      if (s.costPressure >= 55) blockers.push("עלות גבוהה ביחס לתפוקה הנוכחית");
+      if (s.automationExposure >= 60) blockers.push("חלק גדול מהעבודה ידני וחוזר על עצמו");
+      if (s.redeploymentDifficulty >= 55) blockers.push("התאמה להסבה לא מספיק ברורה כרגע");
+      const strengths = [];
+      if (Number(e.knowledge_value || 0) >= 65) strengths.push("ידע ארגוני ששווה לשמר");
+      if (Number(e.redeployment_fit || 0) >= 60) strengths.push("התאמה טובה להסבה לתפקיד חדש");
+      if (Number(e.quality_score || 0) >= 80) strengths.push("איכות עבודה טובה");
+      if (Number(e.automation_potential || 0) >= 0.55) strengths.push("פוטנציאל להפוך את העובד למפעיל/בקר של האוטומציה");
+
+      const aiFit = Number(e.redeployment_fit || 0) >= 65 && Number(e.automation_potential || 0) >= 0.55;
+      const controlFit = Number(e.quality_score || 0) >= 72 || Number(e.knowledge_value || 0) >= 65;
+      const questionHint = question.includes("AI")
+        ? "לתפקיד מנהל תהליך AI הייתי בודק יכולת למידה, הבנת תהליך מקצה לקצה, אחריות על חריגים ויכולת להדריך עובדים אחרים."
+        : question.includes("בקרה") || question.includes("איכות")
+          ? "לתפקיד מנהל בקרה כדאי לבדוק דיוק, הבנת חריגים, יכולת תיעוד, ואחריות על QA של תוצרי המערכת."
+          : "הניתוח מתמקד בשיפור לפני בחינת המשך העסקה.";
+
+      return `תשובת סוכן מקומית (${reason})
+
+עובד: ${e.name}
+תפקיד: ${e.department} / ${e.role}
+ציון סיכון: ${s.risk}/100
+המלצה נוכחית: ${action.headline}
+
+איפה נראה שקשה לו:
+${blockers.length ? blockers.map(x => `- ${x}`).join("\n") : "- אין קושי חד לפי הנתונים. כדאי לאסוף עוד הקשר מהמנהל הישיר."}
+
+נקודות שאפשר לבנות עליהן:
+${strengths.length ? strengths.map(x => `- ${x}`).join("\n") : "- כרגע אין נקודת חוזק מובהקת בנתונים. צריך שיחת מנהל והשלמת מידע איכותני."}
+
+מה לשפר עבורו:
+- להגדיר יעד 30 יום לתפוקה ואיכות, עם מדידה שבועית.
+- להעביר משימות חוזרות לאוטומציה ולהשאיר לו טיפול בחריגים.
+- לבדוק אם הבעיה היא עומס, חוסר הכשרה, תהליך שבור או התאמה נמוכה לתפקיד.
+- לא לקבל החלטה קשה לפני שיחת עובד, תיעוד, ובדיקת HR.
+
+התאמה לתפקיד AI / בקרה:
+- מנהל תהליך AI: ${aiFit ? "יש התאמה ראשונית. מומלץ פיילוט קצר שבו העובד מתפעל תהליך אוטומטי ומדווח חריגים." : "לא ודאי. נדרש לבדוק למידה, עצמאות ורצון לעבוד עם המערכת."}
+- מנהל בקרה: ${controlFit ? "יש בסיס טוב, בעיקר אם הידע או האיכות שלו גבוהים. מומלץ לתת אחריות על QA של תוצרי המערכת." : "נדרשת הוכחת דיוק, תיעוד ועקביות לפני מעבר לתפקיד בקרה."}
+
+שאלות לשיחת מנהל:
+- אילו משימות הכי מעכבות אותך כיום?
+- איפה המערכת החדשה יכולה לעזור לך ולא להחליף אותך?
+- איזה חלק בתפקיד היית רוצה לנהל או לבקר?
+- איזו הכשרה חסרה לך כדי להפעיל מערכת AI?
+
+${questionHint}`;
+    }
+
+    async function askAgent(question) {
+      const ctx = selectedEmployeeContext();
+      if (!ctx || !question.trim()) return;
+      appendAgentMessage("user", question);
+      appendAgentMessage("agent", "מנסה לקבל תשובת LLM. אם זה מתעכב, אציג ניתוח מקומי...");
+      const prompt = `אתה סוכן HR ותפעול שתומך במנהל בשיחה על עובד ספציפי.
+אסור להמליץ על פיטורים אוטומטיים.
+אסור להשתמש או להסיק נתונים מוגנים: גיל, מגדר, דת, מוצא, מצב משפחתי, בריאות, הריון או מוגבלות.
+ענה בעברית, בצורה מעשית למנהל.
+חובה להתייחס לנתונים, לציין מה חסר, ולהציע חלופות: שיפור, הכשרה, מנהל תהליך AI, מנהל בקרה, או HR review.
+אם יש סיכון גבוה, נסח זאת כבחינה ניהולית עם תהליך HR, לא כהחלטה.
+
+שאלת המנהל:
+${question}
+
+נתוני העובד והניקוד:
+${JSON.stringify(ctx, null, 2)}`;
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 12000);
+      try {
+        const res = await fetch(document.getElementById("ollamaUrl").value.trim(), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          signal: controller.signal,
+          body: JSON.stringify({
+            model: document.getElementById("ollamaModel").value.trim(),
+            prompt,
+            stream: false,
+            options: { temperature: 0.2, num_predict: 650 }
+          })
+        });
+        clearTimeout(timeout);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        const log = document.getElementById("agentChatLog");
+        const last = log?.querySelector(".msg.agent:last-child");
+        if (last) last.textContent = data.response || JSON.stringify(data, null, 2);
+        if (els.ollamaOutput) els.ollamaOutput.textContent = data.response || "";
+      } catch (err) {
+        clearTimeout(timeout);
+        const reason = err.name === "AbortError" ? "Ollama עבר timeout אחרי 12 שניות" : `Ollama נכשל: ${err.message}`;
+        const fallback = localAgentAnswer(question, ctx, reason);
+        const log = document.getElementById("agentChatLog");
+        const last = log?.querySelector(".msg.agent:last-child");
+        if (last) last.textContent = fallback;
+        if (els.ollamaOutput) els.ollamaOutput.textContent = fallback;
+      }
+    }
+
+    function sendAgentQuestion() {
+      const input = document.getElementById("agentQuestion");
+      const question = input?.value.trim();
+      if (!question) return;
+      input.value = "";
+      askAgent(question);
+    }
+
+    upgradeOllamaPanel();
+
+    document.querySelectorAll(".navbtn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".navbtn").forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById(btn.dataset.view).classList.add("active");
+      });
+    });
+
+    ["searchInput", "deptFilter", "riskFilter", "sortSelect"].forEach(id => {
+      document.getElementById(id).addEventListener("input", render);
+    });
+    document.getElementById("demoBtn").addEventListener("click", () => {
+      employees = JSON.parse(JSON.stringify(defaultEmployees));
+      selectedId = employees[0].id;
+      render();
+    });
+    document.getElementById("printBtn").addEventListener("click", () => window.print());
+    document.getElementById("aiBtn").addEventListener("click", () => {
+      document.querySelector('[data-view="ollama"]').click();
+      askAgent("תן ניתוח מנהלים קצר על העובד הנבחר: איפה הקושי, מה אפשר לשפר, והאם מתאים להסבה לתפקיד מנהל תהליך AI או מנהל בקרה.");
+    });
+    document.getElementById("testOllamaBtn")?.addEventListener("click", analyzeWithOllama);
+    document.getElementById("sendAgentQuestionBtn")?.addEventListener("click", sendAgentQuestion);
+    document.getElementById("agentQuestion")?.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) sendAgentQuestion();
+    });
+    document.querySelectorAll("[data-agent-question]").forEach(btn => {
+      btn.addEventListener("click", () => askAgent(btn.dataset.agentQuestion));
+    });
+    document.getElementById("loadSheetBtn").addEventListener("click", loadSheet);
+    document.getElementById("copySchemaBtn").addEventListener("click", showSchema);
+    document.getElementById("addEmployeeBtn").addEventListener("click", () => {
+      const id = `E-${Math.floor(1000 + Math.random() * 9000)}`;
+      employees.push({ id, name: "עובד חדש", department: "כללי", role: "תפקיד חדש", monthly_cost: 20000, tasks_per_month: 300, quality_score: 70, error_rate: 0.05, manual_hours: 80, automation_potential: 0.5, knowledge_value: 50, redeployment_fit: 50 });
+      selectedId = id;
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>

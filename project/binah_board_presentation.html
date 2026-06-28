@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>בִּינָה AI Academy — ישיבת דירקטוריון</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --periwinkle: #9FB4F5;
+    --lavender: #C3A8EE;
+    --mint: #46C99A;
+    --mint-light: #D1FAE5;
+    --amber: #FFD08A;
+    --peach: #FFC8A8;
+    --rose: #F5B8C8;
+    --sky: #A7BCF5;
+    --deep-indigo: #1E1B4B;
+    --indigo: #312E81;
+    --mid-indigo: #4338CA;
+    --white: #FFFFFF;
+    --off-white: #F8F7FD;
+    --light-gray: #F2F1FA;
+    --muted: #7A7A92;
+    --dark-text: #2E2E48;
+    --spring: cubic-bezier(.34, 1.35, .5, 1);
+    --ease-out: cubic-bezier(.22,.68,0,1.2);
+  }
+
+  html, body {
+    width: 100%; height: 100%; overflow: hidden;
+    font-family: 'Heebo', sans-serif;
+    background: #0a0818;
+  }
+
+  /* ─── PRESENTATION SHELL ─────────────────────────────── */
+  #pres {
+    width: 100vw; height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+
+  .slide-viewport {
+    width: min(100vw, calc(100vh * 16/9));
+    height: min(100vh, calc(100vw * 9/16));
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ─── SLIDES ─────────────────────────────────────────── */
+  .slide {
+    position: absolute; inset: 0;
+    display: flex;
+    opacity: 0;
+    transform: translateX(-60px) scale(0.97);
+    transition: opacity 0.5s ease, transform 0.5s var(--spring);
+    pointer-events: none;
+    will-change: opacity, transform;
+  }
+  .slide.active {
+    opacity: 1; transform: translateX(0) scale(1);
+    pointer-events: all;
+  }
+  .slide.exit {
+    opacity: 0; transform: translateX(60px) scale(0.97);
+  }
+
+  /* ─── ORBS (shared animated decoration) ─────────────── */
+  .orb {
+    position: absolute; border-radius: 50%;
+    filter: blur(60px);
+    animation: float 24s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes float {
+    0%,100% { transform: translate(0,0) scale(1); }
+    33% { transform: translate(20px,-30px) scale(1.06); }
+    66% { transform: translate(-15px,20px) scale(0.96); }
+  }
+
+  /* ─── GLASS CARD ────────────────────────────────────── */
+  .glass {
+    background: rgba(255,255,255,0.68);
+    border: 1px solid rgba(255,255,255,0.88);
+    backdrop-filter: blur(30px) saturate(160%);
+    -webkit-backdrop-filter: blur(30px) saturate(160%);
+    border-radius: 22px;
+    box-shadow: 0 10px 28px rgba(80,70,140,0.07);
+    transition: transform 0.28s var(--spring), box-shadow 0.28s ease;
+  }
+  .glass:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 22px 44px rgba(80,70,140,0.16);
+  }
+
+  .glass-dark {
+    background: rgba(30,27,75,0.72);
+    border: 1px solid rgba(159,180,245,0.22);
+    backdrop-filter: blur(30px) saturate(160%);
+    -webkit-backdrop-filter: blur(30px) saturate(160%);
+    border-radius: 22px;
+    box-shadow: 0 10px 28px rgba(0,0,0,0.3);
+  }
+
+  /* ─── PRIMARY GRADIENT ──────────────────────────────── */
+  .grad-primary { background: linear-gradient(135deg, #9FB4F5, #C3A8EE); }
+  .grad-mint    { background: linear-gradient(135deg, #46C99A, #7FD3C0); }
+  .grad-amber   { background: linear-gradient(135deg, #FFD08A, #FFB0A0); }
+
+  /* ─── LOGO MARK ─────────────────────────────────────── */
+  .logo-mark {
+    border-radius: 13px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .logo-mark svg { display: block; }
+
+  /* ─── NAVIGATION ─────────────────────────────────────── */
+  #nav {
+    position: fixed; bottom: 2.5vh; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(255,255,255,0.14);
+    border: 1px solid rgba(255,255,255,0.22);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 50px;
+    padding: 8px 16px;
+    z-index: 1000;
+    user-select: none;
+  }
+  .nav-btn {
+    width: 36px; height: 36px; border-radius: 50%;
+    border: none; cursor: pointer;
+    background: rgba(255,255,255,0.18);
+    color: white; font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.22s var(--spring);
+  }
+  .nav-btn:hover {
+    background: rgba(159,180,245,0.4);
+    transform: scale(1.12);
+  }
+  .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
+
+  .dot-nav { display: flex; gap: 7px; align-items: center; }
+  .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: rgba(255,255,255,0.35);
+    cursor: pointer;
+    transition: all 0.3s var(--spring);
+  }
+  .dot.active {
+    width: 22px; border-radius: 4px;
+    background: linear-gradient(90deg, #9FB4F5, #C3A8EE);
+  }
+
+  #slide-counter {
+    color: rgba(255,255,255,0.6);
+    font-size: 12px; font-weight: 600;
+    min-width: 36px; text-align: center;
+    letter-spacing: 0.05em;
+  }
+
+  /* ─── PROGRESS BAR ──────────────────────────────────── */
+  #progress-bar {
+    position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 999;
+    background: rgba(255,255,255,0.1);
+  }
+  #progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #9FB4F5, #C3A8EE, #46C99A);
+    transition: width 0.4s ease;
+  }
+
+  /* ─── SLIDE COUNTER BADGE ────────────────────────────── */
+  #slide-badge {
+    position: fixed; top: 16px; left: 20px;
+    color: rgba(255,255,255,0.45);
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.08em;
+    z-index: 999;
+  }
+
+  /* ─── UTILITY CLASSES ────────────────────────────────── */
+  .tag-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 14px; border-radius: 99px;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(159,180,245,0.3), transparent);
+    margin: 10px 0;
+  }
+
+  /* ──────────────────────────────────────────────────────
+     SLIDE 1 — TITLE (DARK)
+  ────────────────────────────────────────────────────── */
+  #s1 {
+    background: linear-gradient(150deg, #1E1B4B 0%, #2D1F6E 50%, #1a2a3a 100%);
+    flex-direction: column;
+    padding: 5% 7%;
+    justify-content: space-between;
+  }
+  #s1 .top-row { display: flex; align-items: center; gap: 16px; }
+  #s1 .brand-name {
+    font-size: clamp(32px, 5vw, 56px); font-weight: 900;
+    color: white; letter-spacing: -0.01em; line-height: 1.1;
+  }
+  #s1 .brand-sub {
+    font-size: clamp(10px, 1.2vw, 13px); font-weight: 700;
+    color: var(--periwinkle); letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  #s1 .sep-line {
+    height: 1px; margin: 2% 0;
+    background: linear-gradient(90deg, transparent, rgba(159,180,245,0.4), transparent);
+  }
+  #s1 .main-title {
+    font-size: clamp(22px, 3.5vw, 40px); font-weight: 800; color: white;
+    text-align: right; line-height: 1.25; margin-bottom: 8px;
+  }
+  #s1 .sub-title {
+    font-size: clamp(11px, 1.5vw, 17px); color: var(--periwinkle);
+    text-align: right; font-weight: 400;
+  }
+  #s1 .stats-row {
+    display: flex; gap: 2%; justify-content: flex-start;
+  }
+  #s1 .stat-card {
+    flex: 1;
+    background: rgba(159,180,245,0.15);
+    border: 1px solid rgba(159,180,245,0.3);
+    border-radius: 14px;
+    padding: 12px 8px;
+    text-align: center;
+    transition: all 0.28s var(--spring);
+    cursor: default;
+  }
+  #s1 .stat-card:hover {
+    background: rgba(159,180,245,0.28);
+    transform: translateY(-4px);
+  }
+  #s1 .stat-n {
+    font-size: clamp(18px, 2.5vw, 28px); font-weight: 900; color: white;
+  }
+  #s1 .stat-l {
+    font-size: clamp(9px, 1vw, 12px); color: var(--periwinkle); font-weight: 500;
+    margin-top: 2px;
+  }
+
+  /* ──────────────────────────────────────────────────────
+     SLIDE 2 — EXECUTIVE SUMMARY (LIGHT)
+  ────────────────────────────────────────────────────── */
+  #s2 {
+    background: linear-gradient(170deg, #F8F7FD 0%, #F2F1FA 50%, #F2F9F6 100%);
+    flex-direction: column; padding: 4% 6%;
+  }
+  .light-title {
+    font-size: clamp(20px, 3vw, 34px); font-weight: 900;
+    color: var(--deep-indigo); text-align: right;
+  }
+  .light-sub {
+    font-size: clamp(10px, 1.3vw, 15px); color: var(--muted);
+    text-align: right; margin-top: 4px;
+  }
+  #s2 .cards-row {
+    display: flex; gap: 3%; flex: 1; align-items: stretch; margin-top: 3%;
+  }
+  #s2 .exec-card {
+    flex: 1; padding: 5% 5% 4%;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  #s2 .exec-icon {
+    width: clamp(34px,4vw,46px); height: clamp(34px,4vw,46px);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: clamp(16px,2vw,22px);
+    flex-shrink: 0; align-self: flex-end;
+  }
+  #s2 .exec-card h3 {
+    font-size: clamp(13px,1.6vw,17px); font-weight: 800;
+    color: var(--deep-indigo); text-align: right;
+  }
+  #s2 .exec-card p {
+    font-size: clamp(10px,1.2vw,13px); color: var(--dark-text);
+    text-align: right; line-height: 1.65; flex: 1;
+  }
+
+  /* ──────────────────────────────────────────────────────
+     SLIDE 3 — THREE ROLES (LIGHT)
+  ────────────────────────────────────────────────────── */
+  #s3 {
+    background: linear-gradient(170deg, #F8F7FD 0%, #F2F1FA 50%, #F2F9F6 100%);
+    flex-direction: column; padding: 4% 6%;
+  }
+  #s3 .roles-row {
+    display: flex; gap: 3%; flex: 1; align-items: stretch; margin-top: 3%;
+  }
+  .role-card {
+    flex: 1; border-radius: 20px; padding: 5% 4%;
+    display: flex; flex-direction: column; gap: 10px;
+    transition: transform 0.28s var(--spring), box-shadow 0.28s ease;
+    border: 1.5px solid;
+    box-shadow: 0 8px 24px rgba(80,70,140,0.06);
+    cursor: default;
+  }
+  .role-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(80,70,140,0.14);
+  }
+  .role-icon {
+    width: clamp(32px,3.5vw,42px); height: clamp(32px,3.5vw,42px);
+    border-radius: 11px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: clamp(14px,1.8vw,20px); align-self: flex-end;
+  }
+  .role-title {
+    font-size: clamp(14px,1.8vw,20px); font-weight: 900;
+    color: var(--deep-indigo); text-align: right;
+  }
+  .role-items { list-style: none; display: flex; flex-direction: column; gap: 0; }
+  .role-item {
+    font-size: clamp(9px,1.1vw,12px); color: var(--dark-text);
+    text-align: right; padding: 5px 0;
+    border-bottom: 1px solid;
+  }
+  .role-item:last-child { border-bottom: none; }
+
+  /* ──────────────────────────────────────────────────────
+     SLIDE 4 — DIFFERENTIATORS (DARK)
+  ────────────────────────────────────────────────────── */
+  #s4 {
+    background: linear-gradient(150deg, #1E1B4B 0%, #2D1F6E 50%, #1a2a3a 100%);
+    flex-direction: column; padding: 4% 6%;
+  }
+  #s4 .diff-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 3%; flex: 1; margin-top: 3%;
+  }
+  .diff-card {
+    background: rgba(49,46,129,0.5);
+    border-radius: 18px; padding: 5% 5%;
+    display: flex; flex-direction: column; gap: 10px;
+    border: 1px solid;
+    transition: transform 0.28s var(--spring), box-shadow 0.28s ease;
+    cursor: default;
+  }
+  .diff-card:hover {
+    transform: translateY(-5px) scale(1.015);
+  }
+  .diff-icon {
+    width: clamp(30px,3.2vw,40px); height: clamp(30px,3.2vw,40px);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: clamp(14px,1.6vw,18px); align-self: flex-end;
+  }
+  .diff-title {
+    font-size: clamp(13px,1.5vw,17px); font-weight: 800; color: white; text-align: right;
+  }
+  .diff-body {
+    font-size: clamp(9px,1.1vw,12.5px); color: var(--periwinkle);
+    text-align: right; line-height: 1.6; flex: 1;
+  }
+
+  /* ──────────────────────────────────────────────────────
+     SLIDE 5 — SECURITY (LIGHT)
+  ────────────────────────────────────────────────────── */
+  #s5 {
+    background: linear-gradient(170deg, #F8F7FD 0%, #F2F1FA 50%, #F2F9F6 100%);
+    flex-direction: column; padding: 4% 6%;
+  }
+  #s5 .sec-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 2.5%; flex: 1; margin-top: 3%;
+  }
+  .sec-card {
+    padding: 4% 4% 3%;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .sec-badge {
+    width: clamp(26px,2.8vw,34px); height: clamp(26px,2.8vw,34px);
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: clamp(10px,1.2vw,13px); font-weight: 900; color: white;
+    align-self: flex-end;
+  }
+  .sec-title {
+    font-size: clamp(11px,1.3vw,14px); font-weight: 800;
+    color: var(--deep-indigo); text-align: right;
+  }
+  .sec-body {
+    font-size: clamp(8.5px,1vw,11.5px); color: var(--muted);
+    text-align: right; line-height: 1.6; flex: 1;
+  }
+
+  /* ──────────────────────────────────────────────────────
+     SLIDE 6 — BUSINESS MODEL (LIGHT)
+  ────────────────────────────────────────────────────── */
+  #s6 {
+    background: linear-gradient(170deg, #F8F7FD 0%, #F2F1FA 50%, #F2F9F6 100%);
+    flex-direction: column; padding: 4% 6%;
+  }
+  #s6 .tiers-row {
+    display: flex; gap: 3%; flex: 1; align-items: flex-start; margin-top: 3%;
+  }
+  .tier-card {
+    flex: 1; border-radius: 20px; padding: 5% 4%;
+    display: flex; flex-direction: column; gap: 8px;
+    border: 1.5px solid;
+    box-shadow: 0 8px 24px rgba(80,70,140,0.06);
+    transition: transform 0.28s var(--spring), box-shadow 0.28s ease;
+    position: relative; overflow: visible;
+    cursor: default;
+  }
+  .tier-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 22px 42px rgba(80,70,140,0.16);
+  }
+  .tier-card.highlight {
+    border-width: 2px;
+    box-shadow: 0 14px 36px rgba(49,46,129,0.16);
+  }
+  .recommended-badge {
+    position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+    padding: 3px 14px; border-radius: 99px;
+    font-size: clamp(8px,0.9vw,10px); font-weight: 800; color: white;
+    white-space: nowrap;
+  }
+  .tier-name {
+    font-size: clamp(14px,1.7vw,18px); font-weight: 900;
+    color: var(--deep-indigo); text-align: right;
+  }
+  .tier-price {
+    font-size: clamp(20px,2.8vw,32px); font-weight: 900; text-align: right; line-height: 1;
+  }
+  .tier-per {
+    font-size: clamp(9px,1vw,11px); color: var(--muted); text-align: right;
+  }
+  .tier-divider { height: 1px; background: rgba(0,0,0,0.08); margin: 4px 0; }
+  .tier-feat {
+    font-size: clamp(9px,1.05vw,12px); color: var(--dark-text);
+    text-align: right; padding: 3px 0; display: flex;
+    align-items: center; justify-content: flex-end; gap: 7px;
+  }
+  .feat-dot {
+    width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+  }
+
+  /* ──────────────────────────────────────────────────────
+     SLIDE 7 — ROADMAP (LIGHT)
+  ────────────────────────────────────────────────────── */
+  #s7 {
+    background: linear-gradient(170deg, #F8F7FD 0%, #F2F1FA 50%, #F2F9F6 100%);
+    flex-direction: column; padding: 4% 6%;
+  }
+  #s7 .timeline-wrap {
+    flex: 1; display: flex; flex-direction: column; margin-top: 3%; gap: 0;
+  }
+  .timeline-line-wrap {
+    position: relative; display: flex; align-items: center;
+    margin: 8px 0;
+  }
+  .timeline-line {
+    flex: 1; height: 3px; border-radius: 99px;
+    background: linear-gradient(90deg, var(--mint), var(--periwinkle), var(--lavender));
+    opacity: 0.45; position: relative;
+  }
+  .phases-row {
+    display: flex; gap: 3%;
+  }
+  .phase-col {
+    flex: 1; display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
+  }
+  .phase-dot {
+    width: 16px; height: 16px; border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(255,255,255,0.9), 0 4px 12px rgba(0,0,0,0.15);
+    flex-shrink: 0;
+  }
+  .phase-header {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 12px; border-radius: 99px;
+    font-size: clamp(9px,1vw,11px); font-weight: 800; color: white;
+    align-self: flex-end;
+  }
+  .phase-date {
+    font-size: clamp(10px,1.2vw,13px); font-weight: 800;
+    color: var(--deep-indigo); text-align: right;
+  }
+  .phase-card {
+    width: 100%; padding: 3.5% 4%;
+    display: flex; flex-direction: column; gap: 5px;
+  }
+  .phase-item {
+    font-size: clamp(9px,1.05vw,11.5px); color: var(--dark-text);
+    text-align: right; padding: 3px 0;
+    display: flex; align-items: center; justify-content: flex-end; gap: 6px;
+  }
+  .phase-item-dot {
+    width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0;
+  }
+
+  /* ──────────────────────────────────────────────────────
+     SLIDE 8 — THE HOUSE + CTA (DARK)
+  ────────────────────────────────────────────────────── */
+  #s8 {
+    background: linear-gradient(150deg, #1E1B4B 0%, #2D1F6E 50%, #1a2a3a 100%);
+    flex-direction: row;
+    padding: 5% 6%;
+    gap: 4%;
+    align-items: stretch;
+  }
+  #s8 .cta-left {
+    flex: 1.1; display: flex; flex-direction: column; justify-content: space-between;
+    gap: 16px;
+  }
+  #s8 .cta-right {
+    flex: 0.9;
+    background: rgba(49,46,129,0.45);
+    border: 1px solid rgba(159,180,245,0.25);
+    border-radius: 22px;
+    backdrop-filter: blur(20px);
+    padding: 6% 5%;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 12px;
+    box-shadow: 0 0 60px rgba(159,180,245,0.15);
+  }
+  #s8 .cta-big {
+    font-size: clamp(20px,2.8vw,34px); font-weight: 900; color: white;
+    text-align: right; line-height: 1.25;
+  }
+  #s8 .cta-sub {
+    font-size: clamp(11px,1.4vw,16px); color: var(--periwinkle);
+    text-align: right; line-height: 1.6;
+  }
+  .cta-action {
+    background: rgba(159,180,245,0.18);
+    border: 1px solid rgba(159,180,245,0.35);
+    border-radius: 14px; padding: 10px 22px;
+    color: white; font-size: clamp(10px,1.3vw,14px); font-weight: 700;
+    text-align: center; cursor: pointer;
+    transition: all 0.26s var(--spring);
+    width: 100%;
+    font-family: 'Heebo', sans-serif;
+  }
+  .cta-action:hover {
+    background: rgba(159,180,245,0.35);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 12px 28px rgba(159,180,245,0.3);
+  }
+  #s8 .house-title {
+    font-size: clamp(16px,2vw,24px); font-weight: 900; color: white; text-align: center;
+  }
+  #s8 .house-feat {
+    font-size: clamp(9.5px,1.1vw,12.5px); color: var(--periwinkle);
+    text-align: right; width: 100%;
+    display: flex; align-items: center; justify-content: flex-end; gap: 8px;
+  }
+  .house-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--mint); flex-shrink: 0;
+  }
+
+  /* ── House Hub mini preview ──────────────────────────── */
+  #house-hub {
+    width: 100%; aspect-ratio: 4/3;
+    border-radius: 16px; overflow: hidden;
+    background: linear-gradient(135deg, #1a1040 0%, #1e2a4a 50%, #0e1f38 100%);
+    position: relative; cursor: pointer;
+    border: 1px solid rgba(159,180,245,0.2);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  }
+  #house-hub .room {
+    position: absolute; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: clamp(8px,0.9vw,10px); font-weight: 700; color: white;
+    cursor: pointer;
+    transition: all 0.35s var(--spring);
+    text-align: center;
+  }
+  #house-hub .room:hover { filter: brightness(1.35) saturate(1.3); transform: scale(1.07); }
+  #house-hub .room-label { font-size: 0.85em; opacity: 0.9; text-align: center; }
+  #house-hub .room-emoji { font-size: 1.4em; display: block; margin-bottom: 2px; }
+  #house-hub .hub-zoom-overlay {
+    position: absolute; inset: 0; background: rgba(10,8,24,0);
+    transition: background 0.4s ease;
+    display: flex; align-items: center; justify-content: center;
+    pointer-events: none;
+  }
+  #house-hub.zooming .hub-zoom-overlay { background: rgba(10,8,24,0.7); pointer-events: none; }
+  .zoom-in-hint {
+    position: absolute; bottom: 6px; right: 8px;
+    font-size: clamp(7px,0.8vw,9px); color: rgba(159,180,245,0.6);
+    font-weight: 600; pointer-events: none;
+  }
+
+  /* ─── SLIDE-IN ENTRANCE ANIMATION ───────────────────── */
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(-40px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .slide.active .anim-1 { animation: fadeUp 0.5s var(--spring) 0.05s both; }
+  .slide.active .anim-2 { animation: fadeUp 0.5s var(--spring) 0.15s both; }
+  .slide.active .anim-3 { animation: fadeUp 0.5s var(--spring) 0.25s both; }
+  .slide.active .anim-4 { animation: fadeUp 0.5s var(--spring) 0.35s both; }
+  .slide.active .anim-5 { animation: fadeUp 0.5s var(--spring) 0.45s both; }
+
+  /* ─── KEYBOARD HINT ──────────────────────────────────── */
+  #kbd-hint {
+    position: fixed; top: 14px; right: 20px;
+    color: rgba(255,255,255,0.3); font-size: 11px;
+    z-index: 999; letter-spacing: 0.04em;
+  }
+</style>
+</head>
+<body>
+
+<div id="progress-bar"><div id="progress-fill"></div></div>
+<div id="slide-badge">1 / 8</div>
+<div id="kbd-hint">← → מקשים</div>
+
+<div id="pres">
+  <div class="slide-viewport">
+
+    <!-- ══════════════════════════════════════════════════
+         SLIDE 1 — TITLE
+    ══════════════════════════════════════════════════ -->
+    <div class="slide active" id="s1">
+      <!-- orbs -->
+      <div class="orb" style="width:38%;height:38%;background:radial-gradient(circle,rgba(67,56,202,0.6),transparent);top:-8%;right:-5%;animation-delay:-4s"></div>
+      <div class="orb" style="width:28%;height:28%;background:radial-gradient(circle,rgba(195,168,238,0.4),transparent);bottom:5%;left:-5%;animation-delay:-12s"></div>
+      <div class="orb" style="width:22%;height:22%;background:radial-gradient(circle,rgba(70,201,154,0.25),transparent);bottom:20%;right:30%;animation-delay:-18s"></div>
+
+      <div class="top-row anim-1">
+        <div class="logo-mark grad-primary" style="width:clamp(44px,5.5vw,64px);height:clamp(44px,5.5vw,64px);">
+          <svg width="60%" height="60%" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round">
+            <path d="M12 3v18M3 12h18"/>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-name">בִּינָה</div>
+          <div class="brand-sub">AI ACADEMY</div>
+        </div>
+      </div>
+
+      <div class="sep-line anim-2"></div>
+
+      <div class="anim-3">
+        <div class="main-title">מצגת דירקטוריון — יוני 2026</div>
+        <div class="sub-title">פלטפורמת לימוד AI מבוססת בינה מלאכותית — מסוף המורה ועד לסטודנט</div>
+      </div>
+
+      <div class="stats-row anim-4">
+        <div class="stat-card"><div class="stat-n">21</div><div class="stat-l">מסכים</div></div>
+        <div class="stat-card"><div class="stat-n">3</div><div class="stat-l">תפקידים</div></div>
+        <div class="stat-card"><div class="stat-n">AI</div><div class="stat-l">לכל שלב</div></div>
+        <div class="stat-card"><div class="stat-n">DRM</div><div class="stat-l">הגנת IP</div></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════
+         SLIDE 2 — EXECUTIVE SUMMARY
+    ══════════════════════════════════════════════════ -->
+    <div class="slide" id="s2">
+      <div class="orb" style="width:32%;height:32%;background:radial-gradient(circle,rgba(195,168,238,0.35),transparent);top:-6%;left:-4%;animation-delay:-6s"></div>
+      <div class="orb" style="width:22%;height:22%;background:radial-gradient(circle,rgba(70,201,154,0.3),transparent);bottom:3%;right:-3%;animation-delay:-14s"></div>
+
+      <div class="light-title anim-1">סיכום מנהלים</div>
+      <div class="light-sub anim-1">בינה AI Academy בקצרה</div>
+
+      <div class="cards-row">
+        <div class="glass exec-card anim-2">
+          <div class="exec-icon" style="background:rgba(159,180,245,0.2);">🎓</div>
+          <h3>מה אנחנו?</h3>
+          <p>פלטפורמת לימוד AI מלאה בעברית — כולל קורסים מותאמים אישית, סרטוני הסבר AI, מבחנים, ושידורים חיים עם כלים מקצועיים.</p>
+        </div>
+        <div class="glass exec-card anim-3">
+          <div class="exec-icon" style="background:rgba(70,201,154,0.2);">🚀</div>
+          <h3>ההזדמנות</h3>
+          <p>שוק ה-EdTech הישראלי עולה על ₪1.2 מיליארד. ביקוש גדל ב-38% משנת 2024. בינה ממוצבת כפתרון Enterprise לחברות וארגונים.</p>
+        </div>
+        <div class="glass exec-card anim-4">
+          <div class="exec-icon" style="background:rgba(195,168,238,0.2);">🤖</div>
+          <h3>הבידול שלנו</h3>
+          <p>שבי — AI assistant מחובר לנתונים בזמן אמת, Studio AI לייצור תוכן, DRM מלא עם Watermark, ומעקב התקדמות per-תלמיד.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════
+         SLIDE 3 — THREE ROLES
+    ══════════════════════════════════════════════════ -->
+    <div class="slide" id="s3">
+      <div class="orb" style="width:28%;height:28%;background:radial-gradient(circle,rgba(159,180,245,0.3),transparent);top:-5%;right:-4%;animation-delay:-8s"></div>
+      <div class="orb" style="width:20%;height:20%;background:radial-gradient(circle,rgba(70,201,154,0.28),transparent);bottom:5%;left:-3%;animation-delay:-16s"></div>
+
+      <div class="light-title anim-1">המוצר — שלושה תפקידים, עולם אחד</div>
+      <div class="light-sub anim-1">כל משתמש מקבל ממשק מותאם לתפקידו</div>
+
+      <div class="roles-row">
+        <div class="role-card anim-2" style="background:#EEF2FF;border-color:rgba(159,180,245,0.5);">
+          <div class="role-icon" style="background:rgba(159,180,245,0.3);">🎓</div>
+          <div class="role-title">תלמיד</div>
+          <ul class="role-items">
+            <li class="role-item" style="border-color:rgba(159,180,245,0.2);">לוח קורסים + Progress Ring</li>
+            <li class="role-item" style="border-color:rgba(159,180,245,0.2);">תרגום מנוהל ע"י מרצה</li>
+            <li class="role-item" style="border-color:rgba(159,180,245,0.2);">מבחנים מתוזמנים עם נעילה</li>
+            <li class="role-item" style="border-color:rgba(159,180,245,0.2);">Live Assist — איתות שקט</li>
+            <li class="role-item" style="border-color:rgba(159,180,245,0.2);">FocusSound — ריכוז Binaural</li>
+            <li class="role-item" style="border-color:rgba(159,180,245,0.2);">צ'אט ישיר עם המרצה</li>
+          </ul>
+        </div>
+        <div class="role-card anim-3" style="background:#ECFDF5;border-color:rgba(70,201,154,0.5);">
+          <div class="role-icon" style="background:rgba(70,201,154,0.3);">👨‍🏫</div>
+          <div class="role-title">מרצה</div>
+          <ul class="role-items">
+            <li class="role-item" style="border-color:rgba(70,201,154,0.2);">קונסולת ניהול תלמידים</li>
+            <li class="role-item" style="border-color:rgba(70,201,154,0.2);">Studio AI — LLM→TTS→Video</li>
+            <li class="role-item" style="border-color:rgba(70,201,154,0.2);">Lesson Builder + מאגר חומרים</li>
+            <li class="role-item" style="border-color:rgba(70,201,154,0.2);">שידור חי + גרפיקות real-time</li>
+            <li class="role-item" style="border-color:rgba(70,201,154,0.2);">שבי — עוזר AI מחובר לנתונים</li>
+            <li class="role-item" style="border-color:rgba(70,201,154,0.2);">Teams — עבודה שיתופית</li>
+          </ul>
+        </div>
+        <div class="role-card anim-4" style="background:#FFFBEB;border-color:rgba(255,208,138,0.5);">
+          <div class="role-icon" style="background:rgba(255,208,138,0.3);">🏛️</div>
+          <div class="role-title">מנהל המכללה</div>
+          <ul class="role-items">
+            <li class="role-item" style="border-color:rgba(255,208,138,0.2);">ניהול מרצים + הרשאות</li>
+            <li class="role-item" style="border-color:rgba(255,208,138,0.2);">מנויים + חשבוניות ישראליות</li>
+            <li class="role-item" style="border-color:rgba(255,208,138,0.2);">אבטחה: 2FA, DRM, Signed URLs</li>
+            <li class="role-item" style="border-color:rgba(255,208,138,0.2);">System Health + Self-Healing</li>
+            <li class="role-item" style="border-color:rgba(255,208,138,0.2);">Audit Log + Session Control</li>
+            <li class="role-item" style="border-color:rgba(255,208,138,0.2);">חוזים + IP Protection</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════
+         SLIDE 4 — DIFFERENTIATORS (DARK)
+    ══════════════════════════════════════════════════ -->
+    <div class="slide" id="s4">
+      <div class="orb" style="width:36%;height:36%;background:radial-gradient(circle,rgba(67,56,202,0.55),transparent);top:-10%;right:-6%;animation-delay:-3s"></div>
+      <div class="orb" style="width:26%;height:26%;background:radial-gradient(circle,rgba(70,201,154,0.25),transparent);bottom:0;left:-4%;animation-delay:-13s"></div>
+
+      <div class="anim-1">
+        <div class="light-title" style="color:white;">הבידול שלנו</div>
+        <div class="light-sub" style="color:var(--periwinkle);">מה שאין לאף מתחרה בשוק הישראלי</div>
+      </div>
+
+      <div class="diff-grid">
+        <div class="diff-card anim-2" style="border-color:rgba(159,180,245,0.3);">
+          <div class="diff-icon grad-primary">🤖</div>
+          <div class="diff-title">שבי — AI חי</div>
+          <div class="diff-body">מחובר לנתוני התלמידים בזמן אמת. עונה לשאלות כמו 'מי מפגר?' ו'מה ציון הכיתה?' ישירות מה-DB.</div>
+        </div>
+        <div class="diff-card anim-3" style="border-color:rgba(70,201,154,0.3);">
+          <div class="diff-icon grad-mint">🎬</div>
+          <div class="diff-title">Studio AI</div>
+          <div class="diff-body">Pipeline אוטומטי: תסריט ← LLM ← TTS (נועה/איתי/מאיה) ← Text-to-Video. ייצור תוכן בדקות.</div>
+        </div>
+        <div class="diff-card anim-4" style="border-color:rgba(195,168,238,0.3);">
+          <div class="diff-icon" style="background:linear-gradient(135deg,#C3A8EE,#E0A8E8);">🔒</div>
+          <div class="diff-title">DRM + Watermark</div>
+          <div class="diff-body">Signed URLs שפגות תוך דקות. Watermark דינמי עם שם התלמיד. 2FA מחייב. Session limit.</div>
+        </div>
+        <div class="diff-card anim-5" style="border-color:rgba(255,208,138,0.3);">
+          <div class="diff-icon grad-amber">📡</div>
+          <div class="diff-title">שידור חי חכם</div>
+          <div class="diff-body">חדר שידור semi-automatic עם גרפיקות per-שיעור, Timeline אוטומטי, ושבי עוזר השידור.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════
+         SLIDE 5 — SECURITY & IP
+    ══════════════════════════════════════════════════ -->
+    <div class="slide" id="s5">
+      <div class="orb" style="width:28%;height:28%;background:radial-gradient(circle,rgba(159,180,245,0.28),transparent);top:-4%;left:-3%;animation-delay:-7s"></div>
+      <div class="orb" style="width:20%;height:20%;background:radial-gradient(circle,rgba(70,201,154,0.25),transparent);bottom:2%;right:-2%;animation-delay:-17s"></div>
+
+      <div class="light-title anim-1">הגנת IP ואבטחה</div>
+      <div class="light-sub anim-1">שכבות ההגנה על תוכן הקורסים ועל הגישה למערכת</div>
+
+      <div class="sec-grid">
+        <div class="glass sec-card anim-2">
+          <div class="sec-badge" style="background:var(--mint);">01</div>
+          <div class="sec-title">2FA מחייב</div>
+          <div class="sec-body">כניסה דו-שלבית חובה לכל משתמש — 6 תיבות קוד + מייל. מונעת שיתוף סיסמאות.</div>
+        </div>
+        <div class="glass sec-card anim-2">
+          <div class="sec-badge grad-primary">02</div>
+          <div class="sec-title">Signed URLs</div>
+          <div class="sec-body">כל סרטון מוגש דרך URL שפג תוקף תוך דקות. הורדה ישירה בלתי אפשרית.</div>
+        </div>
+        <div class="glass sec-card anim-3">
+          <div class="sec-badge" style="background:var(--lavender);">03</div>
+          <div class="sec-title">Dynamic Watermark</div>
+          <div class="sec-body">שם התלמיד + מייל + timestamp מוטמעים בכל וידאו. כל דליפה ניתנת לאיתור.</div>
+        </div>
+        <div class="glass sec-card anim-3">
+          <div class="sec-badge grad-amber">04</div>
+          <div class="sec-title">Session Control</div>
+          <div class="sec-body">מגבלת מכשירים פעילים per-user. ניתן ל-kick session מרחוק ממסך ה-Security.</div>
+        </div>
+        <div class="glass sec-card anim-4">
+          <div class="sec-badge" style="background:var(--mint);">05</div>
+          <div class="sec-title">AES-256 Storage</div>
+          <div class="sec-body">כל נכסי הקורס מוצפנים at-rest. גישה דרך Gateway מאמת בלבד.</div>
+        </div>
+        <div class="glass sec-card anim-4">
+          <div class="sec-badge" style="background:var(--rose);">06</div>
+          <div class="sec-title">Audit Log</div>
+          <div class="sec-body">כל פעולה נרשמת ב-DB נפרד. Dashboard מנהל + Incident Response Agents אוטומטיים.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════
+         SLIDE 6 — BUSINESS MODEL
+    ══════════════════════════════════════════════════ -->
+    <div class="slide" id="s6">
+      <div class="orb" style="width:30%;height:30%;background:radial-gradient(circle,rgba(195,168,238,0.3),transparent);top:-5%;right:-4%;animation-delay:-9s"></div>
+      <div class="orb" style="width:22%;height:22%;background:radial-gradient(circle,rgba(70,201,154,0.25),transparent);bottom:4%;left:-3%;animation-delay:-19s"></div>
+
+      <div class="light-title anim-1">מודל עסקי</div>
+      <div class="light-sub anim-1">מנוי חודשי per-תלמיד · הכנסה חוזרת · Enterprise B2B</div>
+
+      <div class="tiers-row">
+        <div class="tier-card anim-2" style="background:#EFF6FF;border-color:rgba(167,188,245,0.5);">
+          <div class="tier-name">Basic</div>
+          <div class="tier-price" style="color:var(--mid-indigo);">₪149</div>
+          <div class="tier-per">לחודש / תלמיד</div>
+          <div class="tier-divider"></div>
+          <div class="tier-feat"><span class="feat-dot" style="background:var(--sky);"></span>קורס אחד</div>
+          <div class="tier-feat"><span class="feat-dot" style="background:var(--sky);"></span>Dashboard מלא</div>
+          <div class="tier-feat"><span class="feat-dot" style="background:var(--sky);"></span>2FA + מבחנים</div>
+          <div class="tier-feat"><span class="feat-dot" style="background:var(--sky);"></span>תמיכה במייל</div>
+        </div>
+        <div class="tier-card highlight anim-3" style="background:#EEF2FF;border-color:var(--periwinkle);">
+          <div class="recommended-badge grad-primary">מומלץ ✦</div>
+          <div class="tier-name">Pro</div>
+          <div class="tier-price" style="color:var(--mid-indigo);">₪289</div>
+          <div class="tier-per">לחודש / תלמיד</div>
+          <div class="tier-divider"></div>
+          <div class="tier-feat"><span class="feat-dot" style="background:var(--periwinkle);"></span>קורסים ללא הגבלה</div>
+          <div class="tier-feat"><span class="feat-dot" style="background:var(--periwinkle);"></span>Studio AI</div>
+          <div class="tier-feat"><span class="feat-dot" style="background:var(--periwinkle);"></span>Live broadcasts</div>
+          <div class="tier-feat"><span class="feat-dot" style="background:var(--periwinkle);"></span>שבי Assistant</div>
+          <div class="tier-feat"><span class="feat-dot" style="background:var(--periwinkle);"></span>Teams</div>
+        </div>
+        <div class="tier-card anim-4" style="background:#F5F3FF;border-color:rgba(195,168,238,0.5);">
+          <div class="tier-name">Enterprise</div>
+          <div class="tier-price" style="color:var(--lavender);font-size:clamp(16px,2vw,22px);">מחיר מותאם</div>
+          <div class="tier-per">per-ארגון</div>
+          <div class="tier-divider"></div>
+          <div class="tier-feat"><span class="feat-dot" style="background:var(--lavender);"></span>White Label מלא</div>
+          <div class="tier-feat"><span class="feat-dot" style="background:var(--lavender);"></span>Single Sign-On</div>
+          <div class="tier-feat"><span class="feat-dot" style="background:var(--lavender);"></span>SLA + תמיכה 24/7</div>
+          <div class="tier-feat"><span class="feat-dot" style="background:var(--lavender);"></span>Tranzila חיוב</div>
+          <div class="tier-feat"><span class="feat-dot" style="background:var(--lavender);"></span>Custom DRM</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════
+         SLIDE 7 — ROADMAP
+    ══════════════════════════════════════════════════ -->
+    <div class="slide" id="s7">
+      <div class="orb" style="width:26%;height:26%;background:radial-gradient(circle,rgba(70,201,154,0.28),transparent);top:-4%;right:-3%;animation-delay:-5s"></div>
+      <div class="orb" style="width:20%;height:20%;background:radial-gradient(circle,rgba(195,168,238,0.25),transparent);bottom:3%;left:-2%;animation-delay:-15s"></div>
+
+      <div class="light-title anim-1">מפת דרכים</div>
+      <div class="light-sub anim-1">מה בנוי, מה בבנייה, ומה בתכנון</div>
+
+      <div class="timeline-wrap">
+        <div class="phases-row anim-2" style="margin-bottom:12px;">
+          <!-- Phase 1 -->
+          <div class="phase-col">
+            <div class="phase-header" style="background:var(--mint);">✅ בנוי</div>
+            <div class="phase-date">Q1–Q2 2026</div>
+            <div class="glass phase-card" style="border-radius:16px;">
+              <div class="phase-item"><span class="phase-item-dot" style="background:var(--mint);"></span>21 מסכי ה-UI</div>
+              <div class="phase-item"><span class="phase-item-dot" style="background:var(--mint);"></span>System Dashboard</div>
+              <div class="phase-item"><span class="phase-item-dot" style="background:var(--mint);"></span>Instructor Console</div>
+              <div class="phase-item"><span class="phase-item-dot" style="background:var(--mint);"></span>Security + DRM</div>
+              <div class="phase-item"><span class="phase-item-dot" style="background:var(--mint);"></span>Studio AI Pipeline</div>
+            </div>
+          </div>
+          <!-- Phase 2 -->
+          <div class="phase-col">
+            <div class="phase-header grad-primary">🔨 בבנייה</div>
+            <div class="phase-date">Q3 2026</div>
+            <div class="glass phase-card" style="border-radius:16px;background:rgba(238,242,255,0.7);">
+              <div class="phase-item"><span class="phase-item-dot" style="background:var(--periwinkle);"></span>The House Hub</div>
+              <div class="phase-item"><span class="phase-item-dot" style="background:var(--periwinkle);"></span>Zoom-in Navigation</div>
+              <div class="phase-item"><span class="phase-item-dot" style="background:var(--periwinkle);"></span>Auth Backend</div>
+              <div class="phase-item"><span class="phase-item-dot" style="background:var(--periwinkle);"></span>Supabase Integration</div>
+              <div class="phase-item"><span class="phase-item-dot" style="background:var(--periwinkle);"></span>2FA Full Flow</div>
+            </div>
+          </div>
+          <!-- Phase 3 -->
+          <div class="phase-col">
+            <div class="phase-header" style="background:var(--lavender);">📋 בתכנון</div>
+            <div class="phase-date">Q4 2026+</div>
+            <div class="glass phase-card" style="border-radius:16px;">
+              <div class="phase-item"><span class="phase-item-dot" style="background:var(--lavender);"></span>Mobile App (iOS)</div>
+              <div class="phase-item"><span class="phase-item-dot" style="background:var(--lavender);"></span>Enterprise SSO</div>
+              <div class="phase-item"><span class="phase-item-dot" style="background:var(--lavender);"></span>Video DRM (Widevine)</div>
+              <div class="phase-item"><span class="phase-item-dot" style="background:var(--lavender);"></span>Payment (Tranzila)</div>
+              <div class="phase-item"><span class="phase-item-dot" style="background:var(--lavender);"></span>Analytics Dashboard</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="timeline-line-wrap anim-3">
+          <div class="timeline-line"></div>
+        </div>
+
+        <div class="phases-row anim-3" style="margin-top:0px;">
+          <div class="phase-col" style="align-items:center;">
+            <div class="phase-dot" style="background:var(--mint);"></div>
+          </div>
+          <div class="phase-col" style="align-items:center;">
+            <div class="phase-dot" style="background:var(--periwinkle);"></div>
+          </div>
+          <div class="phase-col" style="align-items:center;">
+            <div class="phase-dot" style="background:var(--lavender);"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════
+         SLIDE 8 — THE HOUSE + CTA
+    ══════════════════════════════════════════════════ -->
+    <div class="slide" id="s8">
+      <div class="orb" style="width:36%;height:36%;background:radial-gradient(circle,rgba(67,56,202,0.55),transparent);top:-8%;right:-5%;animation-delay:-2s"></div>
+      <div class="orb" style="width:24%;height:24%;background:radial-gradient(circle,rgba(70,201,154,0.22),transparent);bottom:0;left:-4%;animation-delay:-11s"></div>
+
+      <!-- Left: CTA -->
+      <div class="cta-left">
+        <div class="anim-1">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+            <div class="logo-mark grad-primary" style="width:clamp(38px,4.5vw,52px);height:clamp(38px,4.5vw,52px);">
+              <svg width="60%" height="60%" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round">
+                <path d="M12 3v18M3 12h18"/>
+              </svg>
+            </div>
+            <div>
+              <div style="font-size:clamp(22px,3vw,32px);font-weight:900;color:white;">בִּינָה</div>
+              <div style="font-size:clamp(9px,1vw,11px);font-weight:700;color:var(--periwinkle);letter-spacing:0.18em;">AI ACADEMY</div>
+            </div>
+          </div>
+          <div class="cta-big">מוכנים לשלב הבא</div>
+          <div class="cta-sub" style="margin-top:8px;">21 מסכים בנויים · UI מלא · תשתית מוכנה.<br/>הצעד הבא: Backend + The House Hub.</div>
+        </div>
+
+        <div class="anim-2" style="display:flex;flex-direction:column;gap:10px;">
+          <button class="cta-action">🎬 Demo מלא — בקשו סיור</button>
+          <button class="cta-action">🤝 הצעת שיתוף פעולה</button>
+          <button class="cta-action" style="background:rgba(195,168,238,0.18);border-color:rgba(195,168,238,0.35);">✉️ gur@agenthub.guru</button>
+        </div>
+      </div>
+
+      <!-- Right: House Hub preview -->
+      <div class="cta-right anim-3">
+        <div style="text-align:center;">
+          <div style="font-size:clamp(10px,1.2vw,14px);font-weight:700;color:var(--periwinkle);letter-spacing:0.1em;margin-bottom:4px;">הצעד הבא —</div>
+          <div class="house-title">The House Hub</div>
+        </div>
+
+        <div id="house-hub" onclick="zoomHouse(this)">
+          <!-- Rooms -->
+          <div class="room" style="left:38%;top:5%;width:24%;height:22%;background:linear-gradient(135deg,rgba(159,180,245,0.35),rgba(195,168,238,0.3));border:1px solid rgba(159,180,245,0.4);" onclick="zoomRoom(event,'סטודיו AI')">
+            <div><span class="room-emoji">🎬</span><span class="room-label">סטודיו AI</span></div>
+          </div>
+          <div class="room" style="left:5%;top:28%;width:30%;height:26%;background:linear-gradient(135deg,rgba(70,201,154,0.3),rgba(127,211,192,0.25));border:1px solid rgba(70,201,154,0.35);" onclick="zoomRoom(event,'לוח תלמיד')">
+            <div><span class="room-emoji">🎓</span><span class="room-label">לוח תלמיד</span></div>
+          </div>
+          <div class="room" style="right:5%;top:28%;width:30%;height:26%;background:linear-gradient(135deg,rgba(255,208,138,0.3),rgba(255,176,160,0.25));border:1px solid rgba(255,208,138,0.35);" onclick="zoomRoom(event,'מרצה')">
+            <div><span class="room-emoji">👨‍🏫</span><span class="room-label">מרצה</span></div>
+          </div>
+          <div class="room" style="left:20%;bottom:8%;width:26%;height:22%;background:linear-gradient(135deg,rgba(245,184,200,0.3),rgba(224,168,232,0.25));border:1px solid rgba(245,184,200,0.35);" onclick="zoomRoom(event,'אבטחה')">
+            <div><span class="room-emoji">🔒</span><span class="room-label">אבטחה</span></div>
+          </div>
+          <div class="room" style="right:20%;bottom:8%;width:26%;height:22%;background:linear-gradient(135deg,rgba(195,168,238,0.3),rgba(159,180,245,0.25));border:1px solid rgba(195,168,238,0.35);" onclick="zoomRoom(event,'מנהל')">
+            <div><span class="room-emoji">🏛️</span><span class="room-label">מנהל</span></div>
+          </div>
+          <!-- Center logo -->
+          <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:14%;aspect-ratio:1;background:linear-gradient(135deg,rgba(159,180,245,0.5),rgba(195,168,238,0.5));border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.3);box-shadow:0 0 20px rgba(159,180,245,0.4);pointer-events:none;">
+            <svg width="55%" height="55%" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round">
+              <path d="M12 3v18M3 12h18"/>
+            </svg>
+          </div>
+          <div class="hub-zoom-overlay"></div>
+          <div class="zoom-in-hint">לחצ/י לכניסה</div>
+        </div>
+
+        <div style="width:100%;display:flex;flex-direction:column;gap:5px;margin-top:4px;">
+          <div class="house-feat"><span class="house-dot"></span>Zoom-in animation לכל מסך</div>
+          <div class="house-feat"><span class="house-dot"></span>Pointer Parallax + Floating Orbs</div>
+          <div class="house-feat"><span class="house-dot"></span>Routing חכם לפי תפקיד</div>
+          <div class="house-feat"><span class="house-dot"></span>Framer Motion · React + Vite</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /slide-viewport -->
+</div><!-- /pres -->
+
+<!-- ─── NAVIGATION ─────────────────────────────── -->
+<nav id="nav">
+  <button class="nav-btn" id="btn-prev" onclick="changeSlide(-1)" disabled>›</button>
+  <div class="dot-nav" id="dot-nav"></div>
+  <span id="slide-counter">1 / 8</span>
+  <button class="nav-btn" id="btn-next" onclick="changeSlide(1)">‹</button>
+</nav>
+
+<script>
+const TOTAL = 8;
+let current = 0;
+let animating = false;
+
+const slides = Array.from(document.querySelectorAll('.slide'));
+const dots = [];
+
+// Build dot nav
+const dotNav = document.getElementById('dot-nav');
+for (let i = 0; i < TOTAL; i++) {
+  const d = document.createElement('div');
+  d.className = 'dot' + (i === 0 ? ' active' : '');
+  d.onclick = () => goTo(i);
+  dotNav.appendChild(d);
+  dots.push(d);
+}
+
+function updateUI() {
+  document.getElementById('progress-fill').style.width = ((current + 1) / TOTAL * 100) + '%';
+  document.getElementById('slide-counter').textContent = (current + 1) + ' / ' + TOTAL;
+  document.getElementById('slide-badge').textContent = (current + 1) + ' / ' + TOTAL;
+  document.getElementById('btn-prev').disabled = current === 0;
+  document.getElementById('btn-next').disabled = current === TOTAL - 1;
+  dots.forEach((d, i) => d.classList.toggle('active', i === current));
+}
+
+function goTo(idx) {
+  if (animating || idx === current || idx < 0 || idx >= TOTAL) return;
+  animating = true;
+
+  const dir = idx > current ? 1 : -1;
+  const prev = slides[current];
+  const next = slides[idx];
+
+  prev.classList.remove('active');
+  prev.classList.add('exit');
+  prev.style.transform = `translateX(${dir * -60}px) scale(0.97)`;
+
+  next.style.transform = `translateX(${dir * 60}px) scale(0.97)`;
+  next.style.opacity = '0';
+  next.classList.add('active');
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      next.style.transition = 'opacity 0.45s ease, transform 0.45s var(--spring)';
+      next.style.transform = 'translateX(0) scale(1)';
+      next.style.opacity = '1';
+    });
+  });
+
+  setTimeout(() => {
+    prev.classList.remove('exit');
+    prev.style.transform = '';
+    prev.style.opacity = '';
+    next.style.transition = '';
+    animating = false;
+  }, 500);
+
+  current = idx;
+  updateUI();
+}
+
+function changeSlide(delta) { goTo(current + delta); }
+
+// Keyboard
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') changeSlide(1);
+  else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') changeSlide(-1);
+  else if (e.key === 'Home') goTo(0);
+  else if (e.key === 'End') goTo(TOTAL - 1);
+});
+
+// Touch / swipe
+let tx = 0;
+document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - tx;
+  if (Math.abs(dx) > 50) changeSlide(dx < 0 ? 1 : -1);
+}, { passive: true });
+
+updateUI();
+
+// ─── HOUSE HUB ZOOM ─────────────────────────────
+function zoomRoom(e, name) {
+  e.stopPropagation();
+  const room = e.currentTarget;
+  const hub = document.getElementById('house-hub');
+
+  if (hub.classList.contains('zooming')) return;
+  hub.classList.add('zooming');
+
+  // Compute room center relative to hub
+  const hubRect = hub.getBoundingClientRect();
+  const roomRect = room.getBoundingClientRect();
+  const rx = (roomRect.left + roomRect.width / 2 - hubRect.left) / hubRect.width;
+  const ry = (roomRect.top + roomRect.height / 2 - hubRect.top) / hubRect.height;
+
+  // Camera: scale + translate toward room
+  const tx = (0.5 - rx) * 50;
+  const ty = (0.5 - ry) * 50;
+
+  room.style.transition = 'transform 0.6s cubic-bezier(.34,1.35,.5,1), filter 0.6s ease';
+  room.style.transform = 'scale(1.5)';
+  room.style.filter = 'brightness(1.6) saturate(1.5)';
+  hub.style.transition = 'transform 0.65s cubic-bezier(.34,1.35,.5,1)';
+  hub.style.transform = `scale(1.35) translate(${tx}%, ${ty}%)`;
+
+  setTimeout(() => {
+    hub.style.transition = 'transform 0.5s ease';
+    hub.style.transform = '';
+    room.style.transition = 'transform 0.45s ease, filter 0.45s ease';
+    room.style.transform = '';
+    room.style.filter = '';
+    hub.classList.remove('zooming');
+  }, 1000);
+}
+
+function zoomHouse(hub) {
+  if (hub.classList.contains('zooming')) return;
+  hub.classList.add('zooming');
+  hub.style.transition = 'transform 0.6s cubic-bezier(.34,1.35,.5,1)';
+  hub.style.transform = 'scale(1.08)';
+  setTimeout(() => {
+    hub.style.transition = 'transform 0.4s ease';
+    hub.style.transform = '';
+    hub.classList.remove('zooming');
+  }, 700);
+}
+</script>
+</body>
+</html>

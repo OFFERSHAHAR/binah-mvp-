@@ -1,0 +1,1604 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>בניית סוכן LLM עם Markdown Files + Scripts + Sheets</title>
+  <style>
+    :root {
+      --bg: #f7f3ea;
+      --ink: #17211d;
+      --muted: #5d665f;
+      --line: #d8d0c0;
+      --panel: #fffaf0;
+      --panel-2: #eef7f2;
+      --accent: #126a5a;
+      --accent-2: #9f4c2f;
+      --accent-3: #2f5f9f;
+      --code-bg: #151b1a;
+      --code-ink: #eef8f3;
+      --shadow: 0 18px 50px rgba(23, 33, 29, 0.13);
+      --radius: 8px;
+      --font: "Segoe UI", Arial, sans-serif;
+      --mono: "Cascadia Code", Consolas, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: var(--font);
+      background:
+        linear-gradient(180deg, rgba(238, 247, 242, 0.72), transparent 38%),
+        var(--bg);
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .deck-shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 22px 18px;
+      border-left: 1px solid var(--line);
+      background: rgba(255, 250, 240, 0.84);
+      backdrop-filter: blur(10px);
+      overflow: auto;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border: 2px solid var(--accent);
+      border-radius: 8px;
+      font-weight: 800;
+      color: var(--accent);
+      background: var(--panel-2);
+    }
+
+    .brand-title {
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    .brand-subtitle {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .progress {
+      height: 8px;
+      margin: 12px 0 18px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--accent), var(--accent-3));
+      transition: width 180ms ease;
+    }
+
+    .slide-list {
+      display: grid;
+      gap: 6px;
+    }
+
+    .slide-tab {
+      width: 100%;
+      min-height: 42px;
+      padding: 9px 10px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      text-align: right;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .slide-tab:hover,
+    .slide-tab.active {
+      color: var(--ink);
+      border-color: var(--line);
+      background: #fffdf7;
+    }
+
+    .slide-tab.active {
+      box-shadow: 0 8px 24px rgba(18, 106, 90, 0.12);
+    }
+
+    .main {
+      min-width: 0;
+      padding: 28px;
+    }
+
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 56px;
+      margin: -28px -28px 20px;
+      padding: 12px 28px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(247, 243, 234, 0.88);
+      backdrop-filter: blur(10px);
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .nav-button {
+      width: 42px;
+      height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--ink);
+      background: var(--panel);
+      cursor: pointer;
+    }
+
+    .nav-button:hover {
+      border-color: var(--accent);
+    }
+
+    .counter {
+      color: var(--muted);
+      font-weight: 700;
+      direction: ltr;
+    }
+
+    .slide {
+      display: none;
+      min-height: calc(100vh - 104px);
+      padding: clamp(22px, 4vw, 54px);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 250, 240, 0.9);
+      box-shadow: var(--shadow);
+    }
+
+    .slide.active {
+      display: block;
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      letter-spacing: 0;
+      line-height: 1.08;
+    }
+
+    h1 {
+      max-width: 980px;
+      font-size: clamp(36px, 5vw, 76px);
+    }
+
+    h2 {
+      max-width: 940px;
+      font-size: clamp(30px, 4vw, 54px);
+    }
+
+    h3 {
+      margin-bottom: 10px;
+      font-size: 22px;
+    }
+
+    p {
+      max-width: 960px;
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 19px;
+      line-height: 1.72;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+      gap: 28px;
+      align-items: center;
+      min-height: 62vh;
+    }
+
+    .system-map {
+      display: grid;
+      gap: 12px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fffdf7;
+    }
+
+    .map-node {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel-2);
+      font-weight: 800;
+    }
+
+    .map-node:nth-child(2n) {
+      background: #f7efe8;
+    }
+
+    .arrow {
+      color: var(--accent);
+      text-align: center;
+      font-size: 24px;
+      font-weight: 900;
+    }
+
+    .grid-2,
+    .grid-3 {
+      display: grid;
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .box {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fffdf7;
+    }
+
+    .box strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--ink);
+      font-size: 18px;
+    }
+
+    .box p,
+    .box li {
+      font-size: 16px;
+      line-height: 1.62;
+    }
+
+    ul,
+    ol {
+      margin: 16px 0 0;
+      padding: 0 24px 0 0;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.72;
+    }
+
+    li + li {
+      margin-top: 8px;
+    }
+
+    .callout {
+      margin-top: 22px;
+      padding: 16px 18px;
+      border-right: 5px solid var(--accent);
+      border-radius: var(--radius);
+      background: var(--panel-2);
+      color: var(--ink);
+      font-size: 18px;
+      line-height: 1.65;
+    }
+
+    .danger {
+      border-right-color: var(--accent-2);
+      background: #fff1ea;
+    }
+
+    .blue {
+      border-right-color: var(--accent-3);
+      background: #edf4ff;
+    }
+
+    code {
+      font-family: var(--mono);
+      direction: ltr;
+      unicode-bidi: embed;
+      font-size: 0.95em;
+    }
+
+    pre {
+      margin: 18px 0 0;
+      padding: 18px;
+      border-radius: 8px;
+      overflow: auto;
+      background: var(--code-bg);
+      color: var(--code-ink);
+      direction: ltr;
+      text-align: left;
+      font-family: var(--mono);
+      font-size: 14px;
+      line-height: 1.55;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    }
+
+    .file-tree {
+      font-size: 15px;
+    }
+
+    table {
+      width: 100%;
+      margin-top: 22px;
+      border-collapse: collapse;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fffdf7;
+      font-size: 16px;
+    }
+
+    th,
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: right;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--ink);
+      background: var(--panel-2);
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .pill {
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--ink);
+      background: #fffdf7;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .checklist li {
+      list-style: none;
+      position: relative;
+      padding-right: 28px;
+    }
+
+    .checklist li::before {
+      content: "✓";
+      position: absolute;
+      right: 0;
+      top: 0;
+      color: var(--accent);
+      font-weight: 900;
+    }
+
+    .speaker-note {
+      margin-top: 20px;
+      padding: 14px 16px;
+      border: 1px dashed var(--line);
+      border-radius: var(--radius);
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.56);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 980px) {
+      .deck-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: relative;
+        height: auto;
+        border-left: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .slide-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .hero-grid,
+      .grid-2,
+      .grid-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .main {
+        padding: 14px;
+      }
+
+      .toolbar {
+        margin: -14px -14px 14px;
+        padding: 10px 14px;
+      }
+
+      .slide {
+        min-height: auto;
+        padding: 20px;
+      }
+
+      .slide-list {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 34px;
+      }
+
+      h2 {
+        font-size: 30px;
+      }
+
+      p,
+      ul,
+      ol {
+        font-size: 17px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="deck-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">AI</div>
+        <div>
+          <div class="brand-title">Markdown Files + Scripts</div>
+          <div class="brand-subtitle">סוכן קורא Sheets ועונה רק מהמידע</div>
+        </div>
+      </div>
+      <div class="progress" aria-label="התקדמות במצגת"><span id="progressBar"></span></div>
+      <nav class="slide-list" id="slideList" aria-label="שקופיות"></nav>
+    </aside>
+
+    <main class="main">
+      <div class="toolbar">
+        <div class="nav-buttons">
+          <button class="nav-button" id="nextBtn" title="הבא">←</button>
+          <button class="nav-button" id="prevBtn" title="הקודם">→</button>
+        </div>
+        <div class="counter" id="counter">1 / 1</div>
+      </div>
+
+      <section class="slide active" data-title="פתיחה">
+        <div class="hero-grid">
+          <div>
+            <p class="eyebrow">מדריך מקומי, שלב אחר שלב</p>
+            <h1>בונים סוכן LLM שקורא נתונים מ־Sheets ועונה רק לפי מה שקרא</h1>
+            <p>
+              המטרה: סוכן פשוט, נשלט, מקומי, שמקבל שאלה, טוען מידע מטבלה,
+              משתמש בקבצי Markdown כהוראות עבודה, מפעיל Scripts לקריאה וסינון,
+              ומחזיר תשובה מתואמת למידע בלבד.
+            </p>
+            <div class="pill-row">
+              <span class="pill">LLM</span>
+              <span class="pill">Markdown Files</span>
+              <span class="pill">Scripts</span>
+              <span class="pill">Google Sheets / CSV</span>
+              <span class="pill">מניעת המצאות</span>
+            </div>
+          </div>
+          <div class="system-map" aria-label="מפת מערכת">
+            <div class="map-node">משתמש שואל שאלה</div>
+            <div class="arrow">↓</div>
+            <div class="map-node">LLM מזהה כוונה וחוסר מידע</div>
+            <div class="arrow">↓</div>
+            <div class="map-node">Script קורא Sheet ומחזיר JSON</div>
+            <div class="arrow">↓</div>
+            <div class="map-node">Markdown מגדיר כללי תשובה</div>
+            <div class="arrow">↓</div>
+            <div class="map-node">תשובה רק מתוך הנתונים</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="התוצאה">
+        <p class="eyebrow">מה אנחנו בונים</p>
+        <h2>סוכן קטן, אבל עם גבולות ברורים</h2>
+        <p>
+          הסוכן לא אמור להיות “כל יודע”. הוא עובד כמו עובד תפעול ממושמע:
+          קורא מקור מידע מוגדר, בודק מה יש בו, מודה כשאין מידע, ולא משלים פערים מהדמיון.
+        </p>
+        <div class="grid-3">
+          <div class="box">
+            <strong>הקלט</strong>
+            <p>שאלה של המשתמש, למשל: “מה המחיר של חבילת Pro?”</p>
+          </div>
+          <div class="box">
+            <strong>מקור האמת</strong>
+            <p>Google Sheet או CSV מקומי עם מוצרים, מחירים, סטטוסים, שאלות ותשובות.</p>
+          </div>
+          <div class="box">
+            <strong>הפלט</strong>
+            <p>תשובה בעברית שמבוססת רק על השורות שנמצאו בטבלה.</p>
+          </div>
+        </div>
+        <div class="callout">
+          הכלל הקדוש: אם התשובה לא נמצאת בנתונים שקראנו, הסוכן אומר שאין לו מספיק מידע.
+        </div>
+      </section>
+
+      <section class="slide" data-title="ללא רקע טכני">
+        <p class="eyebrow">מסלול מתחילים</p>
+        <h2>איך ניגשים לזה אם אין לך רקע טכני</h2>
+        <p>
+          לא מתחילים מ־AI. מתחילים ממערכת קטנה וברורה: טבלה, תיקייה, כמה קבצי הוראות,
+          סקריפט שמחפש בטבלה, ורק בסוף מודל שמנסח תשובה.
+        </p>
+        <div class="grid-2">
+          <div class="box">
+            <strong>מה אתה צריך להבין</strong>
+            <p>הסוכן לא “יודע”. הוא קורא שורות מטבלה, ואז מנסח תשובה לפי השורות האלה בלבד.</p>
+          </div>
+          <div class="box">
+            <strong>מה אתה לא חייב להבין בהתחלה</strong>
+            <p>לא חייב לדעת Machine Learning, אימון מודלים, שרתים, Docker, או ארכיטקטורות מורכבות.</p>
+          </div>
+        </div>
+        <div class="callout blue">
+          המטרה של המסלול הזה: להגיע להרצה ראשונה עובדת, גם אם אף פעם לא בנית סוכן.
+        </div>
+      </section>
+
+      <section class="slide" data-title="מה מתקינים">
+        <p class="eyebrow">מתחילים 1</p>
+        <h2>רשימת ציוד מינימלית</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>דבר</th>
+              <th>למה צריך אותו</th>
+              <th>המלצה למתחילים</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>תיקיית פרויקט</strong></td>
+              <td>מקום אחד לכל הקבצים של הסוכן.</td>
+              <td>ליצור תיקייה בשם `sheet-agent`.</td>
+            </tr>
+            <tr>
+              <td><strong>עורך טקסט</strong></td>
+              <td>כדי לערוך Markdown, CSV וקוד.</td>
+              <td>VS Code, Cursor, או אפילו Notepad להתחלה.</td>
+            </tr>
+            <tr>
+              <td><strong>Python</strong></td>
+              <td>כדי להריץ את הסקריפטים שקוראים את הטבלה.</td>
+              <td>Python 3.11 ומעלה.</td>
+            </tr>
+            <tr>
+              <td><strong>מודל</strong></td>
+              <td>כדי לנסח תשובה טבעית.</td>
+              <td>להתחיל עם API בענן. אם פרטיות חשובה, Ollama מקומי.</td>
+            </tr>
+            <tr>
+              <td><strong>טבלה</strong></td>
+              <td>מקור האמת של הסוכן.</td>
+              <td>להתחיל מ־CSV, אחר כך Google Sheets.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="slide" data-title="מילון מושגים">
+        <p class="eyebrow">מתחילים 2</p>
+        <h2>מילון קצר לפני שמתחילים</h2>
+        <div class="grid-2">
+          <div class="box">
+            <strong>Markdown</strong>
+            <p>קובץ טקסט רגיל עם כותרות ורשימות. בו כותבים לסוכן מה מותר, מה אסור, ואיך לענות.</p>
+          </div>
+          <div class="box">
+            <strong>Script</strong>
+            <p>קובץ קטן שמבצע פעולה מדויקת: לקרוא טבלה, לחפש שורות, להחזיר JSON.</p>
+          </div>
+          <div class="box">
+            <strong>JSON</strong>
+            <p>פורמט מסודר להעברת מידע בין הסקריפט למודל. נראה כמו מילון של שדות וערכים.</p>
+          </div>
+          <div class="box">
+            <strong>LLM</strong>
+            <p>מודל שפה. במקרה שלנו הוא לא מקור האמת, אלא רק מי שמנסח תשובה לפי המידע שנמצא.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="צעדי הקמה">
+        <p class="eyebrow">מתחילים 3</p>
+        <h2>תוכנית הקמה פשוטה ב־10 צעדים</h2>
+        <ol>
+          <li>יוצרים תיקייה בשם `sheet-agent`.</li>
+          <li>יוצרים טבלה עם עמודות ברורות: `id`, `category`, `name`, `status`, `answer`.</li>
+          <li>שומרים את הטבלה כ־`data/products.csv`.</li>
+          <li>יוצרים קובץ `markdown/agent.md` עם כללי הסוכן.</li>
+          <li>יוצרים קובץ `markdown/answer-rules.md` עם כללי תשובה.</li>
+          <li>יוצרים סקריפט `scripts/search_rows.py` שמחפש בטבלה.</li>
+          <li>מריצים את הסקריפט לבד ובודקים שהוא מחזיר שורות.</li>
+          <li>מחברים LLM בענן או מודל מקומי.</li>
+          <li>שולחים למודל רק את השורות שחזרו מהחיפוש.</li>
+          <li>בודקים שאלות שאין להן תשובה כדי לוודא שהסוכן לא ממציא.</li>
+        </ol>
+        <div class="callout">
+          לא ממשיכים לשלב הבא עד שהשלב הקודם עובד. זו הדרך הכי קצרה בפועל.
+        </div>
+      </section>
+
+      <section class="slide" data-title="הטבלה למתחילים">
+        <p class="eyebrow">מתחילים 4</p>
+        <h2>איך להכין את הטבלה בלי להסתבך</h2>
+        <p>
+          כל שורה בטבלה צריכה להיות “עובדה מאושרת” שהסוכן יכול להשתמש בה. אל תכניסו פסקאות ארוכות מדי.
+          עדיף הרבה שורות קטנות וברורות מאשר שורה אחת ענקית.
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>עמודה</th>
+              <th>מה לשים בה</th>
+              <th>דוגמה</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>`id`</td>
+              <td>מספר או קוד קבוע לשורה.</td>
+              <td>`plan_pro_001`</td>
+            </tr>
+            <tr>
+              <td>`category`</td>
+              <td>תחום המידע.</td>
+              <td>`plans`, `billing`, `support`</td>
+            </tr>
+            <tr>
+              <td>`name`</td>
+              <td>שם המוצר, השירות או הנושא.</td>
+              <td>`Pro Plan`</td>
+            </tr>
+            <tr>
+              <td>`status`</td>
+              <td>האם המידע פעיל.</td>
+              <td>`active`</td>
+            </tr>
+            <tr>
+              <td>`answer`</td>
+              <td>הטקסט המאושר שהסוכן יכול להסתמך עליו.</td>
+              <td>`חבילת Pro עולה 99 ש״ח לחודש.`</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="slide" data-title="הרצה ראשונה">
+        <p class="eyebrow">מתחילים 5</p>
+        <h2>איך נראית הרצה ראשונה מוצלחת</h2>
+        <p>
+          לפני שמחברים מודל, בודקים שהחיפוש עובד. זה השלב שמונע 80% מהבלגן.
+        </p>
+        <pre><code># In the project folder
+python scripts/search_rows.py "Pro"</code></pre>
+        <p>פלט טוב נראה בערך כך:</p>
+        <pre><code>{
+  "query": "Pro",
+  "rows": [
+    {
+      "id": "plan_pro_001",
+      "category": "plans",
+      "name": "Pro Plan",
+      "status": "active",
+      "answer": "חבילת Pro עולה 99 ש״ח לחודש."
+    }
+  ]
+}</code></pre>
+        <div class="callout danger">
+          אם אין שורות בפלט, הבעיה עדיין לא ב־AI. הבעיה בחיפוש, בטבלה, או בשם העמודות.
+        </div>
+      </section>
+
+      <section class="slide" data-title="בחירת מודל למתחילים">
+        <p class="eyebrow">מתחילים 6</p>
+        <h2>איך לבחור בין API בענן למודל מקומי</h2>
+        <div class="grid-2">
+          <div class="box">
+            <strong>בחר API בענן אם...</strong>
+            <p>אתה רוצה להתחיל מהר, לקבל איכות גבוהה, ולא להתעסק עם חומרה. זו הבחירה הכי פשוטה ללמידה ול־MVP.</p>
+          </div>
+          <div class="box">
+            <strong>בחר מודל מקומי אם...</strong>
+            <p>המידע רגיש, אין אינטרנט, או חשוב לך שהכול יישאר אצלך. זה דורש יותר התקנה וסבלנות.</p>
+          </div>
+        </div>
+        <pre><code>Beginner recommendation:
+Start with cloud API for learning.
+Move to local model only after the flow works end to end.</code></pre>
+      </section>
+
+      <section class="slide" data-title="בדיקת אמת">
+        <p class="eyebrow">מתחילים 7</p>
+        <h2>שלוש בדיקות חובה לפני שקוראים לזה סוכן</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>בדיקה</th>
+              <th>שאלה לדוגמה</th>
+              <th>מה צריך לקרות</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>מידע קיים</td>
+              <td>מה המחיר של Pro?</td>
+              <td>הסוכן עונה לפי שורת Pro בלבד.</td>
+            </tr>
+            <tr>
+              <td>מידע חסר</td>
+              <td>מה המחיר של Enterprise?</td>
+              <td>הסוכן אומר שלא מצא את המידע בגיליון.</td>
+            </tr>
+            <tr>
+              <td>שאלה רחבה מדי</td>
+              <td>איזו חבילה הכי טובה בעולם?</td>
+              <td>הסוכן מסביר שהוא יכול להשוות רק לפי המידע שבגיליון.</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="callout">
+          סוכן טוב לא רק יודע לענות. הוא יודע מתי לא לענות.
+        </div>
+      </section>
+
+      <section class="slide" data-title="תקלות למתחילים">
+        <p class="eyebrow">מתחילים 8</p>
+        <h2>אם משהו לא עובד, בודקים לפי הסדר הזה</h2>
+        <ol>
+          <li>האם הקובץ `products.csv` נמצא בתיקיית `data`?</li>
+          <li>האם שמות העמודות זהים למה שהסקריפט מצפה?</li>
+          <li>האם החיפוש לבד מחזיר שורות, בלי LLM?</li>
+          <li>האם שולחים למודל רק את השורות שחזרו?</li>
+          <li>האם קובץ ה־Markdown אומר במפורש לא להמציא?</li>
+          <li>האם התשובה כוללת `used_row_ids`?</li>
+          <li>האם בדקת גם שאלה שאין עליה תשובה?</li>
+        </ol>
+        <div class="callout blue">
+          כשבודקים לפי הסדר, מגלים מהר אם הבעיה בדאטה, בסקריפט, במודל, או בהוראות.
+        </div>
+      </section>
+
+      <section class="slide" data-title="הארכיטקטורה">
+        <p class="eyebrow">LLM + Markdown + Scripts</p>
+        <h2>החלוקה שמונעת בלגן</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>רכיב</th>
+              <th>תפקיד</th>
+              <th>מה לא עושים איתו</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>LLM</strong></td>
+              <td>מבין את השאלה, בוחר פעולה, מנסח תשובה.</td>
+              <td>לא נותנים לו להמציא נתונים עסקיים.</td>
+            </tr>
+            <tr>
+              <td><strong>Markdown</strong></td>
+              <td>מגדיר תפקיד, כללים, תהליך, טון, גבולות.</td>
+              <td>לא משתמשים בו כדי לבצע חישובים או קריאות API.</td>
+            </tr>
+            <tr>
+              <td><strong>Scripts</strong></td>
+              <td>קוראים Sheets, מסננים נתונים, בודקים תקינות, מחזירים JSON.</td>
+              <td>לא נותנים להם להחליט איך לדבר עם המשתמש.</td>
+            </tr>
+          </tbody>
+        </table>
+        <pre><code>User Question
+  -> load Markdown instructions
+  -> call Script: read_sheet / search_rows
+  -> send data snippet to LLM
+  -> LLM answers only from snippet
+  -> log question, rows used, final answer</code></pre>
+      </section>
+
+      <section class="slide" data-title="מבנה תיקיות">
+        <p class="eyebrow">שלב 1</p>
+        <h2>יוצרים מבנה פרויקט מקומי</h2>
+        <p>
+          המבנה הזה קטן בכוונה. כל תיקייה עונה על שאלה אחת:
+          איפה ההוראות, איפה הנתונים, איפה הפעולות, ואיפה הריצה הראשית.
+        </p>
+        <pre class="file-tree"><code>sheet-agent/
+  README.md
+  .env.example
+  data/
+    products.csv
+  markdown/
+    agent.md
+    answer-rules.md
+    sheet-schema.md
+  scripts/
+    read_sheet.py
+    search_rows.py
+  app.py
+  requirements.txt</code></pre>
+        <div class="callout blue">
+          בהתחלה מומלץ לעבוד עם CSV מקומי שמיוצא מ־Google Sheets. אחרי שהלוגיקה יציבה,
+          מחברים API אמיתי של Google Sheets.
+        </div>
+      </section>
+
+      <section class="slide" data-title="הנתונים">
+        <p class="eyebrow">שלב 2</p>
+        <h2>מגדירים Sheet פשוט בתור מקור אמת</h2>
+        <p>
+          הטבלה חייבת להיות ברורה, עם כותרות עמודות יציבות. סוכן טוב מתחיל בדאטה מסודר.
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>id</th>
+              <th>category</th>
+              <th>name</th>
+              <th>price</th>
+              <th>status</th>
+              <th>answer</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>p001</td>
+              <td>plans</td>
+              <td>Pro</td>
+              <td>99</td>
+              <td>active</td>
+              <td>חבילת Pro כוללת 10 משתמשים ותמיכה בצ׳אט.</td>
+            </tr>
+            <tr>
+              <td>p002</td>
+              <td>plans</td>
+              <td>Basic</td>
+              <td>39</td>
+              <td>active</td>
+              <td>חבילת Basic כוללת משתמש אחד ותמיכה במייל.</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="callout">
+          כלל UX חשוב: אל תכריח את הסוכן להבין טבלה מבולגנת. שמות עמודות ברורים חוסכים פרומפטים ארוכים.
+        </div>
+      </section>
+
+      <section class="slide" data-title="Markdown ראשון">
+        <p class="eyebrow">שלב 3</p>
+        <h2>כותבים את קובץ הזהות של הסוכן</h2>
+        <p>
+          `markdown/agent.md` הוא חוזה ההתנהגות. הוא לא אמור להיות פיוטי.
+          הוא צריך להיות חד, קצר, ובלתי ניתן לפרשנות יצירתית מדי.
+        </p>
+        <pre><code># Sheet Answer Agent
+
+## Role
+You answer user questions using only rows returned from the sheet search script.
+
+## Hard Rules
+- Never answer from general knowledge.
+- Never invent prices, dates, availability, policy, or product details.
+- If no relevant rows are returned, say that the information was not found in the sheet.
+- Mention uncertainty when the matching rows are partial.
+- Keep the answer concise and useful.
+
+## Allowed Source
+The only source of factual information is the JSON returned by scripts/search_rows.py.</code></pre>
+      </section>
+
+      <section class="slide" data-title="כללי תשובה">
+        <p class="eyebrow">שלב 4</p>
+        <h2>מגדירים איך עונים כשיש או אין מידע</h2>
+        <pre><code># Answer Rules
+
+## When data exists
+Answer in Hebrew.
+Use only the provided rows.
+If several rows match, summarize the difference between them.
+
+## When data is missing
+Say:
+"לא מצאתי את המידע הזה בגיליון הנתונים."
+Then ask one clarifying question if it can help.
+
+## Forbidden
+- Do not say "usually".
+- Do not say "probably".
+- Do not use external knowledge.
+- Do not recommend something unless a matching row supports it.</code></pre>
+        <div class="callout danger">
+          מילים כמו “בדרך כלל”, “כנראה”, “לרוב” הן נורות אזהרה. הן מסמנות שהמודל מתחיל למלא חורים בעצמו.
+        </div>
+      </section>
+
+      <section class="slide" data-title="סכמת Sheet">
+        <p class="eyebrow">שלב 5</p>
+        <h2>מסבירים למודל מה אומרת כל עמודה</h2>
+        <p>
+          זה לא חובה טכנית, אבל זה משפר מאוד את הדיוק. המודל לא צריך לנחש אם `status`
+          הוא סטטוס מוצר, לקוח או משלוח.
+        </p>
+        <pre><code># Sheet Schema
+
+## Columns
+- id: stable row identifier.
+- category: business area, for example plans, support, billing.
+- name: product, plan, policy, or topic name.
+- price: numeric monthly price in ILS. Empty means no price listed.
+- status: active, archived, draft.
+- answer: approved text that may be used in the response.
+
+## Matching guidance
+Prefer exact matches in name.
+Then use category.
+Ignore rows where status is archived unless the user asks about archived items.</code></pre>
+      </section>
+
+      <section class="slide" data-title="CSV מקומי">
+        <p class="eyebrow">שלב 6</p>
+        <h2>מתחילים עם CSV לפני Google API</h2>
+        <p>
+          שמרו קובץ `data/products.csv`. זה מאפשר לפתח מהר, לבדוק בלי הרשאות,
+          ורק אחר כך להחליף את מנוע הקריאה ל־Google Sheets.
+        </p>
+        <pre><code>id,category,name,price,status,answer
+p001,plans,Pro,99,active,"חבילת Pro כוללת 10 משתמשים ותמיכה בצ׳אט."
+p002,plans,Basic,39,active,"חבילת Basic כוללת משתמש אחד ותמיכה במייל."
+p003,billing,Refunds,,active,"ניתן לבקש החזר עד 14 יום מתאריך החיוב."</code></pre>
+        <div class="speaker-note">
+          בשלב הזה אין עדיין LLM. יש רק מקור מידע מסודר. זה טוב: קודם מחזקים את הרצפה, אחר כך מביאים את המודל לרקוד עליה.
+        </div>
+      </section>
+
+      <section class="slide" data-title="קריאת נתונים">
+        <p class="eyebrow">שלב 7</p>
+        <h2>כותבים Script שקורא את הטבלה ומחזיר JSON</h2>
+        <pre><code># scripts/read_sheet.py
+import csv
+import json
+from pathlib import Path
+
+DATA_PATH = Path(__file__).resolve().parents[1] / "data" / "products.csv"
+
+def read_rows():
+    with DATA_PATH.open("r", encoding="utf-8-sig", newline="") as f:
+        return list(csv.DictReader(f))
+
+if __name__ == "__main__":
+    print(json.dumps(read_rows(), ensure_ascii=False, indent=2))</code></pre>
+        <p>בדיקה מהירה:</p>
+        <pre><code>python scripts/read_sheet.py</code></pre>
+      </section>
+
+      <section class="slide" data-title="חיפוש">
+        <p class="eyebrow">שלב 8</p>
+        <h2>כותבים Script שמחפש שורות רלוונטיות</h2>
+        <p>
+          החיפוש הראשוני יכול להיות פשוט מאוד: התאמת מילים בשדות החשובים.
+          בהמשך אפשר להחליף ל־embeddings או חיפוש סמנטי.
+        </p>
+        <pre><code># scripts/search_rows.py
+import csv
+import json
+import sys
+from pathlib import Path
+
+DATA_PATH = Path(__file__).resolve().parents[1] / "data" / "products.csv"
+SEARCH_COLUMNS = ["category", "name", "answer"]
+
+def normalize(text):
+    return (text or "").strip().lower()
+
+def score_row(row, query):
+    q = normalize(query)
+    score = 0
+    for col in SEARCH_COLUMNS:
+        value = normalize(row.get(col))
+        if q and q in value:
+            score += 3
+        for token in q.split():
+            if len(token) > 1 and token in value:
+                score += 1
+    if row.get("status") == "archived":
+        score -= 2
+    return score
+
+def search(query, limit=5):
+    with DATA_PATH.open("r", encoding="utf-8-sig", newline="") as f:
+        rows = list(csv.DictReader(f))
+    ranked = [(score_row(row, query), row) for row in rows]
+    matches = [row for score, row in sorted(ranked, reverse=True, key=lambda x: x[0]) if score > 0]
+    return matches[:limit]
+
+if __name__ == "__main__":
+    query = " ".join(sys.argv[1:]).strip()
+    print(json.dumps({"query": query, "rows": search(query)}, ensure_ascii=False, indent=2))</code></pre>
+      </section>
+
+      <section class="slide" data-title="חיבור LLM">
+        <p class="eyebrow">שלב 9</p>
+        <h2>מחברים את ה־LLM רק אחרי שיש Tool יציב</h2>
+        <p>
+          עכשיו האפליקציה הראשית טוענת Markdown, מריצה חיפוש, ושולחת למודל רק את השורות שחזרו.
+          זה הגבול שמחזיק את הסוכן במקום.
+        </p>
+        <pre><code># app.py - pseudo implementation
+import json
+import subprocess
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+
+def load_markdown():
+    files = [
+        ROOT / "markdown" / "agent.md",
+        ROOT / "markdown" / "answer-rules.md",
+        ROOT / "markdown" / "sheet-schema.md",
+    ]
+    return "\n\n".join(path.read_text(encoding="utf-8") for path in files)
+
+def search_sheet(question):
+    result = subprocess.check_output(
+        ["python", str(ROOT / "scripts" / "search_rows.py"), question],
+        text=True,
+        encoding="utf-8"
+    )
+    return json.loads(result)
+
+def build_messages(question, search_result):
+    return [
+        {"role": "system", "content": load_markdown()},
+        {"role": "user", "content": json.dumps({
+            "question": question,
+            "sheet_search_result": search_result
+        }, ensure_ascii=False)}
+    ]</code></pre>
+      </section>
+
+      <section class="slide" data-title="פרומפט קשיח">
+        <p class="eyebrow">שלב 10</p>
+        <h2>מנסחים הוראת מערכת שמונעת תשובות חופשיות</h2>
+        <pre><code>You are a sheet-grounded answer agent.
+
+You receive:
+1. A user question.
+2. A JSON object named sheet_search_result.
+
+Answer using only sheet_search_result.rows.
+If rows is empty, say in Hebrew that the information was not found in the sheet.
+Do not use outside knowledge.
+Do not infer missing prices, availability, features, or policy.
+
+Return:
+- answer: the user-facing answer in Hebrew
+- used_row_ids: row ids used
+- confidence: high, medium, or low
+- missing_info: what was missing, if anything</code></pre>
+        <div class="callout">
+          הפלט המובנה חשוב: הוא מאפשר לוגים, בדיקות, ניטור, ואפילו UI שמראה מאילו שורות הגיעה התשובה.
+        </div>
+      </section>
+
+      <section class="slide" data-title="פלט מובנה">
+        <p class="eyebrow">שלב 11</p>
+        <h2>מבקשים מהמודל להחזיר JSON ולא רק טקסט</h2>
+        <pre><code>{
+  "answer": "חבילת Pro עולה 99 ש״ח לחודש וכוללת 10 משתמשים ותמיכה בצ׳אט.",
+  "used_row_ids": ["p001"],
+  "confidence": "high",
+  "missing_info": null
+}</code></pre>
+        <div class="grid-2">
+          <div class="box">
+            <strong>למה JSON?</strong>
+            <p>כי אפשר להציג למשתמש תשובה, ולמנהל המערכת להציג מקור, רמת ביטחון וחוסר מידע.</p>
+          </div>
+          <div class="box">
+            <strong>מה בודקים?</strong>
+            <p>שכל `used_row_ids` באמת הופיעו בתוצאת החיפוש, ושאין תשובה כשהשורות ריקות.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="בדיקות">
+        <p class="eyebrow">שלב 12</p>
+        <h2>בודקים שהסוכן לא ממציא</h2>
+        <p>
+          אל תבדקו רק “האם הוא ענה יפה”. בדקו את המקרים שבהם אסור לו לענות.
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>שאלה</th>
+              <th>מה מצופה</th>
+              <th>סיכון</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>מה המחיר של Enterprise?</td>
+              <td>אם אין שורה, לומר שלא נמצא בגיליון.</td>
+              <td>המודל עלול להמציא מחיר.</td>
+            </tr>
+            <tr>
+              <td>מה עדיף לי, Pro או Basic?</td>
+              <td>להשוות רק פיצ׳רים שמופיעים בשורות.</td>
+              <td>המודל עלול להוסיף המלצה כללית.</td>
+            </tr>
+            <tr>
+              <td>האם יש החזר אחרי 30 יום?</td>
+              <td>להסתמך רק על שורת Refunds.</td>
+              <td>המודל עלול להשתמש במדיניות חיצונית.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="slide" data-title="Google Sheets">
+        <p class="eyebrow">שלב 13</p>
+        <h2>מחברים Google Sheets אחרי שהגרסה המקומית עובדת</h2>
+        <p>
+          יש שתי אפשרויות נפוצות: לפרסם את הגיליון כ־CSV, או להשתמש ב־Google Sheets API.
+          להתחלה, CSV ציבורי/מוגן פנימית הוא פשוט יותר. לפרודקשן, API עם הרשאות עדיף.
+        </p>
+        <div class="grid-2">
+          <div class="box">
+            <strong>אפשרות קלה: CSV Export</strong>
+            <p>הסקריפט מוריד CSV מכתובת קבועה ושומר עותק מקומי. טוב לדמו ולמידע לא רגיש.</p>
+          </div>
+          <div class="box">
+            <strong>אפשרות חזקה: Sheets API</strong>
+            <p>שימוש ב־service account, הרשאות מוגדרות, וקריאה ישירה לטווחים בגיליון.</p>
+          </div>
+        </div>
+        <pre><code># .env.example
+OPENAI_API_KEY=...
+GOOGLE_SHEET_ID=...
+GOOGLE_SHEET_RANGE=Products!A:F
+GOOGLE_APPLICATION_CREDENTIALS=./secrets/service-account.json</code></pre>
+      </section>
+
+      <section class="slide" data-title="מודלים מקומיים">
+        <p class="eyebrow">שלב 14</p>
+        <h2>אפשר לעבוד גם עם מודל מקומי במקום LLM בענן</h2>
+        <p>
+          באותה ארכיטקטורה בדיוק אפשר להחליף את שכבת ה־LLM:
+          במקום לשלוח את השאלה והשורות ל־API חיצוני, מריצים מודל על המחשב או על שרת פנימי.
+          ה־Markdown, ה־Scripts וה־Sheets נשארים אותו דבר.
+        </p>
+        <pre><code>User Question
+  -> scripts/search_rows.py
+  -> relevant rows as JSON
+  -> local model through Ollama / LM Studio / llama.cpp
+  -> answer grounded in rows only</code></pre>
+        <div class="grid-2">
+          <div class="box">
+            <strong>מה משתנה?</strong>
+            <p>רק הדרך שבה קוראים למודל. במקום OpenAI/Anthropic/Gemini API, קוראים לשרת מקומי כמו Ollama.</p>
+          </div>
+          <div class="box">
+            <strong>מה לא משתנה?</strong>
+            <p>כללי “ענה רק מהנתונים”, החיפוש ב־Sheet, הלוגים, בדיקות האי־המצאה וה־UI.</p>
+          </div>
+        </div>
+        <div class="callout">
+          זה היתרון הגדול של Markdown Files + Scripts: המודל הוא רכיב להחלפה, לא כל המערכת.
+        </div>
+      </section>
+
+      <section class="slide" data-title="סביבות מקומיות">
+        <p class="eyebrow">שלב 15</p>
+        <h2>כלים נפוצים להרצת מודלים מקומיים</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>כלי</th>
+              <th>למי זה מתאים</th>
+              <th>רמת קושי</th>
+              <th>שימוש טיפוסי</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Ollama</strong></td>
+              <td>מפתחים שרוצים API מקומי פשוט.</td>
+              <td>נמוכה עד בינונית</td>
+              <td>שרת מקומי ב־localhost, קריאה דרך HTTP.</td>
+            </tr>
+            <tr>
+              <td><strong>LM Studio</strong></td>
+              <td>מי שרוצה UI נוח לבחירת מודלים וניסוי.</td>
+              <td>נמוכה</td>
+              <td>בדיקות ידניות, שרת OpenAI-compatible מקומי.</td>
+            </tr>
+            <tr>
+              <td><strong>llama.cpp</strong></td>
+              <td>מי שרוצה שליטה עמוקה וביצועים על CPU/GPU.</td>
+              <td>בינונית עד גבוהה</td>
+              <td>הרצה קלה לפריסה, quantization, שרת פנימי.</td>
+            </tr>
+            <tr>
+              <td><strong>vLLM / TGI</strong></td>
+              <td>צוותים שמריצים מודלים על שרת GPU.</td>
+              <td>גבוהה</td>
+              <td>פרודקשן, עומס משתמשים, batching, throughput.</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="callout blue">
+          להתחלה: Ollama או LM Studio. לפרודקשן כבד: vLLM, TGI, או שירות GPU מנוהל.
+        </div>
+      </section>
+
+      <section class="slide" data-title="דוגמת Ollama">
+        <p class="eyebrow">שלב 16</p>
+        <h2>דוגמת חיבור מקומי עם Ollama</h2>
+        <p>
+          הסקריפטים עדיין מחזירים JSON מה־Sheet. ההבדל הוא שבמקום לשלוח הודעות לענן,
+          שולחים אותן ל־`http://localhost:11434`.
+        </p>
+        <pre><code># local_llm.py - simplified example
+import json
+import requests
+
+def ask_local_model(system_prompt, question, sheet_rows):
+    payload = {
+        "model": "llama3.1:8b",
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": json.dumps({
+                "question": question,
+                "sheet_rows": sheet_rows
+            }, ensure_ascii=False)}
+        ],
+        "stream": False
+    }
+    response = requests.post(
+        "http://localhost:11434/api/chat",
+        json=payload,
+        timeout=120
+    )
+    response.raise_for_status()
+    return response.json()["message"]["content"]</code></pre>
+        <div class="callout danger">
+          גם במודל מקומי צריך להגביל הקשר: שולחים רק את השורות הרלוונטיות, לא את כל הגיליון אם אין צורך.
+        </div>
+      </section>
+
+      <section class="slide" data-title="ענן מול מקומי">
+        <p class="eyebrow">שלב 17</p>
+        <h2>השוואה: API בענן מול מודל מקומי</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>נושא</th>
+              <th>LLM בענן</th>
+              <th>מודל מקומי</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>קושי התחלה</strong></td>
+              <td>קל: API key, SDK, קריאת HTTP.</td>
+              <td>בינוני: התקנה, הורדת מודל, התאמת חומרה.</td>
+            </tr>
+            <tr>
+              <td><strong>איכות תשובות</strong></td>
+              <td>בדרך כלל גבוהה יותר, במיוחד בהוראות מורכבות.</td>
+              <td>תלוי מודל וחומרה. מודלים קטנים עלולים לפספס הוראות.</td>
+            </tr>
+            <tr>
+              <td><strong>עלות</strong></td>
+              <td>תשלום לפי שימוש, נוח להתחלה, מצטבר בעומס.</td>
+              <td>אין עלות פר־בקשה, אבל יש עלות מחשב, GPU, חשמל ותחזוקה.</td>
+            </tr>
+            <tr>
+              <td><strong>פרטיות</strong></td>
+              <td>מידע נשלח לספק חיצוני לפי תנאי השירות.</td>
+              <td>המידע נשאר אצלך אם כל הריצה מקומית.</td>
+            </tr>
+            <tr>
+              <td><strong>תחזוקה</strong></td>
+              <td>הספק מתחזק את המודל והתשתית.</td>
+              <td>אתה אחראי לגרסאות, זיכרון, ביצועים ונפילות.</td>
+            </tr>
+            <tr>
+              <td><strong>Latency</strong></td>
+              <td>תלוי רשת וספק, לרוב יציב.</td>
+              <td>יכול להיות מהיר במחשב חזק או איטי מאוד בלי GPU.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="slide" data-title="ידע ועלויות">
+        <p class="eyebrow">שלב 18</p>
+        <h2>ידע נדרש, סביבות פיתוח ועלויות</h2>
+        <div class="grid-2">
+          <div class="box">
+            <strong>בענן צריך לדעת</strong>
+            <p>עבודה עם API, ניהול מפתחות, rate limits, מבנה הודעות, JSON mode, tool calling, ולוגים.</p>
+          </div>
+          <div class="box">
+            <strong>במקומי צריך לדעת</strong>
+            <p>מודלים, quantization, זיכרון VRAM/RAM, התקנת runtime, בחירת מודל, ניטור ביצועים.</p>
+          </div>
+          <div class="box">
+            <strong>עלות ענן</strong>
+            <p>נמוכה בהתחלה, עולה עם כמות השאלות ואורך ההקשר. טובה ל־MVP ולצוות קטן.</p>
+          </div>
+          <div class="box">
+            <strong>עלות מקומית</strong>
+            <p>השקעה מוקדמת בחומרה/שרת, תחזוקה וזמן פיתוח. משתלם כשיש עומס גבוה או דרישות פרטיות.</p>
+          </div>
+        </div>
+        <pre><code>Rule of thumb:
+MVP / prototype / best quality quickly -> Cloud LLM
+Sensitive data / offline / many calls / full control -> Local model</code></pre>
+      </section>
+
+      <section class="slide" data-title="למה כן או לא">
+        <p class="eyebrow">שלב 19</p>
+        <h2>למה כן ולמה לא בכל שיטה</h2>
+        <div class="grid-2">
+          <div class="box">
+            <strong>כן ל־LLM בענן</strong>
+            <ul>
+              <li>רוצים איכות גבוהה מהר.</li>
+              <li>אין צוות תשתיות או GPU.</li>
+              <li>הדאטה לא רגיש או מותר לשליחה.</li>
+              <li>צריך tool calling ו־JSON אמינים יותר.</li>
+            </ul>
+          </div>
+          <div class="box">
+            <strong>לא ל־LLM בענן</strong>
+            <ul>
+              <li>יש מידע שאסור להוציא החוצה.</li>
+              <li>עלות פר־בקשה עלולה לגדול מדי.</li>
+              <li>צריך עבודה ללא אינטרנט.</li>
+              <li>תלויים מדי בזמינות ספק חיצוני.</li>
+            </ul>
+          </div>
+          <div class="box">
+            <strong>כן למודל מקומי</strong>
+            <ul>
+              <li>פרטיות ושליטה חשובות מאוד.</li>
+              <li>יש הרבה קריאות חוזרות.</li>
+              <li>אפשר להשקיע בחומרה ותחזוקה.</li>
+              <li>רוצים מערכת שעובדת גם offline.</li>
+            </ul>
+          </div>
+          <div class="box">
+            <strong>לא למודל מקומי</strong>
+            <ul>
+              <li>צריך איכות גבוהה בלי התעסקות.</li>
+              <li>אין GPU או שרת מתאים.</li>
+              <li>הצוות לא מכיר inference ו־deployment.</li>
+              <li>המודל המקומי לא מספיק ממושמע להוראות.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="UX">
+        <p class="eyebrow">שלב 20</p>
+        <h2>בונים UI שמראה אמון, לא קסם</h2>
+        <p>
+          UX טוב לסוכן כזה צריך לחשוף את המקור. המשתמש צריך להבין שהסוכן לא מדבר מהאוויר.
+        </p>
+        <ul class="checklist">
+          <li>שדה שאלה ברור.</li>
+          <li>אזור תשובה קצר ונקי.</li>
+          <li>תצוגת “מקורות מהגיליון” עם row id ושם.</li>
+          <li>תג רמת ביטחון: גבוהה, בינונית, נמוכה.</li>
+          <li>מצב ריק: “לא נמצא מידע בגיליון”.</li>
+          <li>כפתור “הצג שורות שנקראו” למנהלים.</li>
+        </ul>
+        <div class="callout blue">
+          אל תסתירו את מקורות התשובה. דווקא הצגת השורות מגבירה אמון ומקלה על תיקון הדאטה.
+        </div>
+      </section>
+
+      <section class="slide" data-title="לוגים">
+        <p class="eyebrow">שלב 21</p>
+        <h2>שומרים לוג מינימלי לכל תשובה</h2>
+        <pre><code>{
+  "timestamp": "2026-06-11T12:00:00Z",
+  "question": "מה המחיר של Pro?",
+  "matched_rows": ["p001"],
+  "answer": "חבילת Pro עולה 99 ש״ח לחודש...",
+  "confidence": "high",
+  "missing_info": null
+}</code></pre>
+        <p>
+          הלוגים מאפשרים לראות איפה הסוכן נכשל: חיפוש חלש, דאטה חסר, הוראות לא חדות,
+          או מודל שמנסה להיות יצירתי מדי.
+        </p>
+      </section>
+
+      <section class="slide" data-title="שדרוגים">
+        <p class="eyebrow">שלב 22</p>
+        <h2>אחרי שזה עובד, משדרגים בזהירות</h2>
+        <div class="grid-2">
+          <div class="box">
+            <strong>חיפוש סמנטי</strong>
+            <p>מוסיפים embeddings כשהמילים של המשתמש שונות מהמילים בטבלה.</p>
+          </div>
+          <div class="box">
+            <strong>Cache</strong>
+            <p>שומרים עותק מקומי של הגיליון כדי שהסוכן יעבוד מהר ויציב יותר.</p>
+          </div>
+          <div class="box">
+            <strong>הרשאות</strong>
+            <p>מגדירים מי יכול לשאול, מי רואה מקורות, ומי יכול לערוך את הגיליון.</p>
+          </div>
+          <div class="box">
+            <strong>בדיקות אוטומטיות</strong>
+            <p>מריצים סט שאלות קבוע בכל שינוי ל־Markdown או ל־Sheet.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="תקלות נפוצות">
+        <p class="eyebrow">שלב 23</p>
+        <h2>איפה זה בדרך כלל נשבר</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>בעיה</th>
+              <th>סימן</th>
+              <th>תיקון</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>החיפוש מחזיר שורות לא קשורות</td>
+              <td>התשובה נכונה תחבירית אבל מוזרה.</td>
+              <td>לשפר scoring, להוסיף category, או embeddings.</td>
+            </tr>
+            <tr>
+              <td>המודל ממציא</td>
+              <td>יש מידע שלא קיים בשורות.</td>
+              <td>להקשיח Markdown, להחזיר JSON, לבדוק `used_row_ids`.</td>
+            </tr>
+            <tr>
+              <td>הטבלה לא עקבית</td>
+              <td>אותו מוצר כתוב בכמה שמות.</td>
+              <td>להוסיף id, aliases, validation.</td>
+            </tr>
+            <tr>
+              <td>אין אמון בתשובה</td>
+              <td>המשתמש לא יודע מאיפה המידע.</td>
+              <td>להציג מקורות מהגיליון ליד התשובה.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="slide" data-title="סיכום">
+        <p class="eyebrow">תבנית העבודה</p>
+        <h2>הסוכן הוא מערכת קטנה, לא פרומפט ארוך</h2>
+        <pre><code>Markdown = זהות, כללים, תהליך, גבולות
+Scripts  = קריאה, חיפוש, בדיקה, JSON
+Sheets   = מקור האמת העסקי
+LLM      = הבנה, תיאום, ניסוח
+Model    = Cloud API או Local runtime, לפי פרטיות, עלות ואיכות
+UI       = אמון, מקורות, מצב ריק, בקרה</code></pre>
+        <div class="callout">
+          הדרך הנכונה להתחיל: CSV מקומי, חיפוש פשוט, Markdown קשיח, תשובות JSON.
+          רק אחרי שזה יציב בוחרים אם לרוץ עם Cloud LLM או מודל מקומי, ואז עוברים ל־Google Sheets API, embeddings והרשאות מתקדמות.
+        </div>
+        <p>
+          אם שומרים על העיקרון “עונים רק ממה שהסקריפט החזיר”, מקבלים סוכן פשוט,
+          שימושי, ואמין הרבה יותר מסוכן שמנסה לדעת הכול לבד.
+        </p>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    const slideList = document.getElementById("slideList");
+    const counter = document.getElementById("counter");
+    const progressBar = document.getElementById("progressBar");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    let current = 0;
+
+    slides.forEach((slide, index) => {
+      const button = document.createElement("button");
+      button.className = "slide-tab";
+      button.type = "button";
+      button.textContent = `${index + 1}. ${slide.dataset.title}`;
+      button.addEventListener("click", () => showSlide(index));
+      slideList.appendChild(button);
+    });
+
+    const tabs = Array.from(document.querySelectorAll(".slide-tab"));
+
+    function showSlide(index) {
+      current = Math.max(0, Math.min(index, slides.length - 1));
+      slides.forEach((slide, i) => slide.classList.toggle("active", i === current));
+      tabs.forEach((tab, i) => tab.classList.toggle("active", i === current));
+      counter.textContent = `${current + 1} / ${slides.length}`;
+      progressBar.style.width = `${((current + 1) / slides.length) * 100}%`;
+      prevBtn.disabled = current === 0;
+      nextBtn.disabled = current === slides.length - 1;
+      document.title = `${slides[current].dataset.title} | בניית סוכן Sheets`;
+    }
+
+    prevBtn.addEventListener("click", () => showSlide(current - 1));
+    nextBtn.addEventListener("click", () => showSlide(current + 1));
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowLeft" || event.key === "PageDown") showSlide(current + 1);
+      if (event.key === "ArrowRight" || event.key === "PageUp") showSlide(current - 1);
+      if (event.key === "Home") showSlide(0);
+      if (event.key === "End") showSlide(slides.length - 1);
+    });
+
+    showSlide(0);
+  </script>
+</body>
+</html>

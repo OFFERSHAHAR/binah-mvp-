@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>קורס AI בארגונים</title>
+<style>
+:root {
+  --bg: #f8f9fc;
+  --bg2: #ffffff;
+  --bg3: #f1f3f8;
+  --card: #ffffff;
+  --border: #e4e8f0;
+  --border2: #cdd3e0;
+  --text: #1a1f36;
+  --text2: #4a5270;
+  --text3: #8892a8;
+  --accent: #2b5eff;
+  --accent2: #7c3aed;
+  --accent-bg: #eef2ff;
+  --accent2-bg: #f5f0ff;
+  --green: #059669;
+  --green-bg: #ecfdf5;
+  --amber: #d97706;
+  --amber-bg: #fffbeb;
+  --red: #dc2626;
+  --red-bg: #fef2f2;
+  --teal: #0891b2;
+  --teal-bg: #ecfeff;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+
+#sidebar {
+  position: fixed; right: 0; top: 0; bottom: 0; width: 290px;
+  background: var(--bg2); border-left: 1px solid var(--border);
+  display: flex; flex-direction: column; z-index: 100;
+  transition: transform 0.3s ease;
+}
+#sidebar.collapsed { transform: translateX(290px); }
+
+.sidebar-header {
+  padding: 18px 20px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.sidebar-logo { font-size: 15px; font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 8px; }
+.sidebar-logo .logo-icon { width: 30px; height: 30px; background: var(--accent-bg); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+
+.progress-bar-wrap { padding: 12px 20px; border-bottom: 1px solid var(--border); }
+.progress-label { font-size: 12px; color: var(--text3); margin-bottom: 6px; display: flex; justify-content: space-between; }
+.progress-label span:last-child { font-weight: 600; color: var(--accent); }
+.progress-bar { height: 5px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 3px; transition: width 0.5s ease; }
+
+.modules-list { flex: 1; overflow-y: auto; padding: 10px 0; }
+.modules-list::-webkit-scrollbar { width: 4px; }
+.modules-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+.module-group { margin-bottom: 4px; }
+.module-header {
+  padding: 8px 20px; display: flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 700; color: var(--text3);
+  text-transform: uppercase; letter-spacing: 0.07em; user-select: none;
+}
+.module-tag { font-size: 10px; padding: 2px 6px; border-radius: 3px; background: var(--accent-bg); color: var(--accent); font-weight: 700; margin-right: auto; }
+
+.lesson-item {
+  padding: 9px 20px 9px 14px; cursor: pointer; display: flex; align-items: center; gap: 9px;
+  font-size: 13px; color: var(--text2); border-right: 3px solid transparent;
+  transition: all 0.15s; position: relative;
+}
+.lesson-item:hover { background: var(--bg3); color: var(--text); }
+.lesson-item.active { background: var(--accent-bg); color: var(--accent); border-right-color: var(--accent); font-weight: 600; }
+.lesson-item.completed .lesson-dot { background: var(--green); border-color: var(--green); }
+.lesson-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--bg3);
+  border: 2px solid var(--border2); flex-shrink: 0; transition: all 0.2s;
+}
+.lesson-item.active .lesson-dot { background: var(--accent); border-color: var(--accent); }
+.lesson-xp { margin-right: auto; font-size: 11px; color: var(--amber); font-weight: 700; background: var(--amber-bg); padding: 1px 6px; border-radius: 10px; }
+
+#main { margin-right: 290px; min-height: 100vh; display: flex; flex-direction: column; transition: margin-right 0.3s ease; }
+#main.full { margin-right: 0; }
+
+#topbar {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(248,249,252,0.95); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px; height: 56px; display: flex; align-items: center; gap: 14px;
+}
+#sidebar-toggle {
+  background: none; border: 1px solid var(--border2); color: var(--text2); padding: 6px 10px;
+  border-radius: 7px; cursor: pointer; font-size: 14px; transition: all 0.15s;
+}
+#sidebar-toggle:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-bg); }
+.topbar-title { font-size: 14px; font-weight: 600; flex: 1; color: var(--text); }
+.topbar-lesson { font-size: 12px; color: var(--text3); }
+.xp-badge { background: var(--amber-bg); color: var(--amber); font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 20px; border: 1px solid #fde68a; }
+.streak-badge { background: #fef2f2; color: #ef4444; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 20px; border: 1px solid #fecaca; }
+
+#content { flex: 1; padding: 36px 48px; max-width: 840px; margin: 0 auto; width: 100%; }
+
+.lesson-hero { margin-bottom: 28px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+.lesson-tag-pill { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); background: var(--accent-bg); padding: 4px 10px; border-radius: 20px; margin-bottom: 12px; }
+.lesson-title { font-size: 26px; font-weight: 700; line-height: 1.25; margin-bottom: 14px; color: var(--text); }
+.lesson-meta { display: flex; gap: 10px; flex-wrap: wrap; }
+.meta-pill { background: var(--bg3); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 12px; color: var(--text2); display: flex; align-items: center; gap: 5px; }
+
+.section-block { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 22px 24px; margin-bottom: 16px; box-shadow: var(--shadow); }
+.section-block h2 { font-size: 16px; font-weight: 700; margin-bottom: 14px; color: var(--text); display: flex; align-items: center; gap: 7px; }
+.section-block p { font-size: 14px; line-height: 1.75; color: var(--text2); margin-bottom: 10px; }
+.section-block ul { padding-right: 18px; }
+.section-block li { font-size: 14px; line-height: 1.8; color: var(--text2); }
+
+.highlight-box { background: var(--accent-bg); border: 1px solid #c7d7ff; border-radius: 8px; padding: 12px 16px; margin: 12px 0; }
+.highlight-box p { color: var(--text); margin: 0; font-size: 13.5px; }
+.warning-box { background: var(--amber-bg); border: 1px solid #fde68a; border-radius: 8px; padding: 12px 16px; margin: 12px 0; }
+.warning-box p { color: #92400e; margin: 0; font-size: 13.5px; }
+.success-box { background: var(--green-bg); border: 1px solid #a7f3d0; border-radius: 8px; padding: 12px 16px; margin: 12px 0; }
+.success-box p { color: #065f46; margin: 0; font-size: 13.5px; }
+
+.compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+.compare-card { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
+.compare-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 9px; }
+.compare-card.good { background: var(--green-bg); border-color: #a7f3d0; }
+.compare-card.good h4 { color: var(--green); }
+.compare-card.bad { background: var(--red-bg); border-color: #fecaca; }
+.compare-card.bad h4 { color: var(--red); }
+.compare-card li { font-size: 13px; color: var(--text2); line-height: 1.75; list-style: none; padding-right: 0; }
+.compare-card.good li::before { content: '✓ '; color: var(--green); font-weight: 700; }
+.compare-card.bad li::before { content: '✗ '; color: var(--red); font-weight: 700; }
+
+.tool-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0; }
+.tool-table th { text-align: right; padding: 9px 12px; background: var(--bg3); color: var(--text3); font-weight: 700; font-size: 11.5px; border-bottom: 2px solid var(--border); text-transform: uppercase; letter-spacing: 0.04em; }
+.tool-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--text2); vertical-align: top; }
+.tool-table tr:last-child td { border-bottom: none; }
+.tool-table tr:hover td { background: var(--bg3); }
+.badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; }
+.badge-blue { background: var(--accent-bg); color: var(--accent); }
+.badge-green { background: var(--green-bg); color: var(--green); }
+.badge-amber { background: var(--amber-bg); color: var(--amber); }
+.badge-red { background: var(--red-bg); color: var(--red); }
+
+.quiz-block { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 20px 0; box-shadow: var(--shadow); }
+.quiz-header { background: var(--bg3); padding: 12px 18px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 8px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); }
+.quiz-q { padding: 18px; font-size: 15px; font-weight: 600; color: var(--text); border-bottom: 1px solid var(--border); background: var(--bg2); }
+.quiz-options { padding: 14px; display: flex; flex-direction: column; gap: 8px; background: var(--bg2); }
+.quiz-opt {
+  padding: 11px 16px; border: 1.5px solid var(--border); border-radius: 8px; cursor: pointer;
+  font-size: 13.5px; transition: all 0.15s; display: flex; align-items: center; gap: 10px;
+  background: var(--bg2); color: var(--text2);
+}
+.quiz-opt:hover { border-color: var(--accent); background: var(--accent-bg); color: var(--accent); }
+.quiz-opt.correct { border-color: var(--green); background: var(--green-bg); color: var(--green); }
+.quiz-opt.wrong { border-color: var(--red); background: var(--red-bg); color: var(--red); }
+.quiz-opt.disabled { pointer-events: none; }
+.quiz-letter { width: 22px; height: 22px; border-radius: 50%; background: var(--bg3); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--text3); }
+.quiz-feedback { padding: 12px 18px; border-top: 1px solid var(--border); font-size: 13px; display: none; }
+.quiz-feedback.show { display: block; }
+.quiz-feedback.good { background: var(--green-bg); color: #065f46; }
+.quiz-feedback.bad { background: var(--red-bg); color: #991b1b; }
+
+.lesson-nav { display: flex; gap: 10px; margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--border); align-items: center; }
+.btn { padding: 9px 20px; border-radius: 8px; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: all 0.15s; border: 1.5px solid transparent; }
+.btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn-primary:hover { background: #1e4fe8; }
+.btn-ghost { background: transparent; border-color: var(--border2); color: var(--text2); }
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-bg); }
+.btn-complete { background: var(--green); color: #fff; border-color: var(--green); }
+.btn-complete:hover { background: #047857; }
+
+/* CHATBOT */
+#chatbot { position: fixed; left: 20px; bottom: 20px; z-index: 200; }
+#chat-toggle {
+  width: 50px; height: 50px; border-radius: 50%; background: var(--accent);
+  border: none; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 16px rgba(43,94,255,0.35); transition: transform 0.2s, box-shadow 0.2s; color: #fff;
+}
+#chat-toggle:hover { transform: scale(1.06); box-shadow: 0 6px 20px rgba(43,94,255,0.45); }
+#chat-panel {
+  position: absolute; left: 0; bottom: 62px; width: 340px;
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 14px;
+  display: none; flex-direction: column; overflow: hidden; box-shadow: var(--shadow-md);
+}
+#chat-panel.open { display: flex; }
+.chat-head {
+  padding: 13px 16px; background: var(--accent); display: flex; align-items: center; gap: 10px;
+}
+.chat-avatar { width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+.chat-name { font-size: 13.5px; font-weight: 700; color: #fff; }
+.chat-status { font-size: 11px; color: rgba(255,255,255,0.75); }
+#chat-messages { flex: 1; overflow-y: auto; padding: 14px; max-height: 300px; display: flex; flex-direction: column; gap: 9px; background: var(--bg); }
+#chat-messages::-webkit-scrollbar { width: 3px; }
+#chat-messages::-webkit-scrollbar-thumb { background: var(--border2); }
+.msg { max-width: 86%; padding: 9px 13px; border-radius: 12px; font-size: 13px; line-height: 1.6; }
+.msg.bot { background: var(--bg2); color: var(--text); align-self: flex-start; border: 1px solid var(--border); border-bottom-right-radius: 4px; }
+.msg.user { background: var(--accent); color: #fff; align-self: flex-end; border-bottom-left-radius: 4px; }
+.chat-hints { padding: 8px 12px; border-top: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 5px; background: var(--bg2); }
+.hint-btn { background: var(--bg3); border: 1px solid var(--border); border-radius: 20px; padding: 4px 10px; font-size: 11px; color: var(--text2); cursor: pointer; transition: all 0.1s; }
+.hint-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-bg); }
+.chat-input-row { padding: 10px 12px; border-top: 1px solid var(--border); display: flex; gap: 7px; background: var(--bg2); }
+#chat-input { flex: 1; background: var(--bg3); border: 1.5px solid var(--border); border-radius: 8px; padding: 8px 12px; color: var(--text); font-size: 13px; outline: none; transition: border 0.15s; }
+#chat-input:focus { border-color: var(--accent); }
+#chat-send { background: var(--accent); border: none; border-radius: 8px; width: 34px; color: #fff; cursor: pointer; font-size: 16px; font-weight: 700; transition: opacity 0.15s; }
+#chat-send:hover { opacity: 0.85; }
+
+/* DASHBOARD */
+.dash-wrap { padding: 36px 48px; max-width: 900px; margin: 0 auto; }
+.dash-hero { margin-bottom: 28px; }
+.dash-eyebrow { font-size: 12px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 6px; }
+.dash-title { font-size: 26px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+.dash-sub { font-size: 14px; color: var(--text2); }
+.dash-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 28px; }
+.stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; box-shadow: var(--shadow); }
+.stat-label { font-size: 11px; color: var(--text3); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+.stat-value { font-size: 26px; font-weight: 800; }
+.stat-sub { font-size: 11.5px; color: var(--text3); margin-top: 3px; }
+.courses-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.course-card {
+  background: var(--bg2); border: 1.5px solid var(--border); border-radius: 12px;
+  padding: 20px; cursor: pointer; transition: all 0.2s; box-shadow: var(--shadow);
+}
+.course-card:hover { border-color: var(--accent); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.course-icon-wrap { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 12px; }
+.course-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; color: var(--text); }
+.course-desc { font-size: 12px; color: var(--text2); line-height: 1.6; margin-bottom: 12px; }
+.course-footer { display: flex; align-items: center; justify-content: space-between; }
+.course-lessons { font-size: 11.5px; color: var(--text3); font-weight: 600; }
+.course-start { font-size: 12px; font-weight: 700; color: var(--accent); }
+
+/* ADD LESSON GUIDE */
+.add-guide { background: var(--bg2); border: 1.5px dashed var(--border2); border-radius: 12px; padding: 18px 20px; margin-top: 14px; }
+.add-guide-title { font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+.code-snippet { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; font-family: 'Courier New', monospace; font-size: 11.5px; color: var(--text2); line-height: 1.6; margin-top: 6px; white-space: pre-wrap; }
+
+#view-content { display: none; flex: 1; flex-direction: column; }
+#view-content.active { display: flex; }
+#view-dashboard { display: none; flex: 1; }
+#view-dashboard.active { display: block; }
+
+.concept-chips { display: flex; flex-wrap: wrap; gap: 7px; margin: 12px 0; }
+.chip { background: var(--bg3); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 12.5px; color: var(--text2); }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+.fade-in { animation: fadeIn 0.25s ease; }
+.typing-dots span { animation: blink 1.4s infinite; display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--text3); margin: 0 1px; }
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes blink { 0%,80%,100% { opacity: 0; } 40% { opacity: 1; } }
+
+.step-row { display: flex; gap: 12px; align-items: flex-start; padding: 11px 14px; border-radius: 8px; margin-bottom: 6px; border: 1px solid var(--border); background: var(--bg2); }
+.step-num { width: 26px; height: 26px; border-radius: 50%; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<nav id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🤖</div>
+      AI בארגונים
+    </div>
+    <button style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;padding:4px;" onclick="toggleSidebar()">✕</button>
+  </div>
+  <div class="progress-bar-wrap">
+    <div class="progress-label"><span>התקדמות</span><span id="pct">0%</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+  </div>
+  <div class="modules-list" id="modules-list"></div>
+</nav>
+
+<div id="main">
+  <div id="topbar">
+    <button id="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+    <span class="topbar-title" id="current-title">ברוך הבא</span>
+    <span class="topbar-lesson" id="topbar-sub"></span>
+    <div style="display:flex;gap:8px;margin-right:auto;">
+      <div class="xp-badge">⚡ <span id="xp-total">0</span> XP</div>
+      <div class="streak-badge" id="streak">🔥 0</div>
+    </div>
+    <button class="btn btn-ghost" onclick="showDashboard()" style="font-size:12px;padding:6px 12px;">🏠 ראשי</button>
+  </div>
+
+  <div id="view-dashboard">
+    <div class="dash-wrap">
+      <div class="dash-hero">
+        <div class="dash-eyebrow">קורס מקצועי</div>
+        <div class="dash-title">הטמעת AI בארגונים</div>
+        <div class="dash-sub">4 מודולים · 15 שיעורים · בדיקות ידע · צ'אטבוט עוזר לימוד</div>
+      </div>
+      <div class="dash-stats">
+        <div class="stat-card"><div class="stat-label">XP שנצבר</div><div class="stat-value" style="color:var(--amber)" id="d-xp">0</div><div class="stat-sub">נקודות ניסיון</div></div>
+        <div class="stat-card"><div class="stat-label">שיעורים הושלמו</div><div class="stat-value" style="color:var(--green)" id="d-done">0</div><div class="stat-sub" id="d-done-sub">מתוך 15</div></div>
+        <div class="stat-card"><div class="stat-label">שאלות נענו</div><div class="stat-value" style="color:var(--accent)" id="d-quiz">0</div><div class="stat-sub">בדיקות ידע</div></div>
+      </div>
+      <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:14px;">מודולי הקורס</div>
+      <div class="courses-grid" id="courses-grid"></div>
+
+      <div class="add-guide" style="margin-top:20px;">
+        <div class="add-guide-title">📌 כיצד להוסיף שיעור חדש (מצגת נוספת)</div>
+        <p style="font-size:12.5px;color:var(--text2);margin:6px 0 8px;">פתח את קובץ ה-HTML בכל עורך טקסט. מצא את מערך <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;font-size:11px;">LESSONS</code> בסוף הקובץ, והוסף אובייקט חדש בתבנית הבאה:</div>
+        <div class="code-snippet">{ id:'m4l1', module:3, title:'שם השיעור',
+  tag:'מודול 4: שם מודול', xp:100,
+  duration:'20 דקות', level:'בינוני',
+  hints:['רמז 1','רמז 2'],
+  content:`&lt;div class="lesson-hero"&gt;...&lt;/div&gt;` }</div>
+        <p style="font-size:12px;color:var(--text3);margin-top:8px;">לאחר מכן הוסף מודול חדש ב-MODULES עם השיעורים החדשים.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-content">
+    <div id="content"></div>
+    <div style="height:50px;"></div>
+  </div>
+</div>
+
+<div id="chatbot">
+  <div id="chat-panel">
+    <div class="chat-head">
+      <div class="chat-avatar">🤖</div>
+      <div><div class="chat-name">עוזר הלמידה</div><div class="chat-status" id="chat-status">● Ollama מקומי</div></div>
+      <button onclick="toggleChat()" style="margin-right:auto;background:rgba(255,255,255,0.2);border:none;color:#fff;cursor:pointer;font-size:14px;width:26px;height:26px;border-radius:50%;">✕</button>
+    </div>
+    <div id="chat-messages"></div>
+    <div class="chat-hints" id="chat-hints"></div>
+    <div class="chat-input-row">
+      <input id="chat-input" placeholder="שאל על החומר..." onkeydown="if(event.key==='Enter')sendChat()" dir="rtl">
+      <button id="chat-send" onclick="sendChat()">↑</button>
+    </div>
+  </div>
+  <button id="chat-toggle" onclick="toggleChat()">💬</button>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// להוספת מצגת/שיעור חדש – הוסף אובייקט ל-LESSONS
+// להוספת מודול חדש – הוסף אובייקט ל-MODULES
+// ═══════════════════════════════════════════════
+const LESSONS = [
+  {
+    id:'m1l1', module:0, title:'AI בארגונים – מבוא ורקע',
+    tag:'מודול 1: יסודות', xp:50, duration:'15 דקות', level:'מתחיל',
+    hints:['מה ההבדל בין AI Agent ל-Generative AI?','שימושים עיקריים של AI בארגונים','אתגרים בהטמעת AI'],
+    content:`
+      <div class="lesson-hero">
+        <div class="lesson-tag-pill">מודול 1 · שיעור 1</div>
+        <div class="lesson-title">AI בארגונים – מבוא ורקע</div>
+        <div class="lesson-meta">
+          <div class="meta-pill">⏱ 15 דקות</div>
+          <div class="meta-pill">⚡ 50 XP</div>
+          <div class="meta-pill">📊 מתחיל</div>
+        </div>
+      </div>
+      <div class="section-block">
+        <h2>🌍 המהפכה ה-AI – מה קורה?</h2>
+        <p>הבינה המלאכותית הפכה לכוח מהפכני בנוף העסקי. ארגונים בכל הגדלים מאמצים טכנולוגיות AI לייעול תהליכים, קבלת החלטות מבוססות נתונים ופתיחת הזדמנויות חדשות.</p>
+        <div class="highlight-box"><p>💡 <b>נתון מרכזי:</b> עד 2030+ כ-50% מפעילויות העבודה יהיו אוטומטיות, ו-80% מהעובדים יושפעו משינויים בשכר ותפקידים.</p></div>
+        <div class="compare-grid">
+          <div style="background:var(--accent-bg);border:1px solid #c7d7ff;border-radius:8px;padding:14px;">
+            <h4 style="color:var(--accent);font-size:13px;margin-bottom:7px;">🔄 מהפכת הנתונים</h4>
+            <p style="font-size:13px;color:var(--text2);margin:0;">זמינות עצומה של נתונים וחישוב ענן המאפשרת עיבוד בקנה מידה גדול</p>
+          </div>
+          <div style="background:var(--accent2-bg);border:1px solid #ddd6fe;border-radius:8px;padding:14px;">
+            <h4 style="color:var(--accent2);font-size:13px;margin-bottom:7px;">🧠 מודלים שפתיים</h4>
+            <p style="font-size:13px;color:var(--text2);margin:0;">LLMs משנים את האינטראקציה האנושית-מכונה ומאפשרים אוטומציה חכמה</p>
+          </div>
+        </div>
+      </div>
+      <div class="section-block">
+        <h2>🤖 Generative AI vs AI Agent</h2>
+        <table class="tool-table">
+          <thead><tr><th>מאפיין</th><th>Generative AI</th><th>AI Agent</th></tr></thead>
+          <tbody>
+            <tr><td>מטרה</td><td>יצירת תוכן חדש</td><td>ביצוע משימות פרואקטיביות</td></tr>
+            <tr><td>אופי הפעולה</td><td>תגובתי</td><td>פרואקטיבי</td></tr>
+            <tr><td>אוטונומיה</td><td>מוגבלת</td><td>גבוהה</td></tr>
+            <tr><td>שימושים</td><td>טקסטים, תמונות, קוד</td><td>ניהול תהליכים, החלטות</td></tr>
+            <tr><td>דרישה לקלט אנושי</td><td>תמידי</td><td>מינימלי</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="section-block">
+        <h2>🏢 שימושים מרכזיים בארגונים</h2>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px;"><div style="font-size:18px;margin-bottom:5px;">💬</div><div style="font-size:13px;font-weight:700;margin-bottom:3px;color:var(--text);">שירות לקוחות</div><div style="font-size:12px;color:var(--text2);">צ'אטבוטים ואוטומציה של תמיכה</div></div>
+          <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px;"><div style="font-size:18px;margin-bottom:5px;">📊</div><div style="font-size:13px;font-weight:700;margin-bottom:3px;color:var(--text);">ניתוח נתונים</div><div style="font-size:12px;color:var(--text2);">תובנות עסקיות בזמן אמת</div></div>
+          <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px;"><div style="font-size:18px;margin-bottom:5px;">🎯</div><div style="font-size:13px;font-weight:700;margin-bottom:3px;color:var(--text);">שיווק מותאם</div><div style="font-size:12px;color:var(--text2);">פרסונליזציה וטרגוט מדויק</div></div>
+          <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px;"><div style="font-size:18px;margin-bottom:5px;">⚙️</div><div style="font-size:13px;font-weight:700;margin-bottom:3px;color:var(--text);">ייעול תפעולי</div><div style="font-size:12px;color:var(--text2);">שרשרת אספקה ולוגיסטיקה</div></div>
+        </div>
+        <div class="success-box" style="margin-top:12px;"><p>📈 <b>מספרים מהשטח:</b> ארגונים שמאמצים AI מדווחים על חיסכון ממוצע של 20-30% בעלויות תפעוליות.</p></div>
+      </div>
+      <div class="quiz-block" id="q-m1l1">
+        <div class="quiz-header">📝 בדיקת ידע</div>
+        <div class="quiz-q">מהו ההבדל המרכזי בין Generative AI ל-AI Agent?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQuiz('q-m1l1',this,false,'Generative AI גם מסוגל לבצע פעולות, אבל הוא תגובתי')"><div class="quiz-letter">א</div>Generative AI מהיר יותר מ-AI Agent</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m1l1',this,true,'נכון! Generative AI תגובתי ויוצר תוכן לפי בקשה; AI Agent פרואקטיבי ופועל באוטונומיה')"><div class="quiz-letter">ב</div>Generative AI תגובתי ויוצר תוכן; AI Agent פרואקטיבי ומבצע משימות</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m1l1',this,false,'ההבדל עמוק יותר מסתם עלות')"><div class="quiz-letter">ג</div>Generative AI זול יותר לתפעול</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m1l1',this,false,'אלו שני סוגים שונים עם שימושים שונים לחלוטין')"><div class="quiz-letter">ד</div>אין הבדל – שמות שונים לאותו הדבר</div>
+        </div>
+        <div class="quiz-feedback" id="fb-q-m1l1"></div>
+      </div>`
+  },
+  {
+    id:'m1l2', module:0, title:'Vibe Engineering ו-Guardrails',
+    tag:'מודול 1: יסודות', xp:60, duration:'18 דקות', level:'מתחיל',
+    hints:['מה זה Vibe Engineering?','מה זה Guardrails?','מחזור Agile + Vibe Coding'],
+    content:`
+      <div class="lesson-hero">
+        <div class="lesson-tag-pill">מודול 1 · שיעור 2</div>
+        <div class="lesson-title">Vibe Engineering – עקרונות ו-Guardrails</div>
+        <div class="lesson-meta">
+          <div class="meta-pill">⏱ 18 דקות</div><div class="meta-pill">⚡ 60 XP</div><div class="meta-pill">📊 מתחיל</div>
+        </div>
+      </div>
+      <div class="section-block">
+        <h2>🎯 מה זה Vibe Engineering?</h2>
+        <p>Vibe Engineering הוא גישה מהפכנית לפיתוח תוכנה הממנפת AI לאורך כל מחזור החיים. במקום לכתוב קוד שורה אחר שורה, מגדירים כוונות, מגבלות ועקרונות – ומותירים ל-AI לייצר פתרונות.</p>
+        <div class="highlight-box"><p>💡 <b>הרעיון המרכזי:</b> Vibe Engineering = Engineering Before Code. מגדירים guardrails לפני שכותבים שורת קוד.</p></div>
+      </div>
+      <div class="section-block">
+        <h2>🛡️ מושג ה-Guardrails</h2>
+        <p>Guardrails הם גבולות אסטרטגיים ועקרונות מנחים שמעצבים את ארכיטקטורת הפתרון לפני כתיבת קוד.</p>
+        <div style="display:flex;gap:10px;margin:12px 0;">
+          <div style="flex:1;text-align:center;padding:14px;background:var(--accent-bg);border:1px solid #c7d7ff;border-radius:8px;">
+            <div style="font-size:22px;margin-bottom:6px;">🎯</div>
+            <div style="font-size:12.5px;font-weight:700;color:var(--accent);margin-bottom:3px;">Define Constraints</div>
+            <div style="font-size:12px;color:var(--text2);">גבולות טכניים ועסקיים</div>
+          </div>
+          <div style="display:flex;align-items:center;color:var(--text3);font-size:18px;">→</div>
+          <div style="flex:1;text-align:center;padding:14px;background:var(--accent2-bg);border:1px solid #ddd6fe;border-radius:8px;">
+            <div style="font-size:22px;margin-bottom:6px;">📏</div>
+            <div style="font-size:12.5px;font-weight:700;color:var(--accent2);margin-bottom:3px;">Set Standards</div>
+            <div style="font-size:12px;color:var(--text2);">הנחיות איכות ואבטחה</div>
+          </div>
+          <div style="display:flex;align-items:center;color:var(--text3);font-size:18px;">→</div>
+          <div style="flex:1;text-align:center;padding:14px;background:var(--teal-bg);border:1px solid #a5f3fc;border-radius:8px;">
+            <div style="font-size:22px;margin-bottom:6px;">🏗️</div>
+            <div style="font-size:12.5px;font-weight:700;color:var(--teal);margin-bottom:3px;">Design Framework</div>
+            <div style="font-size:12px;color:var(--text2);">יסוד ארכיטקטוני</div>
+          </div>
+        </div>
+      </div>
+      <div class="section-block">
+        <h2>🔄 Agile + Vibe Coding</h2>
+        <div class="step-row" style="border-right:3px solid var(--accent);"><div class="step-num" style="background:var(--accent-bg);color:var(--accent);">1</div><div><b>Sprint Planning</b> – הגדרת יעדים עם אומדן מסייע AI</div></div>
+        <div class="step-row" style="border-right:3px solid var(--accent2);"><div class="step-num" style="background:var(--accent2-bg);color:var(--accent2);">2</div><div><b>Development</b> – יצירת קוד ובדיקה עם תמיכת LLM</div></div>
+        <div class="step-row" style="border-right:3px solid var(--teal);"><div class="step-num" style="background:var(--teal-bg);color:var(--teal);">3</div><div><b>Testing</b> – בדיקות אוטומטיות ובטחת איכות</div></div>
+        <div class="step-row" style="border-right:3px solid var(--green);"><div class="step-num" style="background:var(--green-bg);color:var(--green);">4</div><div><b>Retrospective</b> – שיפור מתמיד ואופטימיזציה</div></div>
+      </div>
+      <div class="quiz-block" id="q-m1l2">
+        <div class="quiz-header">📝 בדיקת ידע</div>
+        <div class="quiz-q">מהי המשמעות של "Guardrails" ב-Vibe Engineering?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQuiz('q-m1l2',this,false,'Guardrails אינם כלי debugging')"><div class="quiz-letter">א</div>כלים לאיתור באגים בקוד שנכתב על ידי AI</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m1l2',this,true,'מצוין! Guardrails = גבולות ועקרונות שמוגדרים לפני כתיבת קוד')"><div class="quiz-letter">ב</div>גבולות אסטרטגיים ועקרונות מנחים שמוגדרים לפני כתיבת קוד</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m1l2',this,false,'זוהי הגדרה של API, לא Guardrails')"><div class="quiz-letter">ג</div>ממשק API המגן על הקוד מפני גישה לא מורשית</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m1l2',this,false,'Guardrails הם אסטרטגיים ולא רק תחביריים')"><div class="quiz-letter">ד</div>בדיקות תחביר אוטומטיות בזמן כתיבת קוד</div>
+        </div>
+        <div class="quiz-feedback" id="fb-q-m1l2"></div>
+      </div>`
+  },
+  {
+    id:'m1l3', module:0, title:'LLM-Powered Specification Writing',
+    tag:'מודול 1: יסודות', xp:70, duration:'20 דקות', level:'מתחיל',
+    hints:['מה זה PRD?','איך LLM עוזר לכתוב מפרטים?','כלי Vibe Engineering'],
+    content:`
+      <div class="lesson-hero">
+        <div class="lesson-tag-pill">מודול 1 · שיעור 3</div>
+        <div class="lesson-title">כתיבת מפרטים בעזרת LLM</div>
+        <div class="lesson-meta">
+          <div class="meta-pill">⏱ 20 דקות</div><div class="meta-pill">⚡ 70 XP</div><div class="meta-pill">📊 מתחיל</div>
+        </div>
+      </div>
+      <div class="section-block">
+        <h2>📄 PRD + AI – המהפכה</h2>
+        <p>LLMs מהפכים את יצירת ה-PRD. תהליך שלוקח שבועות לוקח שעות – עם איכות שוות ערך.</p>
+        <div class="highlight-box"><p>🚀 <b>תהליך:</b> Draft PRD → פירוק משימות → הכנת מפת ביצוע</p></div>
+        <div style="display:flex;gap:10px;margin:14px 0;">
+          <div style="flex:1;text-align:center;padding:14px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;"><div style="font-size:22px;margin-bottom:6px;">📝</div><div style="font-size:12.5px;font-weight:700;margin-bottom:3px;">Draft PRD</div><div style="font-size:12px;color:var(--text2);">דרישות ראשוניות עם AI</div></div>
+          <div style="display:flex;align-items:center;color:var(--text3);font-size:18px;">→</div>
+          <div style="flex:1;text-align:center;padding:14px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;"><div style="font-size:22px;margin-bottom:6px;">🔨</div><div style="font-size:12.5px;font-weight:700;margin-bottom:3px;">Decompose</div><div style="font-size:12px;color:var(--text2);">פירוק למשימות</div></div>
+          <div style="display:flex;align-items:center;color:var(--text3);font-size:18px;">→</div>
+          <div style="flex:1;text-align:center;padding:14px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;"><div style="font-size:22px;margin-bottom:6px;">🗺️</div><div style="font-size:12.5px;font-weight:700;margin-bottom:3px;">Execute</div><div style="font-size:12px;color:var(--text2);">מפת דרכים</div></div>
+        </div>
+      </div>
+      <div class="section-block">
+        <h2>🛠️ כלי Vibe Engineering</h2>
+        <table class="tool-table">
+          <thead><tr><th>כלי</th><th>שימוש</th><th>יתרון</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge badge-blue">Figma</span></td><td>PRDs → Prototypes</td><td>הפיכת מפרטים לדגמים אינטראקטיביים</td></tr>
+            <tr><td><span class="badge badge-amber">Midjourney</span></td><td>Visual Concepts</td><td>קונספטים ויזואליים מתיאורים</td></tr>
+            <tr><td><span class="badge badge-green">Canva</span></td><td>Marketing Materials</td><td>חומרי שיווק ומצגות</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="quiz-block" id="q-m1l3">
+        <div class="quiz-header">📝 בדיקת ידע</div>
+        <div class="quiz-q">מהו התהליך הנכון לכתיבת PRD בעזרת LLM?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQuiz('q-m1l3',this,false,'LLM כותב PRD אבל לא מחליף שיחה עם בעלי עניין')"><div class="quiz-letter">א</div>LLM כותב PRD מלא, שולחים ישירות לפיתוח</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m1l3',this,true,'בדיוק! Draft → פירוק משימות → הכנת מפת ביצוע')"><div class="quiz-letter">ב</div>תהליך איטרטיבי: Draft → פירוק משימות → מפת ביצוע</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m1l3',this,false,'LLM כן יכול לסייע בכתיבת PRD')"><div class="quiz-letter">ג</div>LLM אינו מתאים לכתיבת PRDs</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m1l3',this,false,'הדרישות חייבות לבוא מבעלי עניין')"><div class="quiz-letter">ד</div>LLM קובע את הדרישות בעצמו ללא קלט אנושי</div>
+        </div>
+        <div class="quiz-feedback" id="fb-q-m1l3"></div>
+      </div>`
+  },
+  {
+    id:'m2l1', module:1, title:'הגדרת בעיה עסקית',
+    tag:'מודול 2: תכנון פרויקט', xp:80, duration:'22 דקות', level:'בינוני',
+    hints:['5 שאלות קריטיות','מסגרת חשיבה לפרויקט AI','מטריצת היתכנות'],
+    content:`
+      <div class="lesson-hero">
+        <div class="lesson-tag-pill">מודול 2 · שיעור 1</div>
+        <div class="lesson-title">הגדרת בעיה עסקית – הצעד הכי חשוב</div>
+        <div class="lesson-meta">
+          <div class="meta-pill">⏱ 22 דקות</div><div class="meta-pill">⚡ 80 XP</div><div class="meta-pill">📊 בינוני</div>
+        </div>
+      </div>
+      <div class="section-block">
+        <h2>❌ איך לא לחשוב על פרויקט AI</h2>
+        <div class="compare-grid">
+          <div class="compare-card bad"><h4>❌ חשיבה שגויה</h4><ul><li>"נבנה AI לחברה שלנו"</li><li>"נשים ChatGPT על המערכת"</li><li>"נאוטמט הכל עם AI"</li><li>"AI יחליף את הצוות"</li></ul></div>
+          <div class="compare-card good"><h4>✅ חשיבה נכונה</h4><ul><li>"יש בעיה X – AI יכול לפתור?"</li><li>"מה הכי כואב ולוקח זמן?"</li><li>"מה ה-ROI הצפוי?"</li><li>"מה ה-MVP ב-30 יום?"</li></ul></div>
+        </div>
+        <div class="warning-box"><p>⚠️ <b>כלל זהב:</b> תמיד מתחילים מהבעיה העסקית – לא מהטכנולוגיה.</p></div>
+      </div>
+      <div class="section-block">
+        <h2>📋 5 שאלות קריטיות</h2>
+        <div class="step-row" style="border-right:3px solid var(--accent);"><div class="step-num" style="background:var(--accent-bg);color:var(--accent);">1</div><div><b>תאר במספרים</b> – כמה זמן, כסף או אנשים זה עולה היום?</div></div>
+        <div class="step-row" style="border-right:3px solid var(--accent2);"><div class="step-num" style="background:var(--accent2-bg);color:var(--accent2);">2</div><div><b>מי סובל?</b> – מפה את בעלי העניין הישירים</div></div>
+        <div class="step-row" style="border-right:3px solid var(--teal);"><div class="step-num" style="background:var(--teal-bg);color:var(--teal);">3</div><div><b>מה קורה אם לא פותרים?</b> – עלות אי-הפעולה</div></div>
+        <div class="step-row" style="border-right:3px solid var(--amber);"><div class="step-num" style="background:var(--amber-bg);color:var(--amber);">4</div><div><b>האם AI מתאים?</b> – יש נתונים? חזרתיות? דפוס?</div></div>
+        <div class="step-row" style="border-right:3px solid var(--green);"><div class="step-num" style="background:var(--green-bg);color:var(--green);">5</div><div><b>הגדר הצלחה</b> – מה ישתנה ואיך נמדוד?</div></div>
+        <div class="highlight-box" style="margin-top:12px;"><p>📌 <b>כלי עזר:</b> "כרגע [תהליך X] לוקח [זמן/כסף Y] ומשפיע על [מי]. אם נפתור, נחסוך [Z]."</p></div>
+      </div>
+      <div class="quiz-block" id="q-m2l1">
+        <div class="quiz-header">📝 בדיקת ידע</div>
+        <div class="quiz-q">איזו בעיה הכי מתאימה לפתרון AI?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQuiz('q-m2l1',this,false,'החלטות חד-פעמיות לא מתאימות ל-AI')"><div class="quiz-letter">א</div>החלטה אסטרטגית חד-פעמית על כניסה לשוק חדש</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m2l1',this,false,'ללא נתונים ובסביבה משתנה – AI יתקשה')"><div class="quiz-letter">ב</div>תהליך חדש ללא נתונים בסביבה משתנה</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m2l1',this,true,'מצוין! חזרתי, יש נתונים, יש דפוס, ROI ברור – מתאים מצוין')"><div class="quiz-letter">ג</div>סיווג חשבוניות חוזר 500 פעם ביום</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m2l1',this,false,'שיקול דעת יצירתי הוא אתגר גדול ל-AI')"><div class="quiz-letter">ד</div>החלטות UX הדורשות שיקול דעת יצירתי עמוק</div>
+        </div>
+        <div class="quiz-feedback" id="fb-q-m2l1"></div>
+      </div>`
+  },
+  {
+    id:'m2l2', module:1, title:'בחירת כלי AI נכון',
+    tag:'מודול 2: תכנון פרויקט', xp:90, duration:'25 דקות', level:'בינוני',
+    hints:['מתי להשתמש ב-n8n?','Replit vs Claude Code','מדריך בחירה לפי מורכבות'],
+    content:`
+      <div class="lesson-hero">
+        <div class="lesson-tag-pill">מודול 2 · שיעור 2</div>
+        <div class="lesson-title">בחירת הכלי הנכון – קריטריונים טכניים</div>
+        <div class="lesson-meta">
+          <div class="meta-pill">⏱ 25 דקות</div><div class="meta-pill">⚡ 90 XP</div><div class="meta-pill">📊 בינוני</div>
+        </div>
+      </div>
+      <div class="section-block">
+        <h2>🛠️ השוואת כלים מרכזיים</h2>
+        <table class="tool-table">
+          <thead><tr><th>קריטריון</th><th>ChatGPT/Claude</th><th>n8n/Make</th><th>Replit</th><th>Claude Code</th></tr></thead>
+          <tbody>
+            <tr><td>סוג משימה</td><td>טקסט, ניתוח</td><td>אוטומציה, חיבורים</td><td>אפליקציה + ממשק</td><td>לוגיקה מורכבת</td></tr>
+            <tr><td>נדרש קוד?</td><td>לא</td><td>לא (ויזואלי)</td><td>מינימלי</td><td>לא (AI כותב)</td></tr>
+            <tr><td>חיבור למערכות</td><td>API בלבד</td><td>200+ connectors</td><td>דרך קוד</td><td>דרך קוד</td></tr>
+            <tr><td>עלות חודשית</td><td><span class="badge badge-green">$20-200</span></td><td><span class="badge badge-green">$0-500</span></td><td><span class="badge badge-amber">$0-25</span></td><td><span class="badge badge-amber">$20-100</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="section-block">
+        <h2>🗺️ מדריך בחירה</h2>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="display:flex;gap:10px;align-items:center;padding:10px 14px;background:var(--accent-bg);border:1px solid #c7d7ff;border-radius:8px;"><span style="font-size:16px;">📝</span><div><span style="font-size:13px;font-weight:700;color:var(--accent);">נמוכה · יום אחד:</span> <span style="font-size:13px;color:var(--text2);">ChatGPT/Claude – עיבוד טקסט</span></div></div>
+          <div style="display:flex;gap:10px;align-items:center;padding:10px 14px;background:var(--accent2-bg);border:1px solid #ddd6fe;border-radius:8px;"><span style="font-size:16px;">🔄</span><div><span style="font-size:13px;font-weight:700;color:var(--accent2);">בינונית · שבוע:</span> <span style="font-size:13px;color:var(--text2);">n8n – אוטומציה בין מערכות</span></div></div>
+          <div style="display:flex;gap:10px;align-items:center;padding:10px 14px;background:var(--teal-bg);border:1px solid #a5f3fc;border-radius:8px;"><span style="font-size:16px;">💻</span><div><span style="font-size:13px;font-weight:700;color:var(--teal);">בינונית-גבוהה · 2-4 שבועות:</span> <span style="font-size:13px;color:var(--text2);">Replit + Claude Code – כלי פנימי</span></div></div>
+          <div style="display:flex;gap:10px;align-items:center;padding:10px 14px;background:var(--green-bg);border:1px solid #a7f3d0;border-radius:8px;"><span style="font-size:16px;">🏗️</span><div><span style="font-size:13px;font-weight:700;color:var(--green);">גבוהה · חודש+:</span> <span style="font-size:13px;color:var(--text2);">Claude Code + Replit – מערכת מורכבת</span></div></div>
+        </div>
+        <div class="highlight-box" style="margin-top:12px;"><p>💡 <b>כלל אצבע:</b> אם אפשר לפתור עם n8n – פתור עם n8n. פשוט תמיד עדיף.</p></div>
+      </div>
+      <div class="quiz-block" id="q-m2l2">
+        <div class="quiz-header">📝 בדיקת ידע</div>
+        <div class="quiz-q">חברה רוצה לחבר אוטומטית Gmail → Slack → Asana כשמגיע לקוח חדש. איזה כלי מתאים?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQuiz('q-m2l2',this,false,'Claude API הוא לניתוח טקסט, לא חיבור מערכות')"><div class="quiz-letter">א</div>Claude API ישיר</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m2l2',this,true,'מצוין! n8n עם 200+ connectors הוא הפתרון המושלם')"><div class="quiz-letter">ב</div>n8n – connectors מובנים לכל המערכות</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m2l2',this,false,'Replit לאפליקציות עם ממשק, לא חיבור מערכות')"><div class="quiz-letter">ג</div>Replit + Claude Code</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m2l2',this,false,'קוד מאפס מיותר כשn8n קיים')"><div class="quiz-letter">ד</div>כתיבת קוד מאפס</div>
+        </div>
+        <div class="quiz-feedback" id="fb-q-m2l2"></div>
+      </div>`
+  },
+  {
+    id:'m2l3', module:1, title:'Build vs. Buy + תכנון MVP',
+    tag:'מודול 2: תכנון פרויקט', xp:110, duration:'30 דקות', level:'בינוני',
+    hints:['מתי לבנות פנימית?','לוח זמנים ריאלי','כלל x10'],
+    content:`
+      <div class="lesson-hero">
+        <div class="lesson-tag-pill">מודול 2 · שיעור 3</div>
+        <div class="lesson-title">Build vs. Buy ותכנון MVP</div>
+        <div class="lesson-meta">
+          <div class="meta-pill">⏱ 30 דקות</div><div class="meta-pill">⚡ 110 XP</div><div class="meta-pill">📊 בינוני</div>
+        </div>
+      </div>
+      <div class="section-block">
+        <h2>⚖️ Build vs. Buy</h2>
+        <table class="tool-table">
+          <thead><tr><th>קריטריון</th><th>Build (פנימי)</th><th>Buy (ספק)</th></tr></thead>
+          <tbody>
+            <tr><td>עלות ראשונית</td><td><span class="badge badge-red">גבוהה</span></td><td><span class="badge badge-green">נמוכה</span></td></tr>
+            <tr><td>שליטה על נתונים</td><td><span class="badge badge-green">מלאה</span></td><td><span class="badge badge-amber">חלקית</span></td></tr>
+            <tr><td>זמן להשקה</td><td><span class="badge badge-red">חודשים</span></td><td><span class="badge badge-green">ימים-שבועות</span></td></tr>
+            <tr><td>התאמה לצרכים</td><td><span class="badge badge-green">מלאה</span></td><td><span class="badge badge-amber">מוגבלת</span></td></tr>
+          </tbody>
+        </table>
+        <div class="success-box"><p>🏆 <b>אסטרטגיה מומלצת:</b> Buy לפיילוט → הוכח ערך → שקול Build לגרסה המלאה.</p></div>
+      </div>
+      <div class="section-block">
+        <h2>🚀 MVP נכון</h2>
+        <div class="warning-box"><p>⚠️ <b>MVP שלוקח 6 חודשים הוא לא MVP.</b> 30 יום = MVP אמיתי.</p></div>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-top:12px;">
+          <div style="padding:9px 14px;background:var(--bg3);border-radius:7px;font-size:13.5px;"><span style="color:var(--green);margin-left:8px;font-weight:700;">✓</span>בחר תת-בעיה אחת ספציפית</div>
+          <div style="padding:9px 14px;background:var(--bg3);border-radius:7px;font-size:13.5px;"><span style="color:var(--green);margin-left:8px;font-weight:700;">✓</span>הגדר "הצלחה" תוך 30 יום</div>
+          <div style="padding:9px 14px;background:var(--bg3);border-radius:7px;font-size:13.5px;"><span style="color:var(--green);margin-left:8px;font-weight:700;">✓</span>הסר כל פיצ'ר שאינו הכרחי</div>
+          <div style="padding:9px 14px;background:var(--bg3);border-radius:7px;font-size:13.5px;"><span style="color:var(--green);margin-left:8px;font-weight:700;">✓</span>MVP יכול להיות ידני חלקית – זה בסדר</div>
+        </div>
+        <div class="highlight-box" style="margin-top:12px;"><p>🎯 <b>כלל x10:</b> אם ה-MVP לא מספק x10 ערך על הפתרון הנוכחי – חזור להגדרת הבעיה.</p></div>
+      </div>
+      <div class="quiz-block" id="q-m2l3">
+        <div class="quiz-header">📝 בדיקת ידע</div>
+        <div class="quiz-q">מה מאפיין MVP נכון לפרויקט AI?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQuiz('q-m2l3',this,false,'MVP לא אמור לכלול את כל הפיצ\'רים')"><div class="quiz-letter">א</div>כולל את כל הפיצ'רים שהוגדרו בתכנון</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m2l3',this,false,'6 חודשים = לא MVP')"><div class="quiz-letter">ב</div>לוקח 3-6 חודשים לבנות</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m2l3',this,true,'נכון! 30 יום, בעיה אחת, עשוי להיות ידני חלקית')"><div class="quiz-letter">ג</div>מוכיח ערך תוך 30 יום על בעיה אחת ספציפית</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m2l3',this,false,'חלק ידני קביל ב-MVP')"><div class="quiz-letter">ד</div>חייב להיות אוטומטי לחלוטין</div>
+        </div>
+        <div class="quiz-feedback" id="fb-q-m2l3"></div>
+      </div>`
+  },
+  {
+    id:'m3l1', module:2, title:'Human-in-the-Loop Engineering',
+    tag:'מודול 3: קוד ואוטומציה', xp:120, duration:'32 דקות', level:'מתקדם',
+    hints:['מה זה Human-in-the-Loop?','מדוע AI לא יכול לרוץ לבד?','נקודות בקרה קריטיות'],
+    content:`
+      <div class="lesson-hero">
+        <div class="lesson-tag-pill">מודול 3 · שיעור 1</div>
+        <div class="lesson-title">Human-in-the-Loop Engineering</div>
+        <div class="lesson-meta">
+          <div class="meta-pill">⏱ 32 דקות</div><div class="meta-pill">⚡ 120 XP</div><div class="meta-pill">📊 מתקדם</div>
+        </div>
+      </div>
+      <div class="section-block">
+        <h2>🚫 למה AI לא "רץ לבד"?</h2>
+        <div class="compare-grid">
+          <div style="background:var(--red-bg);border:1px solid #fecaca;border-radius:8px;padding:13px;"><div style="font-size:13px;font-weight:700;color:var(--red);margin-bottom:5px;">❌ לא מבין הקשר ארגוני</div><div style="font-size:12.5px;color:var(--text2);">לא יודע פוליטיקה ארגונית, מה מותר ואסור</div></div>
+          <div style="background:var(--red-bg);border:1px solid #fecaca;border-radius:8px;padding:13px;"><div style="font-size:13px;font-weight:700;color:var(--red);margin-bottom:5px;">❌ AI טועה</div><div style="font-size:12.5px;color:var(--text2);">קוד שנראה נכון אבל מכיל באגים לוגיים</div></div>
+          <div style="background:var(--red-bg);border:1px solid #fecaca;border-radius:8px;padding:13px;"><div style="font-size:13px;font-weight:700;color:var(--red);margin-bottom:5px;">❌ אופטימיות יתר</div><div style="font-size:12.5px;color:var(--text2);">מתעלם ממקרי קצה ותרחישי כשל</div></div>
+          <div style="background:var(--red-bg);border:1px solid #fecaca;border-radius:8px;padding:13px;"><div style="font-size:13px;font-weight:700;color:var(--red);margin-bottom:5px;">❌ לא נושא אחריות</div><div style="font-size:12.5px;color:var(--text2);">אחריות על תוצאות תמיד אצל בני האדם</div></div>
+        </div>
+        <div class="warning-box" style="margin-top:12px;"><p>⚠️ <b>Human in the Loop הוא חובה, לא המלצה.</b></p></div>
+      </div>
+      <div class="section-block">
+        <h2>✅ מודל עבודה נכון</h2>
+        <div class="step-row" style="border-right:3px solid var(--accent);"><div class="step-num" style="background:var(--accent-bg);color:var(--accent);">א</div><div><b>אדם מגדיר כוונה</b> – מה אנחנו רוצים להשיג?</div></div>
+        <div class="step-row" style="border-right:3px solid var(--accent2);"><div class="step-num" style="background:var(--accent2-bg);color:var(--accent2);">ב</div><div><b>AI מייצר אפשרויות</b> – קוד, פתרונות, הצעות</div></div>
+        <div class="step-row" style="border-right:3px solid var(--teal);"><div class="step-num" style="background:var(--teal-bg);color:var(--teal);">ג</div><div><b>אדם סוקר</b> – בודק הגיון, אבטחה, מקרי קצה</div></div>
+        <div class="step-row" style="border-right:3px solid var(--amber);"><div class="step-num" style="background:var(--amber-bg);color:var(--amber);">ד</div><div><b>AI מחדד</b> – משפר לפי פידבק</div></div>
+        <div class="step-row" style="border-right:3px solid var(--green);"><div class="step-num" style="background:var(--green-bg);color:var(--green);">ה</div><div><b>בדיקות מאמתות</b> – unit tests, integration tests</div></div>
+        <div class="step-row" style="border-right:3px solid #6366f1;"><div class="step-num" style="background:#eef2ff;color:#6366f1;">ו</div><div><b>אדם מאשר</b> – אישור לפרודקשן</div></div>
+      </div>
+      <div class="quiz-block" id="q-m3l1">
+        <div class="quiz-header">📝 בדיקת ידע</div>
+        <div class="quiz-q">איזה Anti-Pattern הוא הכי מסוכן בפיתוח עם AI?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQuiz('q-m3l1',this,false,'כלים מרובים לא הבעיה בפני עצמה')"><div class="quiz-letter">א</div>שימוש בכלי AI מרובים</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m3l1',this,true,'נכון! "AI בנה הכל" + Merge אוטומטי + אין טסטים = פצצה מתקתקת')"><div class="quiz-letter">ב</div>"תן ל-AI לבנות הכל" + Merge אוטומטי + אין טסטים</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m3l1',this,false,'בדיקות תכופות הן חיוביות')"><div class="quiz-letter">ג</div>בדיקת הקוד תכופות מדי</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m3l1',this,false,'שאילת שאלות תמיד טובה')"><div class="quiz-letter">ד</div>שאילת שאלות רבות מ-AI</div>
+        </div>
+        <div class="quiz-feedback" id="fb-q-m3l1"></div>
+      </div>`
+  },
+  {
+    id:'m3l2', module:2, title:'Multi-Agent Frameworks',
+    tag:'מודול 3: קוד ואוטומציה', xp:130, duration:'35 דקות', level:'מתקדם',
+    hints:['AutoGen vs LangChain vs CrewAI','מתי Multi-Agent?','Orchestration types'],
+    content:`
+      <div class="lesson-hero">
+        <div class="lesson-tag-pill">מודול 3 · שיעור 2</div>
+        <div class="lesson-title">Multi-Agent Frameworks</div>
+        <div class="lesson-meta">
+          <div class="meta-pill">⏱ 35 דקות</div><div class="meta-pill">⚡ 130 XP</div><div class="meta-pill">📊 מתקדם</div>
+        </div>
+      </div>
+      <div class="section-block">
+        <h2>🔧 השוואת Frameworks</h2>
+        <table class="tool-table">
+          <thead><tr><th>Framework</th><th>עוצמה</th><th>מתאים ל</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge badge-blue">AutoGen</span></td><td>דיאלוג בין Agents, Code Review</td><td>פתרון מורכב, Iterative refinement</td></tr>
+            <tr><td><span class="badge badge-amber">LangChain</span></td><td>Pipelines, זיכרון, Tools</td><td>Production, אינטגרציות, RAG</td></tr>
+            <tr><td><span class="badge badge-green">CrewAI</span></td><td>סימולציית צוות, תפקידים</td><td>PRD→Code, QA, DevOps automation</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="section-block">
+        <h2>⚖️ מתי Multi-Agent?</h2>
+        <div class="compare-grid">
+          <div class="compare-card good"><h4>✅ Multi-Agent הכרחי</h4><ul><li>2+ שלבים עם מומחיות שונה</li><li>צריך עיבוד מקבילי</li><li>נדרשת בדיקה עצמאית</li><li>כשל שלב אחד לא יפיל הכל</li></ul></div>
+          <div class="compare-card bad"><h4>❌ סוכן אחד מספיק</h4><ul><li>משימה אחת ברורה</li><li>MVP ראשוני</li><li>תקציב מוגבל</li><li>צוות לא מנוסה</li></ul></div>
+        </div>
+        <div class="highlight-box"><p>💡 <b>כלל:</b> תמיד התחל עם סוכן אחד. הוסף רק כשיש סיבה ספציפית.</p></div>
+      </div>
+      <div class="quiz-block" id="q-m3l2">
+        <div class="quiz-header">📝 בדיקת ידע</div>
+        <div class="quiz-q">Pipeline של Production: DB → AI ניתוח → Slack. איזה framework?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQuiz('q-m3l2',this,false,'AutoGen מתמחה בדיאלוג')"><div class="quiz-letter">א</div>AutoGen</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m3l2',this,true,'נכון! LangChain מצטיין ב-Pipelines ומערכות Production')"><div class="quiz-letter">ב</div>LangChain</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m3l2',this,false,'CrewAI לסימולציית צוות')"><div class="quiz-letter">ג</div>CrewAI</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m3l2',this,false,'אל תבנה Framework משלך כשיש פתרון קיים')"><div class="quiz-letter">ד</div>Framework משלך</div>
+        </div>
+        <div class="quiz-feedback" id="fb-q-m3l2"></div>
+      </div>`
+  },
+  {
+    id:'m3l3', module:2, title:'Security by Design + אינטגרציות',
+    tag:'מודול 3: קוד ואוטומציה', xp:140, duration:'38 דקות', level:'מתקדם',
+    hints:['4 עקרונות Security by Design','API vs Webhook','סיכוני AI נפוצים'],
+    content:`
+      <div class="lesson-hero">
+        <div class="lesson-tag-pill">מודול 3 · שיעור 3</div>
+        <div class="lesson-title">Security by Design ואינטגרציות</div>
+        <div class="lesson-meta">
+          <div class="meta-pill">⏱ 38 דקות</div><div class="meta-pill">⚡ 140 XP</div><div class="meta-pill">📊 מתקדם</div>
+        </div>
+      </div>
+      <div class="section-block">
+        <h2>🔐 4 עקרונות Security by Design</h2>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div style="padding:13px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;"><div style="font-size:18px;margin-bottom:5px;">🔒</div><div style="font-size:13px;font-weight:700;margin-bottom:3px;">הרשאה מינימלית</div><div style="font-size:12px;color:var(--text2);">כל רכיב מקבל רק ההרשאות הנדרשות</div></div>
+          <div style="padding:13px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;"><div style="font-size:18px;margin-bottom:5px;">🏛️</div><div style="font-size:13px;font-weight:700;margin-bottom:3px;">הפרדת אחריויות</div><div style="font-size:12px;color:var(--text2);">לא Agent אחד שולט בכל דבר</div></div>
+          <div style="padding:13px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;"><div style="font-size:18px;margin-bottom:5px;">📋</div><div style="font-size:13px;font-weight:700;margin-bottom:3px;">יכולת ביקורת</div><div style="font-size:12px;color:var(--text2);">כל פעולת AI מתועדת וניתנת לסקירה</div></div>
+          <div style="padding:13px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;"><div style="font-size:18px;margin-bottom:5px;">👁️</div><div style="font-size:13px;font-weight:700;margin-bottom:3px;">יכולת תצפית</div><div style="font-size:12px;color:var(--text2);">ניטור בזמן אמת על כל פעולות ה-AI</div></div>
+        </div>
+        <div class="warning-box" style="margin-top:12px;"><p>🔴 <b>כלל ברזל:</b> לעולם אל תתן ל-AI לבצע פעולות בלתי הפיכות ללא אישור אנושי.</p></div>
+      </div>
+      <div class="section-block">
+        <h2>🔗 API vs Webhook</h2>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div style="text-align:center;padding:16px;background:var(--accent-bg);border:1px solid #c7d7ff;border-radius:8px;"><div style="font-size:26px;margin-bottom:8px;">🔄</div><div style="font-size:14px;font-weight:700;color:var(--accent);">API – Pull</div><div style="font-size:13px;color:var(--text2);margin-top:5px;"><b>אתה שואל</b><br>מבקש נתונים לפי דרישה</div></div>
+          <div style="text-align:center;padding:16px;background:var(--green-bg);border:1px solid #a7f3d0;border-radius:8px;"><div style="font-size:26px;margin-bottom:8px;">📡</div><div style="font-size:14px;font-weight:700;color:var(--green);">Webhook – Push</div><div style="font-size:13px;color:var(--text2);margin-top:5px;"><b>המערכת מודיעה</b><br>אירוע קורה → התראה אוטומטית</div></div>
+        </div>
+      </div>
+      <div class="quiz-block" id="q-m3l3">
+        <div class="quiz-header">📝 בדיקת ידע</div>
+        <div class="quiz-q">מה נכון לגבי Security by Design?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQuiz('q-m3l3',this,false,'אבטחה היא שכבה ראשונה, לא שנייה')"><div class="quiz-letter">א</div>מוסיפים אבטחה בסוף הפרויקט</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m3l3',this,false,'הצפנה חשובה אבל לא מספיקה')"><div class="quiz-letter">ב</div>מספיק להצפין נתונים</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m3l3',this,true,'בדיוק! מוטמעת מהתחלה: הרשאה מינימלית, הפרדה, ביקורת, תצפית')"><div class="quiz-letter">ג</div>מוטמעת מהתחלה: הרשאה מינימלית, הפרדה, ביקורת</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m3l3',this,false,'AI מגדיל סיכוני אבטחה')"><div class="quiz-letter">ד</div>AI מפחית בעיות אבטחה אוטומטית</div>
+        </div>
+        <div class="quiz-feedback" id="fb-q-m3l3"></div>
+      </div>`
+  },
+  {
+    id:'m4l1', module:3, title:'AI Agents בארגונים',
+    tag:'מודול 4: חומרי מקור', xp:110, duration:'28 דקות', level:'בינוני',
+    hints:['מה מבדיל Agent מ-AI רגיל?','איך Agent מתחבר למערכות ארגוניות?','מה חשוב ב-Governance?'],
+    content:`
+      <div class="lesson-hero">
+        <div class="lesson-tag-pill">מודול 4 · שיעור 1</div>
+        <div class="lesson-title">AI Agents בארגונים - Mindset ויישום מעשי</div>
+        <div class="lesson-meta">
+          <div class="meta-pill">⏱ 28 דקות</div><div class="meta-pill">⚡ 110 XP</div><div class="meta-pill">📎 PDF מקור</div>
+        </div>
+      </div>
+      <div class="section-block">
+        <h2>📌 מקור השיעור</h2>
+        <p>השיעור מבוסס על המצגת Agents-in-orgs-mindset.pdf ומרכז את ההבדל בין AI רגיל לבין Agent שפועל, מתכנן, זוכר ומתחבר לכלים.</p>
+        <p><a class="btn btn-primary" href="materials/Agents-in-orgs-mindset.pdf" target="_blank" rel="noopener">פתח את ה-PDF</a></p>
+      </div>
+      <div class="section-block">
+        <h2>🧭 מה צריך לקחת מכאן?</h2>
+        <ul>
+          <li>AI רגיל מחזיר פלט לבקשה; Agent מקבל מטרה ומבצע רצף צעדים.</li>
+          <li>Agent ארגוני צריך זיכרון, כלים, הרשאות, תיעוד ואחריות ברורה.</li>
+          <li>חיבור ל-CRM, ERP או HR דורש APIs, Webhooks ו-Connectors עם גבולות שימוש.</li>
+          <li>Governance אינו שכבת סוף: הוא חלק מהתכנון של כל Agent.</li>
+        </ul>
+      </div>
+      <div class="quiz-block" id="q-m4l1">
+        <div class="quiz-header">📝 בדיקת ידע</div>
+        <div class="quiz-q">מה ההבדל המרכזי בין AI רגיל לבין AI Agent?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQuiz('q-m4l1',this,false,'מהירות אינה ההבדל המהותי')"><div class="quiz-letter">א</div>Agent פשוט עונה מהר יותר</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m4l1',this,true,'נכון! Agent מקבל מטרה, מתכנן, פועל ומתחבר לכלים')"><div class="quiz-letter">ב</div>Agent מתכנן ומבצע פעולות כדי להשיג מטרה</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m4l1',this,false,'Agent דווקא דורש יותר Governance')"><div class="quiz-letter">ג</div>Agent אינו צריך הרשאות או בקרה</div>
+        </div>
+        <div class="quiz-feedback" id="fb-q-m4l1"></div>
+      </div>`
+  },
+  {
+    id:'m4l2', module:3, title:'Security Mindset ל-AI',
+    tag:'מודול 4: חומרי מקור', xp:120, duration:'30 דקות', level:'מתקדם',
+    hints:['Prompt Injection','Zero Trust','Secrets Management'],
+    content:`
+      <div class="lesson-hero">
+        <div class="lesson-tag-pill">מודול 4 · שיעור 2</div>
+        <div class="lesson-title">Security Mindset למערכות AI</div>
+        <div class="lesson-meta">
+          <div class="meta-pill">⏱ 30 דקות</div><div class="meta-pill">⚡ 120 XP</div><div class="meta-pill">📎 PDF מקור</div>
+        </div>
+      </div>
+      <div class="section-block">
+        <h2>📌 מקור השיעור</h2>
+        <p>השיעור מבוסס על AI (7).pdf ומתמקד בשטח התקיפה החדש שנוצר כאשר AI מייצר קוד, מחבר מערכות ופועל בשם משתמשים.</p>
+        <p><a class="btn btn-primary" href="materials/AI%20(7).pdf" target="_blank" rel="noopener">פתח את ה-PDF</a></p>
+      </div>
+      <div class="section-block">
+        <h2>🛡️ עקרונות ליישום</h2>
+        <ul>
+          <li>Prompt Injection הוא סיכון מערכתי, לא רק בעיית ניסוח.</li>
+          <li>Zero Trust: לא סומכים על Agent, כלי, Service או בקשה בלי אימות.</li>
+          <li>Secrets אינם נכנסים לפרומפטים, לוגים או Context ארוך טווח.</li>
+          <li>כל שינוי שמגיע מ-AI חייב Code Review, בדיקות ויכולת Incident Response.</li>
+        </ul>
+      </div>
+      <div class="quiz-block" id="q-m4l2">
+        <div class="quiz-header">📝 בדיקת ידע</div>
+        <div class="quiz-q">מה נכון לגבי Zero Trust במערכת AI?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQuiz('q-m4l2',this,false,'Agent חכם עדיין יכול לטעות או להיות מנוצל')"><div class="quiz-letter">א</div>סומכים על Agent אם הוא משתמש במודל חזק</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m4l2',this,true,'נכון! כל פעולה צריכה אימות, הרשאה ותיעוד')"><div class="quiz-letter">ב</div>מאמתים כל בקשה ונותנים הרשאה מינימלית</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m4l2',this,false,'Firewall לבדו אינו מספיק למערכות AI')"><div class="quiz-letter">ג</div>מספיק Firewall ארגוני</div>
+        </div>
+        <div class="quiz-feedback" id="fb-q-m4l2"></div>
+      </div>`
+  },
+  {
+    id:'m4l3', module:3, title:'AIOps למנהלים',
+    tag:'מודול 4: חומרי מקור', xp:115, duration:'30 דקות', level:'בינוני',
+    hints:['Lifecycle אחרי Launch','Monitoring','Drift ו-CI/CD'],
+    content:`
+      <div class="lesson-hero">
+        <div class="lesson-tag-pill">מודול 4 · שיעור 3</div>
+        <div class="lesson-title">AIOps - איך שומרים מערכת AI עובדת בייצור</div>
+        <div class="lesson-meta">
+          <div class="meta-pill">⏱ 30 דקות</div><div class="meta-pill">⚡ 115 XP</div><div class="meta-pill">📎 PDF מקור</div>
+        </div>
+      </div>
+      <div class="section-block">
+        <h2>📌 מקור השיעור</h2>
+        <p>השיעור מבוסס על AIOPS.pdf ומציג תפעול מלא של מערכת AI לאחר העלייה לייצור: ניטור, אחריות, תקלות, Drift ועדכוני מודלים.</p>
+        <p><a class="btn btn-primary" href="materials/AIOPS.pdf" target="_blank" rel="noopener">פתח את ה-PDF</a></p>
+      </div>
+      <div class="section-block">
+        <h2>📈 מסגרת עבודה</h2>
+        <ul>
+          <li>Launch הוא תחילת החיים של המערכת, לא סוף הפרויקט.</li>
+          <li>מגדירים מראש מדדי איכות, עלות, זמן תגובה והשפעה עסקית.</li>
+          <li>Drift מזוהה דרך ניטור רציף ולא דרך תלונת לקוח מאוחרת.</li>
+          <li>עדכוני מודלים עוברים CI/CD, בדיקות והשוואה לגרסה קודמת.</li>
+        </ul>
+      </div>
+      <div class="quiz-block" id="q-m4l3">
+        <div class="quiz-header">📝 בדיקת ידע</div>
+        <div class="quiz-q">למה AIOps קריטי אחרי העלייה לייצור?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQuiz('q-m4l3',this,true,'נכון! ביצועי AI משתנים וצריך ניטור ועדכון שיטתי')"><div class="quiz-letter">א</div>כי מערכות AI משתנות וצריך לזהות בעיות מוקדם</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m4l3',this,false,'דווקא אחרי Launch מתחיל שלב התפעול')"><div class="quiz-letter">ב</div>כי אחרי Launch אין צורך במפתחים</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m4l3',this,false,'מדידה ידנית בלבד לא מספיקה')"><div class="quiz-letter">ג</div>כדי להחליף ניטור אוטומטי בבדיקה ידנית</div>
+        </div>
+        <div class="quiz-feedback" id="fb-q-m4l3"></div>
+      </div>`
+  },
+  {
+    id:'m4l4', module:3, title:'n8n ואוטומציה חכמה',
+    tag:'מודול 4: חומרי מקור', xp:105, duration:'26 דקות', level:'בינוני',
+    hints:['Triggers Actions Logic','AI בתוך Workflow','Use Cases'],
+    content:`
+      <div class="lesson-hero">
+        <div class="lesson-tag-pill">מודול 4 · שיעור 4</div>
+        <div class="lesson-title">n8n ואוטומציה חכמה עם AI</div>
+        <div class="lesson-meta">
+          <div class="meta-pill">⏱ 26 דקות</div><div class="meta-pill">⚡ 105 XP</div><div class="meta-pill">📎 PDF מקור</div>
+        </div>
+      </div>
+      <div class="section-block">
+        <h2>📌 מקור השיעור</h2>
+        <p>השיעור מבוסס על mindset.pdf ומתמקד בבניית Workflows מורכבים עם n8n, מערכות ארגוניות ו-AI כחלק מהתהליך.</p>
+        <p><a class="btn btn-primary" href="materials/mindset.pdf" target="_blank" rel="noopener">פתח את ה-PDF</a></p>
+      </div>
+      <div class="section-block">
+        <h2>🔁 איפה אוטומציה חכמה מתאימה?</h2>
+        <ul>
+          <li>תהליכים שחוזרים על עצמם: עדכונים, דוחות, תזכורות וניתוב פניות.</li>
+          <li>חיבור CRM, Email, Slack, Sheets ומערכות HR לתהליך אחד.</li>
+          <li>שילוב AI לסיכום, סיווג, ניסוח, חילוץ מידע וקבלת החלטות מוגבלת.</li>
+          <li>Workflow טוב כולל Trigger, Actions, Logic, טיפול בשגיאות ותיעוד.</li>
+        </ul>
+      </div>
+      <div class="quiz-block" id="q-m4l4">
+        <div class="quiz-header">📝 בדיקת ידע</div>
+        <div class="quiz-q">איזה תהליך הוא מועמד טוב לאוטומציה ב-n8n?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQuiz('q-m4l4',this,false,'תהליך חד-פעמי לרוב פחות מתאים')"><div class="quiz-letter">א</div>פעולה חד-פעמית בלי חזרתיות</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m4l4',this,true,'נכון! תהליך חוזר עם מערכות ונתונים הוא מועמד מצוין')"><div class="quiz-letter">ב</div>תהליך חוזר שמחבר נתונים בין כמה מערכות</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m4l4',this,false,'החלטה רגישה דורשת Human-in-the-Loop')"><div class="quiz-letter">ג</div>החלטה בלתי הפיכה בלי אישור אנושי</div>
+        </div>
+        <div class="quiz-feedback" id="fb-q-m4l4"></div>
+      </div>`
+  },
+  {
+    id:'m4l5', module:3, title:'Multi-Agent Workflow & Prompt Engineering',
+    tag:'מודול 4: חומרי מקור', xp:125, duration:'32 דקות', level:'מתקדם',
+    hints:['Single Agent vs System','Orchestrator','Prompt Engineering'],
+    content:`
+      <div class="lesson-hero">
+        <div class="lesson-tag-pill">מודול 4 · שיעור 5</div>
+        <div class="lesson-title">Multi-Agent Workflow ו-Prompt Engineering</div>
+        <div class="lesson-meta">
+          <div class="meta-pill">⏱ 32 דקות</div><div class="meta-pill">⚡ 125 XP</div><div class="meta-pill">📎 PDF מקור</div>
+        </div>
+      </div>
+      <div class="section-block">
+        <h2>📌 מקור השיעור</h2>
+        <p>השיעור מבוסס על Multi-Agent Workflow & Prompt Engineering(4).pdf ומסביר למה Chat אינו System, ואיך מתכננים חלוקת אחריות בין Agents.</p>
+        <p><a class="btn btn-primary" href="materials/Multi-Agent%20Workflow%20%26%20Prompt%20Engineering(4).pdf" target="_blank" rel="noopener">פתח את ה-PDF</a></p>
+      </div>
+      <div class="section-block">
+        <h2>🧩 מרכיבי מערכת Multi-Agent</h2>
+        <ul>
+          <li>Clarifier מחדד כוונה לפני ביצוע.</li>
+          <li>Planner מפרק את המשימה לשלבים ותלויות.</li>
+          <li>Builder מייצר תוצר, QA בודק, Security Reviewer מחפש סיכונים.</li>
+          <li>Orchestrator מנהל את הרצף, עוצר ל-validation ומתעד החלטות.</li>
+        </ul>
+      </div>
+      <div class="quiz-block" id="q-m4l5">
+        <div class="quiz-header">📝 בדיקת ידע</div>
+        <div class="quiz-q">למה Single Agent מתקשה ב-Scale?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQuiz('q-m4l5',this,false,'מהירות אינה הבעיה המרכזית')"><div class="quiz-letter">א</div>כי הוא תמיד איטי יותר</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m4l5',this,true,'נכון! ערבוב תכנון, ביצוע ובקרה מקשה על אמינות')"><div class="quiz-letter">ב</div>כי הוא מערבב חשיבה, ביצוע וביקורת באותו הקשר</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m4l5',this,false,'דווקא Context אחד גדול עלול לזהם החלטות')"><div class="quiz-letter">ג</div>כי יש לו יותר מדי הפרדת אחריות</div>
+        </div>
+        <div class="quiz-feedback" id="fb-q-m4l5"></div>
+      </div>`
+  },
+  {
+    id:'m4l6', module:3, title:'חשיבה הנדסית למערכות AI',
+    tag:'מודול 4: חומרי מקור', xp:115, duration:'28 דקות', level:'בינוני',
+    hints:['תכנון מודולרי','PRD הנדסי','Guardrails ו-KPIs'],
+    content:`
+      <div class="lesson-hero">
+        <div class="lesson-tag-pill">מודול 4 · שיעור 6</div>
+        <div class="lesson-title">חשיבה הנדסית בפיתוח מערכות AI</div>
+        <div class="lesson-meta">
+          <div class="meta-pill">⏱ 28 דקות</div><div class="meta-pill">⚡ 115 XP</div><div class="meta-pill">📎 PDF מקור</div>
+        </div>
+      </div>
+      <div class="section-block">
+        <h2>📌 מקור השיעור</h2>
+        <p>השיעור מבוסס על vibe-engineering-and-AI-2.pdf ומדגיש תכנון מודולרי, פירוק מערכות מורכבות, ממשקים וכתיבת PRD עם AI.</p>
+        <p><a class="btn btn-primary" href="materials/vibe-engineering-and-AI-2.pdf" target="_blank" rel="noopener">פתח את ה-PDF</a></p>
+      </div>
+      <div class="section-block">
+        <h2>🏗️ עקרונות תכנון</h2>
+        <ul>
+          <li>שעת תכנון טובה חוסכת שעות רבות של תיקון, Refactoring ותחזוקה.</li>
+          <li>תכנון מודולרי מאפשר פיתוח מקבילי, בדיקות עצמאיות והחלפת רכיבים.</li>
+          <li>Guardrails מגדירים גבולות ברורים להתנהגות המערכת.</li>
+          <li>KPIs מראש מאפשרים למדוד הצלחה ולא רק תחושת התקדמות.</li>
+        </ul>
+      </div>
+      <div class="quiz-block" id="q-m4l6">
+        <div class="quiz-header">📝 בדיקת ידע</div>
+        <div class="quiz-q">מה היתרון המרכזי של תכנון מודולרי במערכת AI?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="answerQuiz('q-m4l6',this,false,'מודולריות אינה מבטלת בדיקות')"><div class="quiz-letter">א</div>היא מבטלת צורך בבדיקות</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m4l6',this,true,'נכון! הפרדת רכיבים משפרת תחזוקה, בדיקות ושינוי עתידי')"><div class="quiz-letter">ב</div>היא מאפשרת בדיקה, תחזוקה והחלפה של רכיבים בנפרד</div>
+          <div class="quiz-opt" onclick="answerQuiz('q-m4l6',this,false,'מערכת טובה עדיין צריכה KPIs')"><div class="quiz-letter">ג</div>היא מחליפה מדדי הצלחה</div>
+        </div>
+        <div class="quiz-feedback" id="fb-q-m4l6"></div>
+      </div>`
+  }
+];
+
+// ═══════════════════════════════════════════════
+// להוספת מודול חדש – הוסף אובייקט ל-MODULES
+// ═══════════════════════════════════════════════
+const MODULES = [
+  { title:'יסודות AI ו-Vibe Engineering', icon:'🧠', color:'var(--accent-bg)', iconBg:'var(--accent)', desc:'עקרונות AI, Vibe Engineering וכתיבת מפרטים עם LLM', lessons:[0,1,2] },
+  { title:'תכנון פרויקט AI', icon:'📋', color:'var(--accent2-bg)', iconBg:'var(--accent2)', desc:'הגדרת בעיה, בחירת כלים, Build vs Buy, MVP', lessons:[3,4,5] },
+  { title:'קוד, אוטומציה ואבטחה', icon:'⚙️', color:'var(--green-bg)', iconBg:'var(--green)', desc:'Human-in-the-Loop, Multi-Agent, Security by Design', lessons:[6,7,8] },
+  { title:'חומרי מקור ותרגול מתקדם', icon:'📚', color:'var(--amber-bg)', iconBg:'var(--amber)', desc:'Agents, Security, AIOps, n8n, Multi-Agent וחשיבה הנדסית', lessons:[9,10,11,12,13,14] }
+];
+
+const CHAT_KB = {
+  'vibe engineering':'Vibe Engineering = Engineering Before Code. מגדירים Guardrails (גבולות ועקרונות) לפני כתיבת קוד.',
+  'guardrails':'גבולות אסטרטגיים ועקרונות מנחים לפני כתיבת קוד: (1) Define Constraints, (2) Set Standards, (3) Design Framework.',
+  'generative ai':'AI תגובתי שיוצר תוכן (טקסט/תמונות/קוד) לפי בקשה. שונה מ-AI Agent שהוא פרואקטיבי ואוטונומי.',
+  'ai agent':'פרואקטיבי, אוטונומי, מנהל תהליכים ומקבל החלטות. שונה מ-Generative AI שהוא תגובתי.',
+  'multi agent':'מערכת עם כמה Agents: AutoGen (דיאלוג/Code Review), LangChain (Pipelines/Production), CrewAI (תהליכים ארגוניים).',
+  'autogen':'Framework לדיאלוג בין Agents. מתאים ל-Code Review אוטומטי ו-Iterative refinement.',
+  'langchain':'מצטיין ב-Pipelines, Tools, זיכרון. מתאים ל-Production ו-RAG (Retrieval + Generation).',
+  'crewai':'מדמה צוות עם תפקידים. מעולה ל-PRD→Code, QA flows, DevOps automation.',
+  'mvp':'הגרסה הקטנה ביותר שמוכיחה ערך. MVP נכון: 30 יום, בעיה אחת, עשוי להיות ידני חלקית. MVP ב-6 חודשים = לא MVP.',
+  'n8n':'כלי אוטומציה עם 200+ connectors. מתאים לחיבור מערכות ללא קוד. כלל: אם n8n מספיק – השתמש בו.',
+  'build vs buy':'Build: שליטה מלאה, זמן ארוך. Buy: מהיר, זול ראשוני. אסטרטגיה: Buy לפיילוט → שקול Build אם מצליח.',
+  'human in the loop':'אדם מגדיר → AI מייצר → אדם בודק → AI מחדד → בדיקות → אדם מאשר. חובה כי AI טועה ולא נושא אחריות.',
+  'security':'הרשאה מינימלית, הפרדת אחריות, ביקורת, תצפית. כלל: AI לא מבצע פעולות בלתי הפיכות ללא אישור.',
+  'prd':'מסמך דרישות. עם LLM: Draft → פירוק משימות → מפת ביצוע. מקצר שבועות לשעות.',
+  'webhook':'Push – המערכת מודיעה כשקורה אירוע. API = Pull (אתה שואל). Webhook עדיף לאירועים בזמן אמת.',
+  'orchestration':'Static (n8n): צפוי, זול. Dynamic (Claude): גמיש, יקר. Hybrid (מומלץ): n8n לרגיל + Claude לחריגות.',
+};
+
+let state = { currentLesson:null, completed:new Set(), xp:0, quizAnswered:new Set(), chatOpen:false, sidebarOpen:true, chatHistory:[] };
+const OLLAMA_URL = localStorage.getItem('ollamaUrl') || 'http://localhost:11434';
+const OLLAMA_MODEL = localStorage.getItem('ollamaModel') || '';
+const OLLAMA_MODEL_PRIORITY = ['llama3.1','llama3.2','qwen2.5:14b','qwen2.5:7b','qwen3:14b','qwen3:8b','mistral','gemma3','gemma2','phi4','phi3'];
+
+function save(){try{localStorage.setItem('aiCourse2',JSON.stringify({c:[...state.completed],x:state.xp,q:[...state.quizAnswered]}));}catch(e){}}
+function load(){try{const s=JSON.parse(localStorage.getItem('aiCourse2')||'{}');if(s.c)state.completed=new Set(s.c);if(s.x)state.xp=s.x;if(s.q)state.quizAnswered=new Set(s.q);}catch(e){}}
+
+function buildSidebar(){
+  const el=document.getElementById('modules-list');
+  el.innerHTML=MODULES.map((mod,mi)=>`
+    <div class="module-group">
+      <div class="module-header"><span>${mod.icon}</span><span>${mod.title}</span><span class="module-tag">M${mi+1}</span></div>
+      ${mod.lessons.map(li=>{
+        const l=LESSONS[li],done=state.completed.has(l.id),active=state.currentLesson===li;
+        return `<div class="lesson-item ${done?'completed':''} ${active?'active':''}" onclick="loadLesson(${li})">
+          <div class="lesson-dot"></div><span style="flex:1;">${l.title}</span><span class="lesson-xp">+${l.xp}</span>
+        </div>`;
+      }).join('')}
+    </div>`).join('');
+}
+
+function buildDashGrid(){
+  document.getElementById('courses-grid').innerHTML=MODULES.map((m,mi)=>`
+    <div class="course-card" onclick="loadLesson(${m.lessons[0]})">
+      <div class="course-icon-wrap" style="background:${m.color};"><span style="font-size:22px;">${m.icon}</span></div>
+      <div class="course-title">${m.title}</div>
+      <div class="course-desc">${m.desc}</div>
+      <div class="course-footer"><span class="course-lessons">${m.lessons.length} שיעורים</span><span class="course-start">התחל ←</span></div>
+    </div>`).join('');
+}
+
+function updateProgress(){
+  const pct=Math.round((state.completed.size/LESSONS.length)*100);
+  document.getElementById('progress-fill').style.width=pct+'%';
+  document.getElementById('pct').textContent=pct+'%';
+  document.getElementById('xp-total').textContent=state.xp;
+  document.getElementById('d-xp').textContent=state.xp;
+  document.getElementById('d-done').textContent=state.completed.size;
+  document.getElementById('d-done-sub').textContent='מתוך '+LESSONS.length;
+  document.getElementById('d-quiz').textContent=state.quizAnswered.size;
+  document.getElementById('streak').textContent='🔥 '+Math.min(Math.floor(state.completed.size/2)+1,30);
+}
+
+function loadLesson(idx){
+  state.currentLesson=idx;
+  const l=LESSONS[idx];
+  document.getElementById('view-dashboard').classList.remove('active');
+  document.getElementById('view-content').classList.add('active');
+  document.getElementById('current-title').textContent=l.title;
+  document.getElementById('topbar-sub').textContent=l.tag;
+  const c=document.getElementById('content');
+  c.innerHTML='<div class="fade-in">'+l.content+'</div>';
+  if(state.quizAnswered.has('q-'+l.id)){
+    setTimeout(()=>{const q=document.getElementById('q-'+l.id);if(q)q.querySelectorAll('.quiz-opt').forEach(o=>o.classList.add('disabled'));},50);
+  }
+  const nav=document.createElement('div');
+  nav.className='lesson-nav';
+  if(idx>0)nav.innerHTML+=`<button class="btn btn-ghost" onclick="loadLesson(${idx-1})">← הקודם</button>`;
+  nav.innerHTML+='<div style="flex:1;"></div>';
+  if(!state.completed.has(l.id)){
+    nav.innerHTML+=`<button class="btn btn-complete" onclick="completeLesson(${idx})">✓ סיימתי שיעור זה (+${l.xp} XP)</button>`;
+  } else {
+    nav.innerHTML+=`<span style="color:var(--green);font-size:13px;font-weight:700;padding:9px 16px;background:var(--green-bg);border-radius:8px;">✓ הושלם</span>`;
+  }
+  if(idx<LESSONS.length-1)nav.innerHTML+=`<button class="btn btn-primary" onclick="loadLesson(${idx+1})">הבא ←</button>`;
+  c.appendChild(nav);
+  document.getElementById('chat-hints').innerHTML=l.hints.map(h=>`<button class="hint-btn" onclick="askHint('${h}')">${h}</button>`).join('');
+  buildSidebar();
+  window.scrollTo(0,0);
+  save();
+}
+
+function completeLesson(idx){
+  const l=LESSONS[idx];
+  if(!state.completed.has(l.id)){
+    state.completed.add(l.id);state.xp+=l.xp;
+    save();updateProgress();loadLesson(idx);
+    showToast('🎉 +'+l.xp+' XP');
+  }
+}
+
+function answerQuiz(qid,el,correct,fb){
+  const block=document.getElementById(qid);if(!block)return;
+  block.querySelectorAll('.quiz-opt').forEach(o=>o.classList.add('disabled'));
+  el.classList.add(correct?'correct':'wrong');
+  const f=document.getElementById('fb-'+qid);
+  f.className='quiz-feedback show '+(correct?'good':'bad');
+  f.innerHTML=(correct?'✅ ':'❌ ')+fb;
+  if(!state.quizAnswered.has(qid)){
+    state.quizAnswered.add(qid);
+    if(correct){state.xp+=20;updateProgress();showToast('+20 XP!');}
+  }
+  save();
+}
+
+function showDashboard(){
+  document.getElementById('view-dashboard').classList.add('active');
+  document.getElementById('view-content').classList.remove('active');
+  document.getElementById('current-title').textContent='ברוך הבא';
+  document.getElementById('topbar-sub').textContent='';
+  state.currentLesson=null;buildSidebar();
+}
+
+function toggleSidebar(){
+  state.sidebarOpen=!state.sidebarOpen;
+  document.getElementById('sidebar').classList.toggle('collapsed',!state.sidebarOpen);
+  document.getElementById('main').classList.toggle('full',!state.sidebarOpen);
+}
+
+function showToast(msg){
+  const t=document.createElement('div');
+  t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;padding:9px 18px;border-radius:20px;font-size:13px;font-weight:700;z-index:9999;box-shadow:0 4px 16px rgba(43,94,255,0.3);';
+  t.textContent=msg;document.body.appendChild(t);
+  setTimeout(()=>t.remove(),2200);
+}
+
+// CHATBOT
+function toggleChat(){
+  state.chatOpen=!state.chatOpen;
+  document.getElementById('chat-panel').classList.toggle('open',state.chatOpen);
+  if(state.chatOpen&&document.getElementById('chat-messages').children.length===0){
+    addBot('שלום! אני עוזר הלמידה שלך 🤖\n\nשאל אותי על כל נושא מהקורס – Vibe Engineering, Multi-Agent, MVP, Security, ועוד!');
+  }
+}
+
+function getChatResponse(q){
+  const ql=q.toLowerCase();
+  for(const[k,v]of Object.entries(CHAT_KB))if(ql.includes(k))return v;
+  if(ql.includes('שיעור')||ql.includes('מודול'))return '3 מודולים: (1) יסודות AI, (2) תכנון פרויקט, (3) קוד ואוטומציה. סה"כ '+LESSONS.length+' שיעורים עם בדיקות ידע.';
+  if(ql.includes('xp'))return 'XP: 50-140 XP לכל שיעור, +20 XP לתשובה נכונה. סה"כ '+LESSONS.reduce((a,l)=>a+l.xp,0)+' XP אפשריים.';
+  return 'שאלה מעניינת! נסה מילות מפתח כמו: Vibe Engineering, Guardrails, MVP, n8n, Multi-Agent, Security. אני כאן לעזור!';
+}
+
+function buildCourseContext(){
+  return LESSONS.map((l,i)=>{
+    const hints=(l.hints||[]).join(', ');
+    return `${i+1}. ${l.title} | ${l.tag} | רמזים: ${hints}`;
+  }).join('\n');
+}
+
+function pickOllamaModel(models){
+  if(OLLAMA_MODEL)return OLLAMA_MODEL;
+  const names=(models||[]).map(m=>m.name||m.model||'').filter(Boolean);
+  for(const preferred of OLLAMA_MODEL_PRIORITY){
+    const found=names.find(n=>n.toLowerCase().startsWith(preferred));
+    if(found)return found;
+  }
+  return names[0]||'llama3.2';
+}
+
+async function getOllamaModel(){
+  const res=await fetch(`${OLLAMA_URL}/api/tags`);
+  if(!res.ok)throw new Error('Ollama tags failed');
+  const data=await res.json();
+  return pickOllamaModel(data.models);
+}
+
+async function callOllama(q){
+  const model=await getOllamaModel();
+  const status=document.getElementById('chat-status');
+  if(status)status.textContent='● Ollama: '+model;
+  const lesCtx=state.currentLesson!==null?'\nשיעור נוכחי: "'+LESSONS[state.currentLesson].title+'"':'';
+  const system=[
+    'אתה עוזר לימוד לקורס "הטמעת AI בארגונים".',
+    'ענה בעברית ברורה, מעשית ותמציתית. אם חסר מידע, אמור מה חסר במקום להמציא.',
+    'השתמש בהקשר הקורס ובשיעור הנוכחי כאשר זה רלוונטי.',
+    'נושאי הקורס כוללים Vibe Engineering, Guardrails, LLMs, Multi-Agent, Human-in-the-Loop, Security by Design, MVP, n8n, AIOps ו-AI Agents.',
+    lesCtx,
+    '\nמבנה הקורס:\n'+buildCourseContext()
+  ].join('\n');
+  const messages=[
+    {role:'system',content:system},
+    ...state.chatHistory.slice(-8),
+    {role:'user',content:q}
+  ];
+  const res=await fetch(`${OLLAMA_URL}/api/chat`,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model,stream:false,messages,options:{temperature:0.35,num_predict:450}})
+  });
+  if(!res.ok)throw new Error('Ollama chat failed');
+  const data=await res.json();
+  return (data.message&&data.message.content||'').trim();
+}
+
+function getConnectionHelp(){
+  if(location.protocol==='file:'){
+    return 'החיבור ל-Ollama נחסם כי האתר פתוח כקובץ file://. פתח את האתר דרך השרת המקומי: http://127.0.0.1:8765/ai_course_platform_with_materials.html ואז הצ׳אט יוכל להתחבר ל-Ollama.';
+  }
+  return 'לא הצלחתי להתחבר ל-Ollama המקומי ב-'+OLLAMA_URL+'. ודא ש-Ollama רץ, למשל: ollama serve, ושיש מודל מותקן כמו llama3.2 או qwen2.5. אם הדפדפן חוסם CORS, הפעל את Ollama עם OLLAMA_ORIGINS=* ואז רענן את האתר.';
+}
+
+function askHint(q){sendChat(q);}
+
+async function sendChat(prefill){
+  const inp=document.getElementById('chat-input');
+  const q=(prefill||inp.value).trim();if(!q)return;
+  if(!prefill)inp.value='';
+  addUser(q);
+  const lid='l'+Date.now();
+  const msgs=document.getElementById('chat-messages');
+  const loader=document.createElement('div');
+  loader.id=lid;loader.className='msg bot';
+  loader.innerHTML='<div class="typing-dots"><span></span><span></span><span></span></div>';
+  msgs.appendChild(loader);msgs.scrollTop=msgs.scrollHeight;
+  try{
+    const answer=await callOllama(q);
+    const el=document.getElementById(lid);if(!el)return;
+    el.textContent=answer||'קיבלתי תשובה ריקה מ-Ollama. נסה שוב או החלף מודל.';
+    state.chatHistory.push({role:'user',content:q},{role:'assistant',content:el.textContent});
+    msgs.scrollTop=msgs.scrollHeight;
+  }catch(err){
+    const el=document.getElementById(lid);if(!el)return;
+    el.textContent=getConnectionHelp();
+    const status=document.getElementById('chat-status');
+    if(status)status.textContent='● לא מחובר';
+    msgs.scrollTop=msgs.scrollHeight;
+  }
+}
+
+function addUser(t){const m=document.createElement('div');m.className='msg user';m.textContent=t;const msgs=document.getElementById('chat-messages');msgs.appendChild(m);msgs.scrollTop=msgs.scrollHeight;}
+function addBot(t){const m=document.createElement('div');m.className='msg bot';m.textContent=t;const msgs=document.getElementById('chat-messages');msgs.appendChild(m);msgs.scrollTop=msgs.scrollHeight;}
+
+load();buildSidebar();buildDashGrid();updateProgress();
+document.getElementById('view-dashboard').classList.add('active');
+</script>
+</body>
+</html>

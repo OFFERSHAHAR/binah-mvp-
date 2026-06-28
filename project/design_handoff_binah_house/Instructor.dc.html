@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Heebo', -apple-system, system-ui, sans-serif; -webkit-font-smoothing: antialiased; color: #2E2E48; }
+  @keyframes floatA { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(26px,-30px) scale(1.06); } }
+  @keyframes floatB { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-28px,22px) scale(1.05); } }
+  @keyframes pulseDot { 0%,100% { transform:scale(1); opacity:1; } 50% { transform:scale(1.5); opacity:.5; } }
+  @keyframes slideIn { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: rgba(130,135,170,0.24); border-radius: 99px; border: 3px solid transparent; background-clip: padding-box; }
+  input::placeholder { color: #A6AABE; }
+</style>
+</helmet>
+
+<div dir="rtl" style="position:relative; min-height:100vh; display:flex; background:linear-gradient(170deg,#F8F7FD 0%,#F2F1FA 50%,#F2F9F6 100%); overflow:hidden;">
+
+  <div style="position:absolute; width:560px; height:560px; right:-160px; top:-180px; border-radius:50%; background:radial-gradient(circle at 40% 40%,rgba(214,199,255,0.5),rgba(214,199,255,0) 70%); filter:blur(40px); animation:floatA 22s ease-in-out infinite; pointer-events:none;"></div>
+  <div style="position:absolute; width:500px; height:500px; left:-150px; bottom:-160px; border-radius:50%; background:radial-gradient(circle at 50% 50%,rgba(182,239,212,0.45),rgba(182,239,212,0) 70%); filter:blur(44px); animation:floatB 26s ease-in-out infinite; pointer-events:none;"></div>
+
+  <aside style="position:sticky; top:0; width:264px; flex-shrink:0; height:100vh; padding:26px 18px; display:flex; flex-direction:column; gap:7px; background:rgba(255,255,255,0.58); border-left:1px solid rgba(255,255,255,0.75); backdrop-filter:blur(30px) saturate(160%); z-index:3;">
+    <div style="display:flex; align-items:center; gap:11px; padding:6px 8px 20px;">
+      <div style="width:40px; height:40px; border-radius:13px; background:linear-gradient(135deg,#9FB4F5,#C3A8EE); display:flex; align-items:center; justify-content:center; box-shadow:0 8px 20px rgba(159,180,245,0.5);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v18M3 12h18"/></svg></div>
+      <div>
+        <div style="font-size:18px; font-weight:800; color:#2E2E48; line-height:1;">בִּינָה</div>
+        <div style="font-size:10.5px; font-weight:600; color:#A6AABE; letter-spacing:.14em; margin-top:3px;">קונסולת מרצה</div>
+      </div>
+    </div>
+
+    <sc-for list="{{ nav }}" as="n" hint-placeholder-count="6">
+      <div onClick="{{ n.onClick }}" style="display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:14px; background:{{ n.bg }}; border:{{ n.border }}; color:{{ n.color }}; font-size:14.5px; font-weight:{{ n.weight }}; cursor:pointer; transition:background .22s ease, color .22s ease, transform .22s cubic-bezier(.34,1.3,.5,1);" style-hover="background:rgba(159,180,245,0.14); color:#5E5AA8; transform:translateX(-4px);">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ n.icon }}"/></svg>
+        <span style="flex:1;">{{ n.label }}</span>
+        <sc-if value="{{ n.badge }}" hint-placeholder-val="">
+          <span style="min-width:20px; height:20px; padding:0 6px; border-radius:10px; background:#FF6B8A; color:#fff; font-size:11px; font-weight:800; display:flex; align-items:center; justify-content:center;">{{ n.badge }}</span>
+        </sc-if>
+      </div>
+    </sc-for>
+
+    <div style="margin-top:auto; display:flex; flex-direction:column; gap:12px;">
+      <div style="padding:15px; border-radius:18px; background:linear-gradient(140deg,#DDE6FF,#EBDFFB); border:1px solid rgba(255,255,255,0.8); box-shadow:0 8px 22px rgba(120,110,190,0.12);">
+        <div style="font-size:12.5px; font-weight:700; color:#6A5FC0; margin-bottom:4px;">⚙️ הרשאות מרצה</div>
+        <div style="font-size:11.5px; color:#6C6C88; line-height:1.5; margin-bottom:12px;">רק לך יש שליטה בהפעלת תרגום, בניית קורסים אישיים ושחרור מבחנים.</div>
+        <div onClick="{{ addStudent }}" style="display:inline-flex; align-items:center; gap:7px; height:34px; padding:0 14px; border-radius:11px; background:linear-gradient(135deg,#9FB4F5,#C3A8EE); color:#fff; font-size:12.5px; font-weight:700; cursor:pointer; transition:transform .22s cubic-bezier(.34,1.4,.5,1), box-shadow .22s ease;" style-hover="transform:translateY(-2px); box-shadow:0 10px 22px rgba(150,140,220,0.4);">+ הוסף תלמיד</div>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:10px; padding:8px 6px;">
+        <div style="width:36px; height:36px; border-radius:12px; background:linear-gradient(135deg,#9FB4F5,#C3A8EE); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:15px;">{{ instructorInitial }}</div>
+        <div style="flex:1;"><div style="font-size:13.5px; font-weight:700; color:#2E2E48;">{{ instructorName }}</div><div style="font-size:11px; color:#A6AABE;">מרצה · מנהל</div></div>
+        <a href="Dashboard.dc.html" style="text-decoration:none; display:flex; align-items:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A6AABE" stroke-width="2"><path d="M16 17l5-5-5-5M21 12H9M13 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7"/></svg></a>
+      </div>
+    </div>
+  </aside>
+
+  <main style="position:relative; flex:1; height:100vh; overflow-y:auto; padding:30px 36px 60px; z-index:1;">
+
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:26px;">
+      <div>
+        <div style="font-size:26px; font-weight:800; color:#2E2E48; letter-spacing:-.01em;">ניהול תלמידים</div>
+        <div style="font-size:14.5px; color:#7A7A92; margin-top:4px;">{{ totalStudents }} תלמידים פעילים · {{ needAttention }} זקוקים לתשומת לב</div>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="display:flex; align-items:center; gap:9px; height:46px; padding:0 16px; border-radius:15px; background:rgba(255,255,255,0.65); border:1px solid rgba(255,255,255,0.85); backdrop-filter:blur(20px);">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#A6AABE" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input style="border:none; background:transparent; outline:none; font-size:14px; font-family:inherit; width:160px; text-align:right; color:#2E2E48;" placeholder="חיפוש תלמיד…"/>
+        </div>
+
+        <div style="position:relative;">
+          <div onClick="{{ toggleNotif }}" style="width:46px; height:46px; border-radius:15px; background:rgba(255,255,255,0.65); border:1px solid rgba(255,255,255,0.85); backdrop-filter:blur(20px); display:flex; align-items:center; justify-content:center; cursor:pointer; position:relative; transition:transform .22s cubic-bezier(.34,1.4,.5,1);" style-hover="transform:translateY(-2px);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5E5AA8" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+            <sc-if value="{{ notifCount }}" hint-placeholder-val="">
+              <span style="position:absolute; top:8px; right:9px; min-width:17px; height:17px; padding:0 4px; border-radius:9px; background:#FF6B8A; color:#fff; font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center; border:2px solid #fff;">{{ notifCount }}</span>
+            </sc-if>
+          </div>
+
+          <sc-if value="{{ notifOpen }}" hint-placeholder-val="">
+            <div style="position:absolute; top:54px; left:0; width:340px; border-radius:20px; background:rgba(255,255,255,0.92); border:1px solid rgba(255,255,255,0.9); backdrop-filter:blur(40px) saturate(180%); box-shadow:0 24px 60px rgba(80,70,140,0.2); z-index:20; overflow:hidden; animation:slideIn .22s ease;">
+              <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 18px 10px;">
+                <div style="font-size:15px; font-weight:800; color:#2E2E48;">התראות</div>
+                <div style="font-size:12px; font-weight:600; color:#8A7FD8; cursor:pointer;">סמן הכל כנקרא</div>
+              </div>
+              <sc-for list="{{ notifications }}" as="nt" hint-placeholder-count="4">
+                <div style="display:flex; gap:11px; padding:12px 18px; border-top:1px solid rgba(130,135,170,0.1); transition:background .2s;" style-hover="background:rgba(159,180,245,0.08);">
+                  <div style="width:34px; height:34px; border-radius:11px; background:{{ nt.bg }}; display:flex; align-items:center; justify-content:center; flex-shrink:0;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="{{ nt.color }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ nt.icon }}"/></svg></div>
+                  <div style="flex:1;"><div style="font-size:13px; font-weight:700; color:#2E2E48; line-height:1.4;">{{ nt.title }}</div><div style="font-size:11.5px; color:#A6AABE; margin-top:2px;">{{ nt.time }}</div></div>
+                  <sc-if value="{{ nt.unread }}" hint-placeholder-val=""><span style="width:8px; height:8px; border-radius:50%; background:#FF6B8A; margin-top:5px;"></span></sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+
+        <div onClick="{{ addStudent }}" style="display:inline-flex; align-items:center; gap:8px; height:46px; padding:0 20px; border-radius:15px; background:linear-gradient(135deg,#9FB4F5,#C3A8EE); color:#fff; font-size:14px; font-weight:700; cursor:pointer; box-shadow:0 8px 20px rgba(150,140,220,0.32); transition:transform .24s cubic-bezier(.34,1.4,.5,1), box-shadow .24s ease;" style-hover="transform:translateY(-3px) scale(1.03); box-shadow:0 16px 32px rgba(150,140,220,0.45);">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg> תלמיד חדש
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:26px;">
+      <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+        <div style="padding:20px; border-radius:22px; background:rgba(255,255,255,0.66); border:1px solid rgba(255,255,255,0.85); backdrop-filter:blur(30px); box-shadow:0 10px 26px rgba(80,70,140,0.06); transition:transform .3s cubic-bezier(.34,1.35,.5,1), box-shadow .3s ease;" style-hover="transform:translateY(-5px); box-shadow:0 20px 40px rgba(80,70,140,0.14);">
+          <div style="display:flex; align-items:center; gap:9px; margin-bottom:12px;"><div style="width:34px; height:34px; border-radius:11px; background:{{ k.iconBg }}; display:flex; align-items:center; justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{ k.iconColor }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ k.icon }}"/></svg></div><span style="font-size:13px; color:#7A7A92; font-weight:600;">{{ k.label }}</span></div>
+          <div style="font-size:30px; font-weight:800; color:#2E2E48;">{{ k.value }}</div>
+          <div style="font-size:12.5px; color:{{ k.deltaColor }}; font-weight:600; margin-top:10px;">{{ k.delta }}</div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 348px; gap:18px; align-items:start;">
+
+      <div style="border-radius:24px; background:rgba(255,255,255,0.7); border:1px solid rgba(255,255,255,0.85); backdrop-filter:blur(30px); box-shadow:0 12px 30px rgba(80,70,140,0.06); overflow:hidden;">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:18px 22px 14px;">
+          <div style="font-size:17px; font-weight:800; color:#2E2E48;">רשימת תלמידים</div>
+          <div style="display:flex; gap:6px;">
+            <div style="padding:7px 14px; border-radius:11px; background:rgba(159,180,245,0.16); color:#5E5AA8; font-size:12.5px; font-weight:700; cursor:pointer;">הכל</div>
+            <div style="padding:7px 14px; border-radius:11px; color:#7A7A92; font-size:12.5px; font-weight:600; cursor:pointer; transition:background .2s;" style-hover="background:rgba(130,135,170,0.1);">פעילים</div>
+            <div style="padding:7px 14px; border-radius:11px; color:#7A7A92; font-size:12.5px; font-weight:600; cursor:pointer; transition:background .2s;" style-hover="background:rgba(130,135,170,0.1);">לחידוש</div>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1.7fr 1.3fr 1fr 0.8fr 0.5fr; gap:12px; padding:8px 22px; font-size:11.5px; font-weight:700; color:#A6AABE; border-bottom:1px solid rgba(130,135,170,0.12);">
+          <div>תלמיד</div><div>קורס / התקדמות</div><div>תשלום</div><div style="text-align:center;">תרגום</div><div></div>
+        </div>
+
+        <sc-for list="{{ students }}" as="s" hint-placeholder-count="6">
+          <div onClick="{{ s.select }}" style="display:grid; grid-template-columns:1.7fr 1.3fr 1fr 0.8fr 0.5fr; gap:12px; align-items:center; padding:14px 22px; border-bottom:1px solid rgba(130,135,170,0.1); cursor:pointer; background:{{ s.rowBg }}; transition:background .2s ease;" style-hover="background:rgba(159,180,245,0.09);">
+            <div style="display:flex; align-items:center; gap:11px;">
+              <div style="width:38px; height:38px; border-radius:12px; background:{{ s.avatarGrad }}; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:14px; flex-shrink:0;">{{ s.initial }}</div>
+              <div><div style="font-size:14px; font-weight:700; color:#2E2E48;">{{ s.name }}</div><div style="font-size:11.5px; color:#A6AABE;">{{ s.email }}</div></div>
+            </div>
+            <div>
+              <div style="display:flex; align-items:center; justify-content:space-between; font-size:11.5px; color:#7A7A92; margin-bottom:5px;"><span>{{ s.course }}</span><span style="font-weight:700; color:#2E2E48;">{{ s.progress }}%</span></div>
+              <div style="height:6px; border-radius:4px; background:rgba(130,135,170,0.14); overflow:hidden;"><div style="height:100%; border-radius:4px; background:{{ s.barGrad }}; width:{{ s.barW }};"></div></div>
+            </div>
+            <div><span style="display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:{{ s.payColor }}; background:{{ s.payBg }}; padding:5px 11px; border-radius:99px;"><span style="width:7px; height:7px; border-radius:50%; background:{{ s.payColor }};"></span>{{ s.payLabel }}</span></div>
+            <div style="display:flex; justify-content:center;">
+              <div onClick="{{ s.toggle }}" style="width:44px; height:26px; border-radius:13px; background:{{ s.transBg }}; position:relative; cursor:pointer; transition:background .25s ease;">
+                <div style="position:absolute; width:20px; height:20px; border-radius:50%; background:#fff; top:3px; {{ s.knobSide }}:3px; box-shadow:0 1px 4px rgba(0,0,0,0.2); transition:all .25s cubic-bezier(.34,1.4,.5,1);"></div>
+              </div>
+            </div>
+            <div style="display:flex; justify-content:flex-end;">
+              <div style="width:30px; height:30px; border-radius:10px; background:rgba(130,135,170,0.1); display:flex; align-items:center; justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7A7A92" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:18px;">
+
+        <div style="position:relative; overflow:hidden; border-radius:24px; background:rgba(255,255,255,0.7); border:1px solid rgba(255,255,255,0.85); backdrop-filter:blur(30px); box-shadow:0 12px 30px rgba(80,70,140,0.07);">
+          <div style="height:80px; background:{{ sel.avatarGrad }}; position:relative;"><div style="position:absolute; inset:0; background:radial-gradient(circle at 70% 30%,rgba(255,255,255,0.4),transparent 60%);"></div></div>
+          <div style="padding:0 20px 20px; margin-top:-32px; position:relative;">
+            <div style="width:64px; height:64px; border-radius:20px; background:{{ sel.avatarGrad }}; border:3px solid #fff; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:22px; box-shadow:0 8px 20px rgba(120,110,190,0.25);">{{ sel.initial }}</div>
+            <div style="font-size:18px; font-weight:800; color:#2E2E48; margin-top:11px;">{{ sel.name }}</div>
+            <div style="font-size:12.5px; color:#A6AABE;">{{ sel.email }}</div>
+
+            <div style="display:flex; gap:9px; margin:15px 0;">
+              <div style="flex:1; padding:11px; border-radius:14px; background:rgba(159,180,245,0.12); text-align:center;"><div style="font-size:19px; font-weight:800; color:#5E5AA8;">{{ sel.progress }}%</div><div style="font-size:10.5px; color:#7A7A92; margin-top:2px;">התקדמות</div></div>
+              <div style="flex:1; padding:11px; border-radius:14px; background:rgba(111,214,168,0.14); text-align:center;"><div style="font-size:19px; font-weight:800; color:#2E9E72;">{{ sel.avg }}%</div><div style="font-size:10.5px; color:#7A7A92; margin-top:2px;">ממוצע</div></div>
+              <div style="flex:1; padding:11px; border-radius:14px; background:rgba(255,191,140,0.18); text-align:center;"><div style="font-size:19px; font-weight:800; color:#E5821A;">{{ sel.lessons }}</div><div style="font-size:10.5px; color:#7A7A92; margin-top:2px;">שיעורים</div></div>
+            </div>
+
+            <div onClick="{{ sel.toggleTrans }}" style="display:flex; align-items:center; justify-content:space-between; padding:11px 14px; border-radius:14px; background:rgba(195,168,238,0.12); margin-bottom:10px; cursor:pointer;">
+              <div style="display:flex; align-items:center; gap:9px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A88AE0" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 2.5 15 0 18M12 3c-2.5 2.5-2.5 15 0 18"/></svg>
+                <div><div style="font-size:13px; font-weight:700; color:#2E2E48;">תרגום לכל שפה</div><div style="font-size:11px; color:#A6AABE;">{{ sel.transSub }}</div></div>
+              </div>
+              <div style="width:44px; height:26px; border-radius:13px; background:{{ sel.transBg }}; position:relative; transition:background .25s ease;"><div style="position:absolute; width:20px; height:20px; border-radius:50%; background:#fff; top:3px; {{ sel.knobSide }}:3px; box-shadow:0 1px 4px rgba(0,0,0,0.2); transition:all .25s;"></div></div>
+            </div>
+
+            <div style="padding:13px 14px; border-radius:14px; background:rgba(159,180,245,0.1); margin-bottom:10px;">
+              <div style="display:flex; align-items:center; gap:9px; margin-bottom:11px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E5AA8" stroke-width="2"><path d="M3 11l9-8 9 8M5 10v10h14V10M9 20v-6h6v6"/></svg>
+                <div style="flex:1;"><div style="font-size:13px; font-weight:700; color:#2E2E48;">מצב התקדמות בקורס</div><div style="font-size:11px; color:#A6AABE;">{{ sel.unlockSub }}</div></div>
+              </div>
+              <div style="display:flex; gap:7px;">
+                <div onClick="{{ sel.setFree }}" style="flex:1; display:flex; align-items:center; justify-content:center; gap:6px; padding:10px 0; border-radius:11px; background:{{ sel.freeBg }}; color:{{ sel.freeColor }}; font-size:12.5px; font-weight:700; cursor:pointer; transition:all .2s ease;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 7.5-2"/></svg> פתוח
+                </div>
+                <div onClick="{{ sel.setGated }}" style="flex:1; display:flex; align-items:center; justify-content:center; gap:6px; padding:10px 0; border-radius:11px; background:{{ sel.gatedBg }}; color:{{ sel.gatedColor }}; font-size:12.5px; font-weight:700; cursor:pointer; transition:all .2s ease;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg> מדורג
+                </div>
+              </div>
+              <sc-if value="{{ sel.gated }}" hint-placeholder-val="">
+                <div style="margin-top:11px; padding-top:11px; border-top:1px solid rgba(130,135,170,0.14);">
+                  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:9px;">
+                    <span style="font-size:12px; color:#6C6C88;">ציון מינימלי לפתיחת הפרק הבא</span>
+                    <span style="font-size:15px; font-weight:800; color:#5E5AA8;">{{ sel.threshold }}%</span>
+                  </div>
+                  <div style="display:flex; gap:6px;">
+                    <sc-for list="{{ sel.thresholdOptions }}" as="t" hint-placeholder-count="5">
+                      <div onClick="{{ t.set }}" style="flex:1; text-align:center; padding:8px 0; border-radius:10px; background:{{ t.bg }}; color:{{ t.color }}; font-size:12px; font-weight:700; cursor:pointer; transition:all .18s ease;">{{ t.value }}</div>
+                    </sc-for>
+                  </div>
+                  <div style="font-size:11px; color:#A6AABE; margin-top:9px; line-height:1.45;">החניך חייב לסיים כל פרק בציון {{ sel.threshold }}% ומעלה כדי שייפתח הפרק הבא.</div>
+                </div>
+              </sc-if>
+            </div>
+
+            <div style="padding:13px 14px; border-radius:14px; background:rgba(255,191,140,0.12); margin-bottom:10px;">
+              <div style="display:flex; align-items:center; gap:9px; margin-bottom:11px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E5821A" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M12 14v3l2 1"/></svg>
+                <div style="flex:1;"><div style="font-size:13px; font-weight:700; color:#2E2E48;">מועד הגשה / סיום קורס</div><div style="font-size:11px; color:#A6AABE;">{{ sel.deadlineSub }}</div></div>
+                <div onClick="{{ sel.toggleNoDeadline }}" style="display:inline-flex; align-items:center; gap:6px; height:26px; padding:0 10px; border-radius:13px; background:{{ sel.noDlBg }}; cursor:pointer;"><span style="font-size:11px; font-weight:700; color:{{ sel.noDlColor }};">ללא הגשה</span></div>
+              </div>
+              <sc-if value="{{ sel.hasDeadline }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex; align-items:center; gap:9px;">
+                  <div style="flex:1; display:flex; align-items:center; gap:8px; height:42px; padding:0 13px; border-radius:12px; background:rgba(255,255,255,0.7); border:1px solid rgba(130,135,170,0.16);">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E5821A" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                    <span style="font-size:13.5px; font-weight:700; color:#2E2E48;">{{ sel.deadlineDate }}</span>
+                    <sc-if value="{{ sel.extended }}" hint-placeholder-val=""><span style="font-size:10.5px; font-weight:700; color:#2E9E72; background:rgba(111,214,168,0.18); padding:2px 8px; border-radius:99px;">{{ sel.extendedLabel }}</span></sc-if>
+                  </div>
+                  <div onClick="{{ sel.extend }}" style="display:inline-flex; align-items:center; gap:6px; height:42px; padding:0 14px; border-radius:12px; background:linear-gradient(135deg,#FFD08A,#FFB0A0); color:#fff; font-size:12.5px; font-weight:700; cursor:pointer; box-shadow:0 6px 14px rgba(255,180,150,0.35); transition:transform .2s cubic-bezier(.34,1.4,.5,1);" style-hover="transform:translateY(-2px);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg> הארכה</div>
+                </div>
+              </sc-if>
+              <sc-if value="{{ sel.noDeadline }}" hint-placeholder-val="">
+                <div style="display:flex; align-items:center; gap:8px; padding:10px 13px; border-radius:12px; background:rgba(255,255,255,0.6); font-size:12px; color:#7A7A92;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2E9E72" stroke-width="2"><path d="M5 12h14"/></svg> קורס פתוח ללא מועד אחרון — התלמיד לומד בקצב שלו.</div>
+              </sc-if>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:9px;">
+              <div onClick="{{ sel.buildCourse }}" style="display:flex; align-items:center; gap:10px; padding:13px 15px; border-radius:14px; background:linear-gradient(135deg,#9FB4F5,#C3A8EE); color:#fff; font-size:13.5px; font-weight:700; cursor:pointer; box-shadow:0 8px 18px rgba(150,140,220,0.3); transition:transform .22s cubic-bezier(.34,1.4,.5,1), box-shadow .22s ease;" style-hover="transform:translateY(-2px); box-shadow:0 14px 28px rgba(150,140,220,0.42);">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 2 2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> בנה קורס מותאם אישית
+              </div>
+              <div style="display:flex; gap:9px;">
+                <div onClick="{{ sel.assignExam }}" style="flex:1; display:flex; align-items:center; justify-content:center; gap:7px; padding:11px; border-radius:14px; background:rgba(255,191,140,0.18); color:#E5821A; font-size:12.5px; font-weight:700; cursor:pointer; transition:background .2s;" style-hover="background:rgba(255,191,140,0.3);">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#E5821A" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/></svg> מבחן מתוזמן
+                </div>
+                <div onClick="{{ sel.message }}" style="flex:1; display:flex; align-items:center; justify-content:center; gap:7px; padding:11px; border-radius:14px; background:rgba(111,214,168,0.16); color:#2E9E72; font-size:12.5px; font-weight:700; cursor:pointer; transition:background .2s;" style-hover="background:rgba(111,214,168,0.28);">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2E9E72" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> הודעה
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="border-radius:24px; background:rgba(255,255,255,0.7); border:1px solid rgba(255,255,255,0.85); backdrop-filter:blur(30px); box-shadow:0 12px 30px rgba(80,70,140,0.06); overflow:hidden; display:flex; flex-direction:column;">
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 18px 12px;">
+            <div style="display:flex; align-items:center; gap:9px;"><div style="width:32px; height:32px; border-radius:10px; background:rgba(111,214,168,0.18); display:flex; align-items:center; justify-content:center;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2E9E72" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><div style="font-size:15px; font-weight:800; color:#2E2E48;">צ׳אט עם תלמידים</div></div>
+            <div style="display:inline-flex; align-items:center; gap:6px; height:26px; padding:0 11px; border-radius:13px; background:{{ officeBg }};"><span style="width:7px; height:7px; border-radius:50%; background:{{ officeColor }}; animation:pulseDot 2s infinite;"></span><span style="font-size:11px; font-weight:700; color:{{ officeColor }};">{{ officeStatus }}</span></div>
+          </div>
+
+          <div style="padding:0 18px 10px;">
+            <div style="display:flex; align-items:center; gap:8px; padding:9px 12px; border-radius:12px; background:rgba(159,180,245,0.1); font-size:11.5px; color:#6C6C88;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8A7FD8" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+              שעות קבלה: {{ officeHours }}
+              <span onClick="{{ editHours }}" style="margin-right:auto; font-weight:700; color:#8A7FD8; cursor:pointer;">ערוך</span>
+            </div>
+          </div>
+
+          <div style="padding:6px 18px 12px; display:flex; flex-direction:column; gap:10px; max-height:188px; overflow-y:auto;">
+            <sc-for list="{{ messages }}" as="m" hint-placeholder-count="3">
+              <div style="display:flex; {{ m.justify }}; gap:8px;">
+                <div style="max-width:78%; padding:9px 13px; border-radius:{{ m.radius }}; background:{{ m.bg }}; color:{{ m.color }}; font-size:13px; line-height:1.45;">{{ m.text }}<div style="font-size:10px; opacity:.6; margin-top:3px;">{{ m.time }}</div></div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="padding:12px 16px; border-top:1px solid rgba(130,135,170,0.12); display:flex; align-items:center; gap:9px;">
+            <input style="flex:1; border:none; background:rgba(130,135,170,0.08); border-radius:12px; height:40px; padding:0 14px; outline:none; font-size:13.5px; font-family:inherit; text-align:right; color:#2E2E48;" placeholder="{{ chatPlaceholder }}"/>
+            <div onClick="{{ sendMsg }}" style="width:40px; height:40px; border-radius:12px; background:linear-gradient(135deg,#9FB4F5,#C3A8EE); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:transform .2s cubic-bezier(.34,1.4,.5,1);" style-hover="transform:scale(1.08);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <sc-if value="{{ examModalOpen }}" hint-placeholder-val="">
+    <div onClick="{{ closeExam }}" style="position:fixed; inset:0; background:rgba(46,46,72,0.32); backdrop-filter:blur(6px); z-index:40; display:flex; align-items:center; justify-content:center; animation:slideIn .2s ease;">
+      <div style="width:440px; border-radius:26px; background:rgba(255,255,255,0.96); border:1px solid rgba(255,255,255,0.9); box-shadow:0 30px 70px rgba(80,70,140,0.3); padding:28px; cursor:default;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:6px;">
+          <div style="width:46px; height:46px; border-radius:14px; background:linear-gradient(135deg,#FFD08A,#FFB0A0); display:flex; align-items:center; justify-content:center; box-shadow:0 8px 18px rgba(255,180,150,0.4);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/></svg></div>
+          <div><div style="font-size:19px; font-weight:800; color:#2E2E48;">מבחן בזמן קצוב</div><div style="font-size:12.5px; color:#A6AABE;">שיוך ל{{ sel.name }}</div></div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:14px; margin-top:18px;">
+          <div>
+            <div style="font-size:13px; font-weight:700; color:#4A4A66; margin-bottom:7px;">מבחן</div>
+            <div style="display:flex; align-items:center; gap:10px; height:48px; padding:0 14px; border-radius:14px; background:rgba(130,135,170,0.08); font-size:14px; color:#2E2E48;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8A7FD8" stroke-width="2"><path d="M9 11l3 3 8-8M21 12v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h11"/></svg> מודול 4 · ממשל ואחריות</div>
+          </div>
+          <div style="display:flex; gap:12px;">
+            <div style="flex:1;">
+              <div style="font-size:13px; font-weight:700; color:#4A4A66; margin-bottom:7px;">מגבלת זמן</div>
+              <div style="display:flex; gap:7px;">
+                <div style="flex:1; text-align:center; padding:11px 0; border-radius:12px; background:rgba(130,135,170,0.1); color:#7A7A92; font-size:13.5px; font-weight:700; cursor:pointer;">15</div>
+                <div style="flex:1; text-align:center; padding:11px 0; border-radius:12px; background:linear-gradient(135deg,#9FB4F5,#C3A8EE); color:#fff; font-size:13.5px; font-weight:700; cursor:pointer;">30</div>
+                <div style="flex:1; text-align:center; padding:11px 0; border-radius:12px; background:rgba(130,135,170,0.1); color:#7A7A92; font-size:13.5px; font-weight:700; cursor:pointer;">45</div>
+              </div>
+              <div style="font-size:11px; color:#A6AABE; margin-top:6px; text-align:center;">דקות</div>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:13px; font-weight:700; color:#4A4A66; margin-bottom:7px;">מועד אחרון</div>
+              <div style="display:flex; align-items:center; gap:8px; height:42px; padding:0 13px; border-radius:12px; background:rgba(130,135,170,0.08); font-size:13.5px; color:#2E2E48;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8A7FD8" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> 30 ביוני</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-radius:14px; background:rgba(159,180,245,0.1);">
+            <div style="font-size:13px; color:#4A4A66;">נעילה אוטומטית בתום הזמן</div>
+            <div style="width:44px; height:26px; border-radius:13px; background:linear-gradient(135deg,#9FB4F5,#C3A8EE); position:relative;"><div style="position:absolute; width:20px; height:20px; border-radius:50%; background:#fff; top:3px; left:3px; box-shadow:0 1px 4px rgba(0,0,0,0.2);"></div></div>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:11px; margin-top:22px;">
+          <div onClick="{{ closeExam }}" style="flex:1; text-align:center; padding:13px; border-radius:14px; background:rgba(130,135,170,0.1); color:#7A7A92; font-size:14px; font-weight:700; cursor:pointer;">ביטול</div>
+          <div onClick="{{ closeExam }}" style="flex:2; text-align:center; padding:13px; border-radius:14px; background:linear-gradient(135deg,#9FB4F5,#C3A8EE); color:#fff; font-size:14px; font-weight:700; cursor:pointer; box-shadow:0 8px 20px rgba(150,140,220,0.35); transition:transform .2s;" style-hover="transform:translateY(-2px);">שלח מבחן לתלמיד</div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ shviOpen }}" hint-placeholder-val="">
+    <div style="position:fixed; bottom:96px; left:28px; width:392px; max-height:560px; border-radius:26px; background:rgba(255,255,255,0.94); border:1px solid rgba(255,255,255,0.9); backdrop-filter:blur(40px) saturate(180%); box-shadow:0 30px 70px rgba(80,70,140,0.26); z-index:45; display:flex; flex-direction:column; overflow:hidden; animation:slideIn .24s ease;">
+      <div style="display:flex; align-items:center; gap:11px; padding:16px 18px; background:linear-gradient(135deg,#9FB4F5,#C3A8EE);">
+        <div style="position:relative; width:40px; height:40px; border-radius:13px; background:rgba(255,255,255,0.22); border:1px solid rgba(255,255,255,0.4); display:flex; align-items:center; justify-content:center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.2 5.6L20 9l-5.8 1.4L12 16l-2.2-5.6L4 9l5.8-1.4z"/></svg><span style="position:absolute; bottom:-2px; left:-2px; width:12px; height:12px; border-radius:50%; background:#5BFFB0; border:2px solid #fff;"></span></div>
+        <div style="flex:1; color:#fff;"><div style="font-size:16px; font-weight:800;">שבי</div><div style="font-size:11.5px; opacity:.88;">העוזר החכם שלך · מחובר למאגר</div></div>
+        <div onClick="{{ toggleShvi }}" style="width:30px; height:30px; border-radius:10px; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4"><path d="M18 6 6 18M6 6l12 12"/></svg></div>
+      </div>
+
+      <div style="flex:1; overflow-y:auto; padding:16px 16px 10px; display:flex; flex-direction:column; gap:11px;">
+        <sc-for list="{{ shviMessages }}" as="m" hint-placeholder-count="2">
+          <div style="display:flex; {{ m.justify }};">
+            <div style="max-width:84%; padding:11px 14px; border-radius:{{ m.radius }}; background:{{ m.bg }}; color:{{ m.color }}; font-size:13.5px; line-height:1.55;">{{ m.text }}</div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="padding:4px 14px 10px; display:flex; gap:7px; flex-wrap:wrap;">
+        <sc-for list="{{ shviChips }}" as="c" hint-placeholder-count="3">
+          <div onClick="{{ c.ask }}" style="padding:7px 12px; border-radius:99px; background:rgba(159,180,245,0.14); border:1px solid rgba(159,180,245,0.28); color:#5E5AA8; font-size:11.5px; font-weight:700; cursor:pointer; transition:background .18s ease;" style-hover="background:rgba(159,180,245,0.26);">{{ c.label }}</div>
+        </sc-for>
+      </div>
+
+      <div style="padding:12px 14px; border-top:1px solid rgba(130,135,170,0.12); display:flex; align-items:center; gap:9px;">
+        <input id="shvi-input" style="flex:1; border:none; background:rgba(130,135,170,0.08); border-radius:13px; height:42px; padding:0 14px; outline:none; font-size:13.5px; font-family:inherit; text-align:right; color:#2E2E48;" placeholder="שאל את שבי על תלמיד או שיעור…"/>
+        <div onClick="{{ sendShvi }}" style="width:42px; height:42px; border-radius:13px; background:linear-gradient(135deg,#9FB4F5,#C3A8EE); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:transform .2s cubic-bezier(.34,1.4,.5,1);" style-hover="transform:scale(1.08);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></div>
+      </div>
+    </div>
+  </sc-if>
+
+  <div onClick="{{ toggleShvi }}" style="position:fixed; bottom:28px; left:28px; height:54px; padding:0 20px 0 16px; border-radius:27px; background:linear-gradient(135deg,#9FB4F5,#C3A8EE); display:flex; align-items:center; gap:11px; cursor:pointer; z-index:44; box-shadow:0 14px 34px rgba(150,140,220,0.45); transition:transform .24s cubic-bezier(.34,1.4,.5,1), box-shadow .24s ease;" style-hover="transform:translateY(-3px) scale(1.03); box-shadow:0 20px 44px rgba(150,140,220,0.55);">
+    <div style="position:relative; width:34px; height:34px; border-radius:11px; background:rgba(255,255,255,0.22); border:1px solid rgba(255,255,255,0.4); display:flex; align-items:center; justify-content:center;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.2 5.6L20 9l-5.8 1.4L12 16l-2.2-5.6L4 9l5.8-1.4z"/></svg></div>
+    <div style="color:#fff;"><div style="font-size:14.5px; font-weight:800; line-height:1;">שבי</div><div style="font-size:10.5px; opacity:.85; margin-top:2px;">עוזר חכם</div></div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;instructorName&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;שבי&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  state = { selectedId: 0, notifOpen: false, examModalOpen: false, trans: {}, unlock: {}, threshold: {}, noDl: {}, extend: {}, shviOpen: false, shviLog: [] };
+
+  _data() {
+    return [
+      { name: 'דנה לוי', course: 'סוכני AI בארגון', progress: 50, avg: 88, pay: 'active' },
+      { name: 'אורי בר', course: 'שילוב מערכות', progress: 72, avg: 91, pay: 'active' },
+      { name: 'מאיה רון', course: 'סוכני AI בארגון', progress: 28, avg: 76, pay: 'renew' },
+      { name: 'יוסי כהן', course: 'שילוב מערכות', progress: 95, avg: 94, pay: 'active' },
+      { name: 'נועה שמש', course: 'סוכני AI בארגון', progress: 12, avg: 68, pay: 'cancel' },
+      { name: 'גיא אלון', course: 'שילוב מערכות', progress: 60, avg: 85, pay: 'active' },
+    ];
+  }
+
+  _answer(q) {
+    const d = this._data();
+    const t = q.trim();
+    if (/פיגור|מאחר|נמוך|תקוע|בפיגור/.test(t)) {
+      const lag = d.filter(s => s.progress < 30).map(s => s.name + ' (' + s.progress + '%)');
+      return lag.length + ' תלמידים בפיגור מתחת ל-30%: ' + lag.join(' · ') + '. ממליץ לפנות לנועה שמש קודם — גם המנוי שלה בוטל.';
+    }
+    if (/תשלום|שילם|מנוי|חידוש|כסף|גבייה/.test(t)) {
+      const unpaid = d.filter(s => s.pay !== 'active').map(s => s.name + ' (' + (s.pay === 'renew' ? 'לחידוש' : 'בוטל') + ')');
+      return unpaid.length + ' תלמידים לא פעילים תשלומית: ' + unpaid.join(' · ') + '. לחץ על תלמיד בטבלה כדי לשלוח תזכורת.';
+    }
+    if (/ממוצע|התקדמות|כיתה|כללי|סטטוס/.test(t)) {
+      const avgP = Math.round(d.reduce((a, s) => a + s.progress, 0) / d.length);
+      const avgS = Math.round(d.reduce((a, s) => a + s.avg, 0) / d.length);
+      return 'התקדמות ממוצעת בכיתה: ' + avgP + '% · ציון מבחנים ממוצע: ' + avgS + '%. המוביל: יוסי כהן (95%).';
+    }
+    if (/מבחן|ציון|בחן|נבדק|הגיש/.test(t)) {
+      return '3 מבחנים ממתינים לבדיקה, 2 הוגשו היום. אורי בר סיים מודול 3 ב-91% — מעל הסף, הפרק הבא נפתח לו אוטומטית.';
+    }
+    const hit = d.find(s => t.includes(s.name.split(' ')[0]) || t.includes(s.name));
+    if (hit) {
+      return hit.name + ': קורס «' + hit.course + '» · התקדמות ' + hit.progress + '% · ממוצע מבחנים ' + hit.avg + '% · תשלום ' + (hit.pay === 'active' ? 'פעיל' : hit.pay === 'renew' ? 'לחידוש' : 'בוטל') + '.';
+    }
+    return 'אני שבי — אפשר לשאול אותי על כל תלמיד (למשל «מה מצב של מאיה?»), מי בפיגור, מי לא שילם, או סטטוס מבחנים. על מה תרצה לדעת?';
+  }
+
+  _ask(q) {
+    if (!q || !q.trim()) return;
+    this.setState(s => ({ shviLog: [...s.shviLog, { role: 'user', text: q }, { role: 'bot', text: this._answer(q) }] }));
+  }
+
+  _sendShvi() {
+    const el = document.getElementById('shvi-input');
+    if (el && el.value.trim()) { this._ask(el.value); el.value = ''; }
+  }
+
+  renderVals() {
+    const instructorName = this.props.instructorName ?? 'שבי';
+
+    const greeting = { role: 'bot', text: 'היי שבי 👋 אני העוזר החכם שלך — מחובר למאגר התלמידים והשיעורים. שאל אותי כל דבר ואחזיר לך מידע מיד.' };
+    const rawLog = this.state.shviLog.length ? [greeting, ...this.state.shviLog] : [greeting];
+    const shviMessages = rawLog.map(m => m.role === 'user'
+      ? { text: m.text, justify: 'justify-content:flex-end', radius: '16px 4px 16px 16px', bg: 'linear-gradient(135deg,#9FB4F5,#C3A8EE)', color: '#fff' }
+      : { text: m.text, justify: 'justify-content:flex-start', radius: '4px 16px 16px 16px', bg: 'rgba(130,135,170,0.1)', color: '#2E2E48' });
+    const shviChips = [
+      { label: 'מי בפיגור?', ask: () => this._ask('מי בפיגור?') },
+      { label: 'מי לא שילם?', ask: () => this._ask('מי לא שילם?') },
+      { label: 'ממוצע כיתה', ask: () => this._ask('מה ההתקדמות הממוצעת?') },
+      { label: 'מבחנים לבדיקה', ask: () => this._ask('מבחנים לבדיקה') },
+    ];
+
+    const grads = [
+      'linear-gradient(135deg,#9FB4F5,#C3A8EE)',
+      'linear-gradient(135deg,#FFC8A8,#FFAFC8)',
+      'linear-gradient(135deg,#7FD3C0,#9AD9F0)',
+      'linear-gradient(135deg,#F5B8C8,#E0A8E8)',
+      'linear-gradient(135deg,#FFD08A,#FFB0A0)',
+      'linear-gradient(135deg,#A7BCF5,#9AD9F0)',
+    ];
+    const pay = {
+      active: { label: 'פעיל', color: '#2E9E72', bg: 'rgba(111,214,168,0.18)' },
+      renew:  { label: 'לחידוש', color: '#E5821A', bg: 'rgba(255,191,140,0.22)' },
+      cancel: { label: 'בוטל', color: '#E5483C', bg: 'rgba(255,107,107,0.16)' },
+    };
+
+    const raw = [
+      { name: 'דנה לוי', email: 'dana@studio.ai', course: 'סוכני AI בארגון', progress: 50, avg: 88, lessons: 3, pay: 'active', trans: true },
+      { name: 'אורי בר', email: 'uri.bar@mail.com', course: 'שילוב מערכות', progress: 72, avg: 91, lessons: 4, pay: 'active', trans: false },
+      { name: 'מאיה רון', email: 'maya.r@mail.com', course: 'סוכני AI בארגון', progress: 28, avg: 76, lessons: 2, pay: 'renew', trans: true },
+      { name: 'יוסי כהן', email: 'yossi@team.io', course: 'שילוב מערכות', progress: 95, avg: 94, lessons: 5, pay: 'active', trans: false },
+      { name: 'נועה שמש', email: 'noa.s@mail.com', course: 'סוכני AI בארגון', progress: 12, avg: 68, lessons: 1, pay: 'cancel', trans: false },
+      { name: 'גיא אלון', email: 'guy.alon@mail.com', course: 'שילוב מערכות', progress: 60, avg: 85, lessons: 3, pay: 'active', trans: true },
+    ];
+
+    const transState = (i) => this.state.trans[i] !== undefined ? this.state.trans[i] : raw[i].trans;
+
+    const students = raw.map((r, i) => {
+      const on = transState(i);
+      return {
+        ...r, initial: r.name.charAt(0), avatarGrad: grads[i % grads.length],
+        barW: r.progress + '%', barGrad: grads[i % grads.length],
+        payLabel: pay[r.pay].label, payColor: pay[r.pay].color, payBg: pay[r.pay].bg,
+        transBg: on ? 'linear-gradient(135deg,#9FB4F5,#C3A8EE)' : 'rgba(130,135,170,0.22)',
+        knobSide: on ? 'left' : 'right',
+        rowBg: i === this.state.selectedId ? 'rgba(159,180,245,0.1)' : 'transparent',
+        select: () => this.setState({ selectedId: i }),
+        toggle: (e) => { e.stopPropagation(); this.setState(s => ({ trans: { ...s.trans, [i]: !transState(i) } })); },
+      };
+    });
+
+    const si = this.state.selectedId;
+    const selOn = transState(si);
+    const isGated = this.state.unlock[si] !== undefined ? this.state.unlock[si] === 'gated' : (si % 2 === 0);
+    const thr = this.state.threshold[si] !== undefined ? this.state.threshold[si] : 70;
+    const onTile = { bg: 'linear-gradient(135deg,#9FB4F5,#C3A8EE)', color: '#fff' };
+    const offTile = { bg: 'rgba(130,135,170,0.1)', color: '#7A7A92' };
+    const thresholdOptions = [60, 70, 80, 90, 100].map(v => ({
+      value: v + '%',
+      bg: thr === v ? 'linear-gradient(135deg,#9FB4F5,#C3A8EE)' : 'rgba(130,135,170,0.1)',
+      color: thr === v ? '#fff' : '#7A7A92',
+      set: () => this.setState(s => ({ threshold: { ...s.threshold, [si]: v } })),
+    }));
+    const noDeadline = this.state.noDl[si] !== undefined ? this.state.noDl[si] : (si === 3);
+    const weeksAdded = this.state.extend[si] || 0;
+    const baseDl = new Date(2026, 6, 15); // 15 ביולי 2026
+    baseDl.setDate(baseDl.getDate() + weeksAdded * 7);
+    const heb = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+    const dlDate = baseDl.getDate() + ' ב' + heb[baseDl.getMonth()];
+    const sel = {
+      ...raw[si], initial: raw[si].name.charAt(0), avatarGrad: grads[si % grads.length],
+      transBg: selOn ? 'linear-gradient(135deg,#9FB4F5,#C3A8EE)' : 'rgba(130,135,170,0.22)',
+      knobSide: selOn ? 'left' : 'right',
+      transSub: selOn ? 'מופעל — התלמיד יכול לתרגם כל שפה' : 'כבוי — לחץ להפעלה',
+      toggleTrans: () => this.setState(s => ({ trans: { ...s.trans, [si]: !transState(si) } })),
+      gated: isGated, threshold: thr, thresholdOptions,
+      unlockSub: isGated ? 'מדורג — נפתח לפי ציון' : 'פתוח — כל הפרקים נגישים',
+      freeBg: !isGated ? onTile.bg : offTile.bg, freeColor: !isGated ? onTile.color : offTile.color,
+      gatedBg: isGated ? onTile.bg : offTile.bg, gatedColor: isGated ? onTile.color : offTile.color,
+      setFree: () => this.setState(s => ({ unlock: { ...s.unlock, [si]: 'free' } })),
+      setGated: () => this.setState(s => ({ unlock: { ...s.unlock, [si]: 'gated' } })),
+      hasDeadline: !noDeadline, noDeadline,
+      deadlineDate: dlDate, deadlineSub: noDeadline ? 'ללא מועד אחרון' : (weeksAdded ? 'הוארך ע״י המרצה' : 'מוגדר ע״י המרצה'),
+      extended: weeksAdded > 0, extendedLabel: '+' + weeksAdded + ' שבוע',
+      noDlBg: noDeadline ? 'linear-gradient(135deg,#7FD3C0,#9AD9F0)' : 'rgba(130,135,170,0.12)',
+      noDlColor: noDeadline ? '#fff' : '#7A7A92',
+      toggleNoDeadline: () => this.setState(s => ({ noDl: { ...s.noDl, [si]: !noDeadline } })),
+      extend: () => this.setState(s => ({ extend: { ...s.extend, [si]: (s.extend[si] || 0) + 1 } })),
+      buildCourse: () => {}, assignExam: () => this.setState({ examModalOpen: true }), message: () => {},
+    };
+
+    const navItem = (label, icon, active, badge) => ({
+      label, icon, badge: badge || '',
+      bg: active ? 'linear-gradient(135deg,rgba(159,180,245,0.22),rgba(195,168,238,0.16))' : 'transparent',
+      border: active ? '1px solid rgba(255,255,255,0.8)' : '1px solid transparent',
+      color: active ? '#5E5AA8' : '#7A7A92', weight: active ? 700 : 600, onClick: () => {},
+    });
+    const nav = [
+      navItem('התלמידים שלי', 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM2 20a7 7 0 0 1 14 0M17 11a3 3 0 0 0 0-6M22 20a7 7 0 0 0-5-6.7', true, ''),
+      navItem('קורסים ותכנים', 'M4 5a2 2 0 0 1 2-2h9v16H6a2 2 0 0 0-2 2zM15 3h3a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2h-3', false, ''),
+      navItem('מבחנים וציונים', 'M9 11l3 3 8-8M21 12v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h11', false, '3'),
+      navItem('צ׳אט והודעות', 'M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z', false, '2'),
+      navItem('אנליטיקה', 'M3 3v18h18M7 14l4-4 3 3 5-6', false, ''),
+      navItem('הגדרות', 'M12 2v4M12 18v4M4 12H2M22 12h-2M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2', false, ''),
+    ];
+
+    const kpis = [
+      { label: 'סך תלמידים', value: '6', delta: '+3 החודש', deltaColor: '#3DAE80', icon: 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM2 20a7 7 0 0 1 14 0M17 11a3 3 0 0 0 0-6M22 20a7 7 0 0 0-5-6.7', iconBg: 'rgba(159,180,245,0.2)', iconColor: '#7A8FE0' },
+      { label: 'התקדמות ממוצעת', value: '53%', delta: '+6% מהשבוע', deltaColor: '#3DAE80', icon: 'M3 3v18h18M7 14l4-4 3 3 5-6', iconBg: 'rgba(111,214,168,0.22)', iconColor: '#3DAE80' },
+      { label: 'ממתינים לתשלום', value: '2', delta: 'דורש מעקב', deltaColor: '#F2942E', icon: 'M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z', iconBg: 'rgba(255,191,140,0.26)', iconColor: '#F2942E' },
+      { label: 'מבחנים לבדיקה', value: '3', delta: '2 הוגשו היום', deltaColor: '#A88AE0', icon: 'M9 11l3 3 8-8M21 12v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h11', iconBg: 'rgba(195,168,238,0.24)', iconColor: '#A88AE0' },
+    ];
+
+    const notifications = [
+      { title: 'אורי בר סיים מודול 3 בציון 91% — מעל הסף, נפתח הפרק הבא', time: 'לפני 5 דקות', unread: true, bg: 'rgba(159,180,245,0.2)', color: '#5E5AA8', icon: 'M3 11l9-8 9 8M5 10v10h14V10M9 20v-6h6v6' },
+      { title: 'מאיה רון הגישה מבחן מודול 3 · ציון 76%', time: 'לפני 12 דקות', unread: true, bg: 'rgba(111,214,168,0.2)', color: '#2E9E72', icon: 'M9 11l3 3 8-8M21 12v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h11' },
+      { title: 'נועה שמש — המנוי בוטל, נדרשת פנייה', time: 'לפני שעה', unread: true, bg: 'rgba(255,107,107,0.16)', color: '#E5483C', icon: 'M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z' },
+      { title: 'הודעה חדשה מאורי בר בצ׳אט', time: 'לפני שעתיים', unread: true, bg: 'rgba(159,180,245,0.2)', color: '#7A8FE0', icon: 'M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z' },
+      { title: 'יוסי כהן השלים את הקורס — מוכן לתעודה', time: 'אתמול', unread: false, bg: 'rgba(255,191,140,0.22)', color: '#E5821A', icon: 'M12 15a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM9 14l-1.5 7L12 18l4.5 3L15 14' },
+    ];
+
+    const officeOpen = true;
+    const msgIn = (text, time) => ({ text, time, justify: 'justify-content:flex-start', bg: 'rgba(130,135,170,0.1)', color: '#2E2E48', radius: '4px 16px 16px 16px' });
+    const msgOut = (text, time) => ({ text, time, justify: 'justify-content:flex-end', bg: 'linear-gradient(135deg,#9FB4F5,#C3A8EE)', color: '#fff', radius: '16px 4px 16px 16px' });
+    const messages = [
+      msgIn('שלום, יש לי שאלה על מודול 4 — מתי אפשר?', '09:42'),
+      msgOut('בוקר טוב! אני זמינה בשעות הקבלה היום. שלחי לי את השאלה.', '09:50'),
+      msgIn('מצוין, תודה! 🙏', '09:51'),
+    ];
+
+    return {
+      instructorName, instructorInitial: instructorName.replace('ד״ר ', '').charAt(0),
+      totalStudents: 6, needAttention: 2, avgProgress: 53, pendingPay: 2, examsToReview: 3, submittedToday: 2,
+      nav, kpis, students, sel, notifications,
+      notifOpen: this.state.notifOpen, notifCount: this.state.notifOpen ? '' : String(notifications.filter(n => n.unread).length),
+      toggleNotif: () => this.setState(s => ({ notifOpen: !s.notifOpen })),
+      addStudent: () => {},
+      officeStatus: officeOpen ? 'זמין עכשיו' : 'מחוץ לשעות', officeColor: officeOpen ? '#2E9E72' : '#A6AABE',
+      officeBg: officeOpen ? 'rgba(111,214,168,0.16)' : 'rgba(130,135,170,0.12)',
+      officeHours: 'א׳–ה׳ · 18:00–21:00', editHours: () => {},
+      messages, chatPlaceholder: 'כתוב הודעה לתלמיד…', sendMsg: () => {},
+      examModalOpen: this.state.examModalOpen, closeExam: () => this.setState({ examModalOpen: false }),
+      shviOpen: this.state.shviOpen, toggleShvi: () => this.setState(s => ({ shviOpen: !s.shviOpen })),
+      shviMessages, shviChips, sendShvi: () => this._sendShvi(),
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API MCP Server — מצגת מוצר</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;800;900&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0e141b;
+    --panel:#151d27;
+    --panel-2:#1b2533;
+    --line:#26334a;
+    --text:#e8eef6;
+    --muted:#8da2bb;
+    --get:#49cc90;
+    --post:#fca130;
+    --put:#61affe;
+    --del:#f93e3e;
+    --auth:#b388ff;
+    --accent:#49cc90;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--ink);
+    color:var(--text);
+    font-family:'Heebo',sans-serif;
+    overflow:hidden;
+  }
+  .mono{font-family:'IBM Plex Mono',monospace;direction:ltr;unicode-bidi:isolate}
+
+  /* ===== deck frame ===== */
+  #deck{height:100vh;width:100vw;position:relative}
+  .slide{
+    position:absolute;inset:0;
+    display:none;
+    flex-direction:column;
+    padding:clamp(20px,4vw,64px);
+    padding-bottom:96px;
+    opacity:0;
+    transform:translateY(14px);
+  }
+  .slide.active{
+    display:flex;
+    animation:enter .45s cubic-bezier(.2,.7,.2,1) forwards;
+  }
+  @keyframes enter{to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion: reduce){
+    .slide.active{animation:none;opacity:1;transform:none}
+  }
+
+  /* ===== signature: HTTP request line per slide ===== */
+  .reqline{
+    font-family:'IBM Plex Mono',monospace;
+    direction:ltr;text-align:left;
+    font-size:clamp(11px,1.4vw,14px);
+    color:var(--muted);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:8px 14px;
+    background:var(--panel);
+    display:flex;gap:10px;align-items:center;
+    width:fit-content;
+    margin-bottom:clamp(18px,3vh,40px);
+  }
+  .reqline .m{font-weight:700}
+  .reqline .ok{color:var(--get)}
+  .badge{
+    font-family:'IBM Plex Mono',monospace;direction:ltr;
+    font-weight:700;font-size:12px;
+    padding:3px 10px;border-radius:6px;color:#08110c;
+  }
+  .b-get{background:var(--get)} .b-post{background:var(--post)}
+  .b-put{background:var(--put)} .b-del{background:var(--del)}
+  .b-auth{background:var(--auth);color:#150a26}
+
+  h1{font-size:clamp(34px,6.4vw,84px);font-weight:900;line-height:1.05;letter-spacing:-.01em}
+  h2{font-size:clamp(26px,4.2vw,52px);font-weight:800;line-height:1.1;margin-bottom:clamp(14px,2.4vh,28px)}
+  .sub{color:var(--muted);font-size:clamp(15px,1.9vw,22px);font-weight:300;max-width:46ch;line-height:1.6}
+  .accent{color:var(--accent)}
+
+  .grow{flex:1;display:flex;flex-direction:column;justify-content:center;min-height:0}
+
+  /* ===== cards ===== */
+  .grid{display:grid;gap:clamp(10px,1.6vw,18px)}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  @media (max-width:720px){.g2,.g3{grid-template-columns:1fr}}
+  .card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:clamp(14px,2vw,24px);
+  }
+  .card h3{font-size:clamp(16px,1.8vw,21px);font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+  .card p{color:var(--muted);font-size:clamp(13px,1.5vw,16px);line-height:1.55}
+
+  /* ===== code block ===== */
+  .code{
+    background:#0a0f15;
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:clamp(14px,2vw,24px);
+    font-family:'IBM Plex Mono',monospace;
+    direction:ltr;text-align:left;
+    font-size:clamp(12px,1.5vw,16px);
+    line-height:1.7;
+    overflow:auto;
+    white-space:pre;
+  }
+  .c-key{color:var(--put)} .c-str{color:var(--get)} .c-cm{color:#5b6c82} .c-mtd{color:var(--post);font-weight:700}
+
+  /* ===== hero typewriter ===== */
+  .hero-req{
+    font-family:'IBM Plex Mono',monospace;direction:ltr;text-align:left;
+    font-size:clamp(14px,2.2vw,24px);
+    background:#0a0f15;border:1px solid var(--line);border-radius:12px;
+    padding:clamp(14px,2vw,22px) clamp(18px,2.6vw,28px);
+    width:fit-content;max-width:100%;
+    margin-top:clamp(20px,3.4vh,38px);
+  }
+  .cursor{display:inline-block;width:.55em;height:1.1em;background:var(--accent);vertical-align:text-bottom;animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+
+  /* ===== auth flow ===== */
+  .flow{display:flex;align-items:stretch;gap:clamp(8px,1.4vw,16px);flex-wrap:wrap}
+  .flow .card{flex:1;min-width:200px}
+
+  /* ===== params table ===== */
+  table{width:100%;border-collapse:collapse;font-size:clamp(12px,1.5vw,16px)}
+  th,td{padding:clamp(8px,1.2vw,14px);border-bottom:1px solid var(--line);text-align:right}
+  th{color:var(--muted);font-weight:600;font-size:.85em}
+  td .mono{color:var(--put);font-size:.92em}
+  .req-tag{color:var(--del);font-size:.8em;font-weight:600}
+  .opt-tag{color:var(--muted);font-size:.8em}
+
+  /* ===== nav ===== */
+  #nav{
+    position:fixed;bottom:0;left:0;right:0;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px clamp(20px,4vw,64px);
+    background:linear-gradient(to top, var(--ink) 60%, transparent);
+    z-index:10;
+  }
+  #status{
+    font-family:'IBM Plex Mono',monospace;direction:ltr;
+    color:var(--muted);font-size:13px;
+  }
+  #status .ok{color:var(--get);font-weight:700}
+  .btns{display:flex;gap:10px}
+  .nbtn{
+    background:var(--panel);border:1px solid var(--line);color:var(--text);
+    width:44px;height:44px;border-radius:10px;font-size:18px;cursor:pointer;
+    transition:border-color .15s, background .15s;
+  }
+  .nbtn:hover{border-color:var(--accent)}
+  .nbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  #bar{position:fixed;top:0;right:0;height:3px;background:var(--accent);z-index:11;transition:width .3s}
+
+  ul.clean{list-style:none}
+  ul.clean li{display:flex;gap:12px;align-items:flex-start;margin-bottom:clamp(10px,1.6vh,18px);font-size:clamp(14px,1.8vw,19px);color:var(--text)}
+  ul.clean li .dot{color:var(--accent);font-family:'IBM Plex Mono',monospace;flex-shrink:0;margin-top:2px}
+  ul.clean li span.d{color:var(--muted);font-weight:300}
+</style>
+</head>
+<body>
+
+<div id="bar"></div>
+
+<div id="deck">
+
+  <!-- 1 ▸ HERO -->
+  <section class="slide active">
+    <div class="reqline mono"><span class="m" style="color:var(--get)">GET</span> /api-mcp-server <span>HTTP/1.1</span> <span class="ok">· 200 OK</span></div>
+    <div class="grow">
+      <h1>API MCP Server</h1>
+      <p class="sub" style="margin-top:18px">תנו ל־LLM שלכם ידיים אמיתיות.<br>שרת MCP אחד שמחבר את המודל לכל API בעולם — עם אותנטיקציה מלאה, headers מותאמים ופענוח תגובות אוטומטי.</p>
+      <div class="hero-req" aria-hidden="true"><span id="type-target"></span><span class="cursor"></span></div>
+    </div>
+  </section>
+
+  <!-- 2 ▸ הבעיה -->
+  <section class="slide">
+    <div class="reqline mono"><span class="m" style="color:var(--del)">ERR</span> /the-problem <span style="color:var(--del)">· 403 FORBIDDEN</span></div>
+    <div class="grow">
+      <h2>מודל שפה חכם.<br><span class="accent">בלי גישה לעולם.</span></h2>
+      <div class="grid g2" style="margin-top:8px">
+        <div class="card">
+          <h3>היום</h3>
+          <p>ה־LLM יודע לנסח בקשת API מושלמת — אבל לא יכול לשלוח אותה. כל אינטגרציה דורשת פיתוח ייעודי, wrapper נפרד וקוד תחזוקה.</p>
+        </div>
+        <div class="card" style="border-color:var(--accent)">
+          <h3 class="accent">עם API MCP Server</h3>
+          <p>כלי אחד גנרי. המודל בוחר URL, שיטה, אותנטיקציה ו־body — והשרת מבצע, מפענח ומחזיר תשובה מובנית. אפס קוד ייעודי לכל שירות.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 ▸ תכונות -->
+  <section class="slide">
+    <div class="reqline mono"><span class="m" style="color:var(--get)">GET</span> /features <span class="ok">· 200 OK</span></div>
+    <div class="grow">
+      <h2>כל מה שבקשת HTTP צריכה</h2>
+      <div class="grid g3">
+        <div class="card"><h3><span class="badge b-get">7</span> שיטות HTTP</h3><p>GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS — תמיכה מלאה בכולן.</p></div>
+        <div class="card"><h3><span class="badge b-auth">AUTH</span> אותנטיקציה</h3><p>Bearer Token, Basic Auth ו־API Key עם header מותאם אישית.</p></div>
+        <div class="card"><h3><span class="badge b-put">HDR</span> Headers</h3><p>הוספת כל header שתצטרכו — מ־User-Agent ועד מפתחות פנימיים.</p></div>
+        <div class="card"><h3><span class="badge b-post">BODY</span> גוף בקשה</h3><p>JSON, מחרוזות ופורמטים נוספים. אובייקטים עוברים serialization אוטומטי.</p></div>
+        <div class="card"><h3><span class="badge b-get">PARSE</span> פענוח תגובות</h3><p>JSON, XML, HTML וטקסט — מוחזרים מפוענחים ומוכנים לשימוש המודל.</p></div>
+        <div class="card"><h3><span class="badge b-del">CTRL</span> שליטה מלאה</h3><p>Timeout מותאם לכל בקשה ובקרה על מעקב אחרי redirects.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 ▸ אותנטיקציה -->
+  <section class="slide">
+    <div class="reqline mono"><span class="m" style="color:var(--auth)">AUTH</span> /authentication <span class="ok">· 200 OK</span></div>
+    <div class="grow">
+      <h2>שלוש דרכים להזדהות. <span class="accent">פרמטר אחד.</span></h2>
+      <div class="flow">
+        <div class="card">
+          <h3><span class="badge b-auth">bearer</span></h3>
+          <p>טוקן אחד ב־Authorization header. מושלם ל־GitHub, OpenAI ורוב ה־APIs המודרניים.</p>
+          <div class="code" style="margin-top:12px;font-size:12px">auth_type: bearer
+auth_token: ghp_xxxx</div>
+        </div>
+        <div class="card">
+          <h3><span class="badge b-auth">basic</span></h3>
+          <p>שם משתמש וסיסמה — לשירותים ותיקים ומערכות פנים־ארגוניות.</p>
+          <div class="code" style="margin-top:12px;font-size:12px">auth_type: basic
+auth_username: user
+auth_password: ****</div>
+        </div>
+        <div class="card">
+          <h3><span class="badge b-auth">api_key</span></h3>
+          <p>מפתח בכל header שתבחרו — ברירת מחדל X-API-Key, אבל הכול גמיש.</p>
+          <div class="code" style="margin-top:12px;font-size:12px">auth_type: api_key
+auth_api_key: sk-xxxx
+auth_api_key_header: Authorization</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 ▸ דוגמה חיה -->
+  <section class="slide">
+    <div class="reqline mono"><span class="m" style="color:var(--post)">POST</span> /example <span class="ok">· 201 CREATED</span></div>
+    <div class="grow">
+      <h2>ככה זה נראה בפועל</h2>
+      <div class="grid g2">
+        <div>
+          <p class="sub" style="margin-bottom:14px">המודל קורא לכלי <span class="mono" style="color:var(--accent)">api_http_request</span>:</p>
+          <div class="code"><span class="c-mtd">POST</span> https://jsonplaceholder.typicode.com/posts
+
+<span class="c-key">body:</span> {
+  <span class="c-key">"title"</span>: <span class="c-str">"Hello"</span>,
+  <span class="c-key">"body"</span>:  <span class="c-str">"World"</span>,
+  <span class="c-key">"userId"</span>: 1
+}
+<span class="c-key">headers:</span> { <span class="c-key">"Content-Type"</span>: <span class="c-str">"application/json"</span> }</div>
+        </div>
+        <div>
+          <p class="sub" style="margin-bottom:14px">ומקבל תשובה מובנית:</p>
+          <div class="code">{
+  <span class="c-key">"status"</span>: <span class="c-str">201</span>,
+  <span class="c-key">"success"</span>: <span class="c-str">true</span>,
+  <span class="c-key">"contentType"</span>: <span class="c-str">"application/json"</span>,
+  <span class="c-key">"data"</span>: { ... }   <span class="c-cm">// מפוענח, מוכן לעבודה</span>
+}</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 ▸ פרמטרים -->
+  <section class="slide">
+    <div class="reqline mono"><span class="m" style="color:var(--put)">PUT</span> /parameters <span class="ok">· 200 OK</span></div>
+    <div class="grow">
+      <h2>API פשוט. שליטה מלאה.</h2>
+      <div class="card" style="padding:0;overflow:auto">
+        <table>
+          <thead><tr><th>פרמטר</th><th>תיאור</th><th>סטטוס</th></tr></thead>
+          <tbody>
+            <tr><td><span class="mono">url</span></td><td>כתובת מלאה כולל HTTPS</td><td><span class="req-tag">חובה</span></td></tr>
+            <tr><td><span class="mono">method</span></td><td>אחת משבע שיטות HTTP</td><td><span class="req-tag">חובה</span></td></tr>
+            <tr><td><span class="mono">headers</span></td><td>אובייקט key-value חופשי</td><td><span class="opt-tag">אופציונלי</span></td></tr>
+            <tr><td><span class="mono">body</span></td><td>מחרוזת או אובייקט (JSON אוטומטי)</td><td><span class="opt-tag">אופציונלי</span></td></tr>
+            <tr><td><span class="mono">auth_type</span></td><td>none / bearer / basic / api_key</td><td><span class="opt-tag">אופציונלי</span></td></tr>
+            <tr><td><span class="mono">timeout</span></td><td>במילישניות, ברירת מחדל 30,000</td><td><span class="opt-tag">אופציונלי</span></td></tr>
+            <tr><td><span class="mono">response_format</span></td><td>markdown / json</td><td><span class="opt-tag">אופציונלי</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 ▸ אבטחה -->
+  <section class="slide">
+    <div class="reqline mono"><span class="m" style="color:var(--auth)">SEC</span> /security <span class="ok">· 200 OK</span></div>
+    <div class="grow">
+      <h2>בנוי <span class="accent">בטוח</span> מהיסוד</h2>
+      <ul class="clean">
+        <li><span class="dot">▸</span><div><b>אפס מפתחות בקוד</b> — <span class="d">כל הסודות דרך environment variables בלבד.</span></div></li>
+        <li><span class="dot">▸</span><div><b>HTTPS בלבד</b> — <span class="d">כל תעבורה מוצפנת, ללא חריגים.</span></div></li>
+        <li><span class="dot">▸</span><div><b>הגנת Timeout</b> — <span class="d">30 שניות ברירת מחדל, אף בקשה לא נתקעת לנצח.</span></div></li>
+        <li><span class="dot">▸</span><div><b>אימות URL</b> — <span class="d">כל כתובת מאומתת לפני שהבקשה יוצאת.</span></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 8 ▸ CTA -->
+  <section class="slide">
+    <div class="reqline mono"><span class="m" style="color:var(--get)">GET</span> /started <span class="ok">· 200 OK</span></div>
+    <div class="grow" style="align-items:flex-start">
+      <h2>שלוש פקודות. <span class="accent">וה־LLM שלכם מחובר לעולם.</span></h2>
+      <div class="code" style="font-size:clamp(14px,2vw,20px);margin-top:8px"><span class="c-cm">$</span> cd api-mcp-server
+<span class="c-cm">$</span> npm install && npm run build
+<span class="c-cm">$</span> npm start</div>
+      <p class="sub" style="margin-top:26px">רישיון MIT · קוד פתוח · מוכן לחיבור לכל לקוח MCP</p>
+    </div>
+  </section>
+
+</div>
+
+<nav id="nav" aria-label="ניווט שקפים">
+  <div class="btns">
+    <button class="nbtn" id="prev" aria-label="שקף קודם">→</button>
+    <button class="nbtn" id="next" aria-label="שקף הבא">←</button>
+  </div>
+  <div id="status" class="mono">slide <span id="cur">1</span>/<span id="tot">8</span> <span class="ok">· 200 OK</span></div>
+</nav>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  const cur=document.getElementById('cur'),bar=document.getElementById('bar');
+  document.getElementById('tot').textContent=slides.length;
+  let i=0;
+  function show(n){
+    i=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+    cur.textContent=i+1;
+    bar.style.width=((i+1)/slides.length*100)+'%';
+  }
+  document.getElementById('next').onclick=()=>show(i+1);
+  document.getElementById('prev').onclick=()=>show(i-1);
+  addEventListener('keydown',e=>{
+    if(e.key==='ArrowLeft'||e.key===' '||e.key==='PageDown')show(i+1);   // RTL: שמאלה = קדימה
+    if(e.key==='ArrowRight'||e.key==='PageUp')show(i-1);
+    if(e.key==='Home')show(0);
+    if(e.key==='End')show(slides.length-1);
+  });
+  // swipe למובייל
+  let x0=null;
+  addEventListener('touchstart',e=>x0=e.touches[0].clientX,{passive:true});
+  addEventListener('touchend',e=>{
+    if(x0===null)return;
+    const dx=e.changedTouches[0].clientX-x0;
+    if(Math.abs(dx)>50) show(dx>0?i+1:i-1); // RTL
+    x0=null;
+  },{passive:true});
+
+  // typewriter בשקף הפתיחה
+  const t=document.getElementById('type-target');
+  const line='api_http_request → any API on Earth';
+  let c=0;
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduced){t.textContent=line}
+  else{(function type(){if(c<=line.length){t.textContent=line.slice(0,c++);setTimeout(type,45)}})()}
+  show(0);
+</script>
+</body>
+</html>
