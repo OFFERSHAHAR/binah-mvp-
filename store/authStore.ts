@@ -27,7 +27,7 @@ export interface AuthState {
 
   // Actions
   login: (email: string, password: string) => Promise<void>
-  signup: (name: string, email: string, password: string, confirmPassword: string) => Promise<void>
+  signup: (name: string, email: string, password: string, confirmPassword: string, phone?: string) => Promise<void>
   logout: () => Promise<void>
   clearError: () => void
   setUser: (user: User) => void
@@ -73,10 +73,10 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
 
-  signup: async (name: string, email: string, password: string, confirmPassword: string) => {
+  signup: async (name: string, email: string, password: string, confirmPassword: string, phone?: string) => {
     set({ isLoading: true, error: null })
     try {
-      const response = await apiRegister(email, password, confirmPassword, name)
+      const response = await apiRegister(email, password, confirmPassword, name, phone)
 
       if (!response.success) {
         throw new Error(response.error || 'שגיאה בהרשמה')

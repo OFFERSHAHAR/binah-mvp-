@@ -10,6 +10,7 @@ interface StoredUser {
   name: string
   role: 'student' | 'teacher' | 'admin'
   emailVerified: boolean
+  phone?: string
   createdAt: string
   updatedAt: string
 }
@@ -21,6 +22,7 @@ interface UserRow {
   name: string
   role: 'student' | 'teacher' | 'admin'
   email_verified: boolean
+  phone: string | null
   created_at: string
   updated_at: string
 }
@@ -32,6 +34,7 @@ const fromRow = (r: UserRow): StoredUser => ({
   name: r.name,
   role: r.role,
   emailVerified: r.email_verified,
+  phone: r.phone || undefined,
   createdAt: r.created_at,
   updatedAt: r.updated_at,
 })
@@ -72,6 +75,7 @@ export interface CreateUserInput {
   passwordHash: string
   name: string
   role?: 'student' | 'teacher' | 'admin'
+  phone?: string
 }
 
 export async function findUserByEmail(email: string): Promise<StoredUser | null> {
@@ -96,6 +100,7 @@ export async function createUser(input: CreateUserInput): Promise<StoredUser> {
       name: input.name,
       role: input.role || 'student',
       email_verified: false,
+      phone: input.phone || null,
     })
     return fromRow(row)
   } catch (e) {

@@ -7,8 +7,10 @@ import { createUser, getUserPublicData } from '@/lib/db'
 import { checkRateLimit, incrementRateLimit, DEFAULT_AUTH_RATE_LIMIT } from '@/lib/rate-limit'
 import { kvSet } from '@/lib/store/kv'
 import { sendVerificationEmail } from '@/lib/email'
+import { sendWhatsApp } from '@/lib/whatsapp'
 
 interface RegisterRequest {
+  phone?: string
   email: string
   password: string
   confirmPassword: string
@@ -34,7 +36,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     const body: RegisterRequest = await request.json()
-    const { email, password, confirmPassword, name } = body
+    const { email, password, confirmPassword, name, phone } = body
 
     // Validation
     if (!email || !password || !confirmPassword || !name) {
@@ -87,7 +89,20 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       passwordHash,
       name: name.trim(),
       role: 'student',
+      phone: phone?.trim() || undefined,
     })
+
+    // Send WhatsApp welcome (best-effort — no-op if no phone or gateway unconfigured)
+    if (phone?.trim()) {
+      try {
+        await sendWhatsApp(
+          phone.trim(),
+          `שלום ${user.name}! 🎓 נרשמת בהצלחה לבִּינָה. נשמח לראות אותך בשיעור הראשון. כאן נשלח לך תזכורות ועדכונים.`
+        )
+      } catch (waErr) {
+        console.error('WhatsApp welcome failed (signup still succeeded):', waErr)
+      }
+    }
 
     // Send confirmation email (best-effort — never fail signup if email is down/unconfigured)
     try {

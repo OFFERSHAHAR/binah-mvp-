@@ -49,7 +49,8 @@ export async function register(
   email: string,
   password: string,
   confirmPassword: string,
-  name: string
+  name: string,
+  phone?: string
 ): Promise<AuthResponse> {
   try {
     const res = await fetch('/api/auth/register', {
@@ -60,6 +61,7 @@ export async function register(
         password,
         confirmPassword,
         name,
+        phone,
       }),
     })
 
