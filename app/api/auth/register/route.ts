@@ -97,7 +97,23 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       try {
         await sendWhatsApp(
           phone.trim(),
-          `שלום ${user.name}! 🎓 נרשמת בהצלחה לבִּינָה. נשמח לראות אותך בשיעור הראשון. כאן נשלח לך תזכורות ועדכונים.`
+          [
+            '*בִּינָה*  ‹ / ›   בית הספר ל-AI',
+            '━━━━━━━━━━━━━━━',
+            '',
+            `שלום *${user.name}*! 👋`,
+            'ההרשמה הושלמה בהצלחה ✅',
+            '',
+            '```> initializing your journey...```',
+            '',
+            '🎓 *מה הלאה:*',
+            '• הקורס הראשון מחכה לך בלוח הבקרה',
+            '• שיעורים, תרגול ומבחנים — הכל במקום אחד',
+            '• תזכורות ועדכונים יגיעו אליך לכאן',
+            '',
+            '_בהצלחה, ונתראה בכיתה!_',
+            '— צוות בִּינָה',
+          ].join('\n')
         )
       } catch (waErr) {
         console.error('WhatsApp welcome failed (signup still succeeded):', waErr)
