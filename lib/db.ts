@@ -47,8 +47,8 @@ let seeded = false
 async function ensureSeed(): Promise<void> {
   if (seeded) return
   seeded = true
+  // Production: only the admin is seeded. Students register themselves.
   const seeds = [
-    { id: 'demo-user-001', email: 'demo@binah.com', pw: 'Demo@123', name: 'דנה כהן', role: 'student' as const },
     { id: 'admin-user-001', email: 'admin@binah.com', pw: process.env.ADMIN_PASSWORD || 'Admin@123', name: 'מנהל המערכת', role: 'admin' as const },
   ]
   for (const s of seeds) {
