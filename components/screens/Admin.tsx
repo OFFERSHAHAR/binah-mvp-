@@ -32,6 +32,33 @@ export const Admin = () => {
   const { courses, fetchCourses } = useAppData()
   const [users, setUsers] = useState<AdminUser[]>([])
   const [usersState, setUsersState] = useState<'loading' | 'ok' | 'error'>('loading')
+  const [broadcast, setBroadcast] = useState('')
+  const [castState, setCastState] = useState<'idle' | 'sending' | 'done' | 'error'>('idle')
+  const [castResult, setCastResult] = useState('')
+
+  const sendBroadcast = async () => {
+    if (!broadcast.trim()) return
+    setCastState('sending')
+    try {
+      const r = await fetch('/api/notify/whatsapp/broadcast', {
+        method: 'POST',
+        headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: broadcast }),
+      })
+      const data = await r.json()
+      if (!r.ok) {
+        setCastState('error')
+        setCastResult(r.status === 503 ? 'שער ה-WhatsApp לא מוגדר (מקומי/לא מחובר)' : data.error || 'שגיאה')
+      } else {
+        setCastState('done')
+        setCastResult(`נשלח ל-${data.sent}/${data.recipients} תלמידים`)
+        setBroadcast('')
+      }
+    } catch {
+      setCastState('error')
+      setCastResult('שגיאת רשת')
+    }
+  }
 
   useEffect(() => {
     fetchCourses()
@@ -106,6 +133,26 @@ export const Admin = () => {
             </Link>
           </motion.div>
         ))}
+      </motion.div>
+
+      {/* WhatsApp broadcast to students */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="rounded-2xl glass p-5 sm:p-6 mb-4">
+        <div className="flex items-center gap-2 mb-3">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2E9E72" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+          <div className="text-base font-extrabold text-dark">שליחת תזכורת ב-WhatsApp לכל התלמידים</div>
+        </div>
+        <textarea
+          value={broadcast} onChange={(e) => setBroadcast(e.target.value)} aria-label="הודעת שידור"
+          placeholder="לדוגמה: תזכורת — שיעור היום ב-18:00. נתראה! 🎓"
+          className="w-full h-24 rounded-xl bg-white/60 border border-white/70 p-3 text-sm outline-none resize-none text-right"
+        />
+        <div className="flex items-center justify-between gap-3 mt-2">
+          <span className={`text-xs ${castState === 'error' ? 'text-red-500' : 'text-muted'}`}>{castResult}</span>
+          <button onClick={sendBroadcast} disabled={!broadcast.trim() || castState === 'sending'}
+            className="h-10 px-5 rounded-xl text-white text-sm font-bold bg-gradient-to-br from-[#2E9E72] to-[#7FD3C0] disabled:opacity-50 active:scale-95 transition-transform shrink-0">
+            {castState === 'sending' ? 'שולח…' : 'שלח לכולם'}
+          </button>
+        </div>
       </motion.div>
 
       {/* User management — live from Supabase */}
