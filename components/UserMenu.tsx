@@ -50,12 +50,12 @@ export const UserMenu = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="absolute left-0 mt-2 w-56 glass rounded-lg shadow-lg py-2 z-50"
+            className="absolute right-0 mt-2 w-56 glass rounded-lg shadow-lg py-2 z-50"
           >
             {/* User Info */}
             <div className="px-4 py-3 border-b border-[#E5E5E5]">
-              <p className="font-semibold text-[#2E2E48]">{user.name}</p>
-              <p className="text-xs text-[#7A7A92]">{user.email}</p>
+              <p className="font-semibold text-[#2E2E48] truncate">{user.name}</p>
+              <p className="text-xs text-[#7A7A92] truncate" title={user.email}>{user.email}</p>
               <p className="text-xs text-[#5E5AA8] mt-1 capitalize">
                 {user.role === 'student'
                   ? 'תלמיד'

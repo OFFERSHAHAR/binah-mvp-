@@ -226,19 +226,6 @@ export default function LoginPage() {
             </AuthButton>
           </form>
 
-          {/* Demo Credentials Hint */}
-          <motion.div
-            variants={itemVariants}
-            className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg"
-          >
-            <p className="text-xs font-medium text-blue-900 mb-2">
-              🔍 אישורי הדמו:
-            </p>
-            <p className="text-xs text-blue-800 font-mono">
-              demo@binah.com / demo123
-            </p>
-          </motion.div>
-
           {/* Links */}
           <div className="mt-6 space-y-3 text-center text-sm">
             <motion.div variants={itemVariants}>
